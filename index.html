@@ -605,6 +605,134 @@ body::after {
 .pt-trend.up { color:#4ade80; }
 .pt-trend.dn { color:#f87171; }
 .pt-trend.eq { color:var(--ink3); }
+
+/* ────────────────── REST TIMER */
+@keyframes rt-slide-up   { from{transform:translateY(100%);opacity:0} to{transform:translateY(0);opacity:1} }
+@keyframes rt-slide-down { from{transform:translateY(0);opacity:1}    to{transform:translateY(100%);opacity:0} }
+@keyframes rt-ring       { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+@keyframes rt-tick       { 0%{opacity:.6;transform:scale(.97)} 100%{opacity:1;transform:scale(1)} }
+@keyframes rt-done-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(200,240,58,.5)} 50%{box-shadow:0 0 0 18px rgba(200,240,58,0)} }
+
+#rt-backdrop {
+  position:fixed; inset:0; z-index:9000;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(6px);
+  opacity:0; pointer-events:none;
+  transition:opacity .28s ease;
+}
+#rt-backdrop.show { opacity:1; pointer-events:auto; }
+
+#rt-sheet {
+  position:fixed; bottom:0; left:0; right:0; z-index:9001;
+  background:linear-gradient(175deg, #12121a 0%, #0a0a10 100%);
+  border:1px solid rgba(255,255,255,.09);
+  border-bottom:none;
+  border-radius:20px 20px 0 0;
+  padding:0 0 env(safe-area-inset-bottom,16px);
+  transform:translateY(100%);
+  transition:transform .32s cubic-bezier(.32,1.2,.42,1);
+  will-change:transform;
+}
+#rt-sheet.show { transform:translateY(0); }
+
+.rt-handle {
+  width:36px; height:4px;
+  background:rgba(255,255,255,.12);
+  border-radius:99px;
+  margin:12px auto 0;
+}
+
+.rt-hd {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 20px 0;
+}
+.rt-label {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ink3);
+}
+.rt-close {
+  width:28px; height:28px; border-radius:50%;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all .15s; color:var(--ink3); font-size:14px;
+}
+.rt-close:hover { background:rgba(255,255,255,.12); color:var(--ink); }
+
+.rt-ring-wrap {
+  display:flex; align-items:center; justify-content:center;
+  padding:20px 0 12px;
+  position:relative;
+}
+.rt-svg { width:160px; height:160px; transform:rotate(-90deg); }
+.rt-track { fill:none; stroke:rgba(255,255,255,.06); stroke-width:6; }
+.rt-prog  {
+  fill:none; stroke:var(--lime); stroke-width:6;
+  stroke-linecap:round;
+  stroke-dasharray:440;
+  stroke-dashoffset:0;
+  transition:stroke-dashoffset .9s linear, stroke .3s;
+}
+.rt-prog.urgent { stroke:var(--amber); }
+.rt-prog.done   { stroke:var(--lime); animation:rt-done-pulse .6s ease; }
+
+.rt-center {
+  position:absolute;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  inset:0;
+}
+.rt-time {
+  font-family:'JetBrains Mono',monospace;
+  font-size:44px; font-weight:600; letter-spacing:-.02em;
+  color:var(--ink); line-height:1;
+}
+.rt-time.urgent { color:var(--amber); }
+.rt-time.done   { color:var(--lime); animation:rt-ring .6s ease; }
+.rt-status {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink3); margin-top:4px;
+}
+
+.rt-presets {
+  display:flex; gap:8px; justify-content:center;
+  padding:0 20px 16px;
+}
+.rt-pre {
+  flex:1; padding:10px 4px;
+  border-radius:10px;
+  border:1.5px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px; font-weight:600; color:var(--ink3);
+  cursor:pointer; transition:all .15s;
+}
+.rt-pre:hover  { border-color:rgba(200,240,58,.3); color:var(--lime); background:rgba(200,240,58,.06); }
+.rt-pre.active { border-color:var(--lime); color:var(--lime); background:rgba(200,240,58,.1); }
+
+.rt-actions {
+  display:flex; gap:10px; padding:0 20px 20px;
+}
+.rt-btn {
+  flex:1; padding:14px;
+  border-radius:12px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; letter-spacing:.1em; text-transform:uppercase; font-weight:600;
+  cursor:pointer; transition:all .18s;
+}
+.rt-skip {
+  border:1.5px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+  color:var(--ink3);
+}
+.rt-skip:hover { border-color:rgba(255,255,255,.2); color:var(--ink); }
+.rt-restart {
+  border:1.5px solid rgba(200,240,58,.2);
+  background:rgba(200,240,58,.07);
+  color:var(--lime);
+}
+.rt-restart:hover { background:rgba(200,240,58,.14); }
 </style>
 </head>
 <body>
@@ -881,6 +1009,8 @@ function checkSet(exid, setIdx){
     if(!rpEl.value) rpEl.value=reps||'';
     row.classList.add('flash');
     setTimeout(()=>row.classList.remove('flash'),600);
+    // start rest timer (skip for warm-up rows)
+    if(!row.classList.contains('wu-row')) rtOpen();
   }
 
   // persist all checked sets for this exercise
@@ -1017,9 +1147,137 @@ function jumpToToday(){
   }
 }
 
+
+/* ── REST TIMER ── */
+const RT = {
+  total: 90, remaining: 90, running: false,
+  interval: null, activePreset: 90,
+  circumference: 2 * Math.PI * 70  // 439.82
+};
+
+function rtOpen(presetSecs) {
+  const secs = presetSecs || RT.activePreset;
+  RT.total = secs; RT.remaining = secs; RT.activePreset = secs; RT.running = true;
+
+  // update active preset button
+  document.querySelectorAll('.rt-pre').forEach(b => {
+    const s = parseInt(b.textContent.split(':')[0])*60 + parseInt(b.textContent.split(':')[1]||0);
+    b.classList.toggle('active', s === secs);
+  });
+
+  // show sheet
+  document.getElementById('rt-backdrop').classList.add('show');
+  document.getElementById('rt-sheet').classList.add('show');
+
+  rtTick();
+  clearInterval(RT.interval);
+  RT.interval = setInterval(rtTick, 1000);
+
+  // haptic
+  if(navigator.vibrate) navigator.vibrate(30);
+}
+
+function rtTick() {
+  if(RT.remaining < 0){ rtDone(); return; }
+  const m = Math.floor(RT.remaining / 60);
+  const s = RT.remaining % 60;
+  const timeEl   = document.getElementById('rt-time');
+  const statusEl = document.getElementById('rt-status');
+  const prog     = document.getElementById('rt-prog');
+
+  timeEl.textContent = m + ':' + String(s).padStart(2,'0');
+
+  const pct  = RT.remaining / RT.total;
+  const offset = RT.circumference * (1 - pct);
+  prog.style.strokeDasharray  = RT.circumference;
+  prog.style.strokeDashoffset = offset;
+
+  const urgent = RT.remaining <= 10 && RT.remaining > 0;
+  timeEl.className   = 'rt-time'  + (urgent ? ' urgent' : '');
+  prog.className     = 'rt-prog'  + (urgent ? ' urgent' : '');
+  statusEl.textContent = urgent ? 'Almost…' : RT.remaining === 0 ? 'Done!' : 'Resting…';
+
+  if(urgent && navigator.vibrate) navigator.vibrate(15);
+
+  RT.remaining--;
+}
+
+function rtDone() {
+  clearInterval(RT.interval);
+  RT.running = false;
+  const timeEl = document.getElementById('rt-time');
+  const prog   = document.getElementById('rt-prog');
+  timeEl.textContent = '0:00';
+  timeEl.className   = 'rt-time done';
+  prog.className     = 'rt-prog done';
+  prog.style.strokeDashoffset = 0;
+  document.getElementById('rt-status').textContent = 'Rest complete!';
+  if(navigator.vibrate) navigator.vibrate([60,40,60,40,120]);
+  // auto close after 2s
+  setTimeout(() => rtClose(), 2000);
+}
+
+function rtClose() {
+  clearInterval(RT.interval);
+  RT.running = false;
+  document.getElementById('rt-backdrop').classList.remove('show');
+  document.getElementById('rt-sheet').classList.remove('show');
+}
+
+function rtRestart() {
+  clearInterval(RT.interval);
+  RT.remaining = RT.total; RT.running = true;
+  RT.interval = setInterval(rtTick, 1000);
+  rtTick();
+  if(navigator.vibrate) navigator.vibrate(20);
+}
+
+function rtSet(secs) {
+  RT.total = secs; RT.remaining = secs; RT.activePreset = secs;
+  document.querySelectorAll('.rt-pre').forEach(b => {
+    const bSecs = parseInt(b.textContent.split(':')[0])*60 + parseInt(b.textContent.split(':')[1]||0);
+    b.classList.toggle('active', bSecs === secs);
+  });
+  clearInterval(RT.interval);
+  RT.interval = setInterval(rtTick, 1000);
+  rtTick();
+  if(navigator.vibrate) navigator.vibrate(10);
+}
+
 /* ── INIT ── */
 injectTrackers();
 initToday();
 </script>
+
+<!-- ── REST TIMER ── -->
+<div id="rt-backdrop" onclick="rtClose()"></div>
+<div id="rt-sheet" role="dialog" aria-modal="true" aria-label="Rest Timer">
+  <div class="rt-handle"></div>
+  <div class="rt-hd">
+    <span class="rt-label">Rest Timer</span>
+    <button class="rt-close" onclick="rtClose()" aria-label="Close">✕</button>
+  </div>
+  <div class="rt-ring-wrap">
+    <svg class="rt-svg" viewBox="0 0 150 150">
+      <circle class="rt-track" cx="75" cy="75" r="70"/>
+      <circle class="rt-prog"  cx="75" cy="75" r="70" id="rt-prog"/>
+    </svg>
+    <div class="rt-center">
+      <div class="rt-time" id="rt-time">2:00</div>
+      <div class="rt-status" id="rt-status">Resting…</div>
+    </div>
+  </div>
+  <div class="rt-presets">
+    <button class="rt-pre" onclick="rtSet(60)">1:00</button>
+    <button class="rt-pre active" onclick="rtSet(90)">1:30</button>
+    <button class="rt-pre" onclick="rtSet(120)">2:00</button>
+    <button class="rt-pre" onclick="rtSet(180)">3:00</button>
+  </div>
+  <div class="rt-actions">
+    <button class="rt-btn rt-skip"    onclick="rtClose()">Skip</button>
+    <button class="rt-btn rt-restart" onclick="rtRestart()">↺ Restart</button>
+  </div>
+</div>
+
 </body>
 </html>

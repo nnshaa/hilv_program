@@ -92,6 +92,20 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [1.1.0] — 2026-05-02
+
+**Added**
+- Rest Timer — bottom sheet otomatis muncul setelah set di-check
+- SVG circular progress ring dengan countdown real-time
+- Preset waktu: 1:00 · 1:30 · 2:00 · 3:00 (bisa ganti mid-countdown)
+- Haptic feedback saat timer mulai, urgent (10 detik terakhir), dan selesai
+- Auto-close setelah rest selesai + pola vibrate berbeda tiap state
+- Tombol Skip dan Restart di dalam sheet
+- Backdrop blur saat timer aktif
+- Timer tidak muncul untuk warm-up row (WU)
+
+---
+
 ### [1.0.0] — 2026-05-02
 
 Initial release.
