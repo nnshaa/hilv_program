@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HILV — High Frequency Program</title>
+<meta name="description" content="HILV High Frequency Program — Natural Lifter, Cutting Phase, 5 Days/Week. Minimum effective dose, strength retention focus.">
+<meta name="theme-color" content="#05050A">
+<meta property="og:title" content="HILV — High Frequency Program">
+<meta property="og:description" content="Natural Lifter · Cutting Phase · 5 Days/Week · Minimum Effective Dose">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏋️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05050A;
+  --ink: #F0EDE6;
+  --ink2: #6E6C67;
+  --ink3: #2E2C28;
+  --lime: #C8F03A;
+  --lime-a: rgba(200,240,58,.12);
+  --lime-b: rgba(200,240,58,.06);
+  --blue: #56AAFF;
+  --amber: #F5B830;
+  --glass: rgba(255,255,255,.042);
+  --glass-b: rgba(255,255,255,.072);
+  --glass-s: rgba(255,255,255,.14);
+  --edge: rgba(255,255,255,.08);
+  --edge2: rgba(255,255,255,.14);
+  --r1: 16px;
+  --r2: 12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+button{font:inherit;border:none;background:none;cursor:pointer}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* BG layers */
+body::before {
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 1000px 700px at 70% -10%, rgba(200,240,58,.07) 0%,transparent 55%),
+    radial-gradient(ellipse 700px 600px at -5% 80%,  rgba(86,170,255,.05) 0%,transparent 60%),
+    radial-gradient(ellipse 500px 400px at 50% 110%, rgba(245,184,48,.04) 0%,transparent 60%);
+}
+body::after {
+  content:'';position:fixed;inset:0;z-index:999;pointer-events:none;opacity:.45;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.038'/%3E%3C/svg%3E");
+}
+
+/* glass mixin */
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(36px) saturate(180%);
+  -webkit-backdrop-filter: blur(36px) saturate(180%);
+  border: 1px solid var(--edge);
+  border-top-color: var(--edge2);
+  box-shadow: 0 24px 64px rgba(0,0,0,.55), 0 1px 0 rgba(255,255,255,.07) inset, 0 -1px 0 rgba(0,0,0,.4) inset;
+  position: relative; overflow: hidden;
+}
+.glass::after {
+  content:''; position:absolute; top:0;left:0; width:40%; height:100%;
+  background: linear-gradient(140deg, rgba(255,255,255,.036) 0%, transparent 55%);
+  pointer-events:none; border-radius:inherit;
+}
+
+/* ────────────────── LAYOUT */
+.page { position:relative; z-index:1; }
+.wrap { max-width:1060px; margin:0 auto; padding:0 14px; }
+@media(min-width:400px){ .wrap{ padding:0 18px; } }
+@media(min-width:640px){ .wrap{ padding:0 36px; } }
+
+/* ────────────────── HEADER BAR */
+.bar {
+  border-bottom: 1px solid var(--edge);
+  padding: 16px 0;
+  display: flex; align-items:center; justify-content:space-between; gap:16px;
+}
+.bar-l {
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink3);
+}
+.bar-r {
+  display:flex; align-items:center; gap:8px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--lime);
+}
+.pulse {
+  width:7px; height:7px; border-radius:50%; background:var(--lime);
+  box-shadow: 0 0 0 2px rgba(200,240,58,.25), 0 0 12px rgba(200,240,58,.5);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.55)}}
+
+/* ────────────────── HERO */
+.hero {
+  padding: 72px 0 64px;
+  display: grid; grid-template-columns: 1fr; gap:28px;
+  border-bottom: 1px solid var(--edge);
+}
+@media(min-width:720px){ .hero{ grid-template-columns:1fr auto; align-items:flex-end; gap:48px; } }
+
+.hero-eyebrow {
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ink2); margin-bottom:20px;
+  display:flex; align-items:center; gap:10px;
+}
+.hero-eyebrow::before {
+  content:''; display:block; width:28px; height:1px;
+  background: linear-gradient(90deg, var(--lime), transparent);
+}
+
+.hero-h {
+  font-family:'Bebas Neue',sans-serif;
+  font-size: clamp(80px,17vw,164px);
+  line-height:.84; letter-spacing:.03em;
+}
+.hero-h .c1 { color:var(--lime); text-shadow: 0 0 80px rgba(200,240,58,.25); }
+.hero-h .c2 { -webkit-text-stroke:1.5px rgba(240,237,230,.15); color:transparent; }
+
+.hero-sub {
+  margin-top:22px; font-size:14px; font-weight:300;
+  color:var(--ink2); max-width:400px; line-height:1.7;
+}
+
+.hero-pills { display:flex; flex-wrap:wrap; gap:6px; margin-top:18px; }
+.pill {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+  padding:5px 14px; border-radius:100px;
+  border:1px solid var(--edge); color:var(--ink3);
+  background: rgba(255,255,255,.02);
+}
+.pill.hi { border-color:rgba(200,240,58,.3); color:var(--lime); background:var(--lime-b); }
+
+.hero-score { flex-shrink:0; }
+@media(max-width:719px){ .hero-score{ display:flex; align-items:baseline; gap:12px; } }
+.score-l {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink3);
+}
+.score-n {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(80px,13vw,128px); line-height:.85;
+  color:var(--lime); letter-spacing:.02em;
+  text-shadow: 0 0 80px rgba(200,240,58,.25);
+}
+.score-s { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); letter-spacing:.12em; text-transform:uppercase; }
+
+/* ────────────────── STAT STRIP */
+.statbar {
+  display:grid; grid-template-columns:repeat(2,1fr);
+  gap:1px; background:var(--edge); border-bottom:1px solid var(--edge);
+  margin-bottom:72px;
+}
+@media(min-width:440px){ .statbar{ grid-template-columns:repeat(3,1fr); } }
+@media(min-width:720px){ .statbar{ grid-template-columns:repeat(5,1fr); } }
+.stat { background:var(--bg); padding:24px 20px 20px; transition:background .14s; }
+.stat:hover { background:#0a0a12; }
+.stat-n { font-family:'Bebas Neue',sans-serif; font-size:40px; line-height:1; color:var(--lime); letter-spacing:.02em; }
+.stat-l { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); letter-spacing:.12em; text-transform:uppercase; margin-top:4px; }
+
+/* ────────────────── SECTION */
+.sec { margin-bottom:80px; }
+.sec-hd { display:flex; align-items:center; gap:14px; margin-bottom:28px; }
+.sec-tag {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--lime); background:var(--lime-b); border:1px solid rgba(200,240,58,.2);
+  padding:4px 12px; border-radius:100px; flex-shrink:0;
+}
+.sec-line { flex:1; height:1px; background:linear-gradient(90deg,var(--edge),transparent); }
+.sec-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(32px,5vw,52px); letter-spacing:.04em; color:var(--ink);
+  margin-bottom:24px; line-height:1;
+}
+
+/* ────────────────── TABS */
+.tabs {
+  display:grid; grid-template-columns:repeat(2,1fr);
+  gap:8px; margin-bottom:14px;
+}
+@media(min-width:480px){ .tabs{ grid-template-columns:repeat(3,1fr); } }
+@media(min-width:760px){ .tabs{ grid-template-columns:repeat(5,1fr); } }
+
+.tab {
+  padding:15px 14px; text-align:left; border-radius:var(--r2);
+  background:rgba(255,255,255,.025);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--edge); border-top-color:var(--glass-s);
+  box-shadow: 0 4px 16px rgba(0,0,0,.3), 0 1px 0 rgba(255,255,255,.06) inset;
+  transition: all .18s ease;
+}
+.tab:hover { border-color:rgba(200,240,58,.2); transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,.45); }
+.tab.on {
+  background:rgba(200,240,58,.07); border-color:rgba(200,240,58,.3);
+  border-top-color:rgba(200,240,58,.45);
+  box-shadow: 0 0 0 1px rgba(200,240,58,.1), 0 10px 28px rgba(0,0,0,.45), 0 0 40px rgba(200,240,58,.06);
+}
+.td { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink3); margin-bottom:6px; }
+.tn { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:.04em; line-height:1; color:var(--ink); }
+.tab.on .tn { color:var(--lime); }
+.ts { font-size:10px; color:var(--ink3); margin-top:3px; font-style:italic; }
+
+/* ────────────────── PANELS */
+.panel { display:none; animation:pi .26s cubic-bezier(.16,1,.3,1); }
+.panel.on { display:block; }
+@keyframes pi { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
+/* ────────────────── EXERCISE TABLE */
+.xt {
+  border-radius:var(--r1); overflow:hidden;
+  background: rgba(255,255,255,.02);
+  backdrop-filter:blur(36px) saturate(190%);
+  -webkit-backdrop-filter:blur(36px) saturate(190%);
+  border:1px solid var(--edge); border-top-color:rgba(255,255,255,.16);
+  box-shadow: 0 28px 72px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.08) inset;
+}
+.xh {
+  display:none; padding:10px 24px;
+  border-bottom:1px solid var(--edge);
+  background:rgba(255,255,255,.02);
+}
+@media(min-width:640px){
+  .xh { display:grid; grid-template-columns:36px 1fr 96px 96px 76px; gap:8px; align-items:center; }
+}
+.xh span { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink3); }
+.xh span:last-child { text-align:right; }
+
+.xr { border-bottom:1px solid rgba(255,255,255,.04); transition:background .12s; }
+.xr:last-child { border-bottom:none; }
+.xr:hover { background:rgba(255,255,255,.018); }
+.xr.wu { opacity:.35; }
+
+/* mobile: flex column, clean stacked layout */
+.xri {
+  padding:14px 16px;
+  display:flex; flex-direction:column; gap:0;
+}
+@media(min-width:640px){
+  .xri {
+    display:grid;
+    grid-template-columns:36px 1fr 100px 80px 72px;
+    gap:8px; align-items:center;
+    padding:0 20px; min-height:60px;
+  }
+}
+
+/* top row: number + name + RIR badge */
+.xrt {
+  display:flex; align-items:flex-start; gap:10px;
+  width:100%;
+}
+@media(min-width:640px){ .xrt{ display:contents; } }
+
+/* bottom row: sets × reps + load — mobile only */
+.xrm {
+  display:flex; gap:12px; padding-left:28px; align-items:center;
+  margin-top:6px;
+}
+@media(min-width:640px){ .xrm{ display:contents; padding-left:0; margin-top:0; } }
+
+.xi {
+  font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--ink3);
+  flex-shrink:0; min-width:18px; margin-top:2px;
+}
+@media(min-width:640px){ .xi{ margin-top:0; min-width:auto; } }
+
+.xinfo { flex:1; min-width:0; }
+.xname { font-size:14px; font-weight:500; color:var(--ink); line-height:1.3; }
+.xnote { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); margin-top:2px; letter-spacing:.03em; }
+
+/* on mobile, RIR badge sits inline next to name; push to right */
+.xrir {
+  display:flex; justify-content:flex-end; flex-shrink:0;
+  margin-left:auto;
+}
+@media(min-width:640px){ .xrir{ justify-content:flex-end; margin-left:0; } }
+
+.xsets { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink2); }
+.xload { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; color:var(--lime); }
+.wu .xload { color:var(--ink3); }
+
+.rb { font-family:'JetBrains Mono',monospace; font-size:9px; padding:3px 9px; border-radius:6px; white-space:nowrap; letter-spacing:.04em; }
+.rb12 { background:rgba(86,170,255,.1); color:var(--blue); border:1px solid rgba(86,170,255,.2); }
+.rb1  { background:rgba(200,240,58,.08); color:var(--lime); border:1px solid rgba(200,240,58,.2); }
+.rb01 { background:rgba(245,184,48,.1); color:var(--amber); border:1px solid rgba(245,184,48,.2); }
+.rbwu { background:rgba(255,255,255,.04); color:var(--ink3); border:1px solid var(--edge); }
+.cardio {
+  display:flex; align-items:center; gap:12px; padding:14px 16px;
+  background:rgba(86,170,255,.04); border-top:1px solid rgba(86,170,255,.1);
+}
+@media(min-width:640px){ .cardio{ padding:14px 24px; } }
+.cardio-i { width:33px; height:33px; flex-shrink:0; background:rgba(86,170,255,.1); border:1px solid rgba(86,170,255,.18); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:15px; }
+.cardio-t { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--blue); }
+.cardio-s { font-size:11px; color:var(--ink3); margin-top:1px; font-style:italic; }
+
+/* ────────────────── VOLUME */
+.vol { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+@media(min-width:540px){ .vol{ grid-template-columns:repeat(3,1fr); } }
+@media(min-width:780px){ .vol{ grid-template-columns:repeat(4,1fr); } }
+.vc {
+  border-radius:var(--r2); padding:20px 18px 16px;
+  background:rgba(255,255,255,.025);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--edge); border-top-color:var(--glass-s);
+  box-shadow:0 6px 24px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.06) inset;
+  position:relative; overflow:hidden;
+  transition:transform .18s,box-shadow .18s;
+}
+.vc::after { content:''; position:absolute; top:0;left:0; width:40%; height:100%; background:linear-gradient(140deg,rgba(255,255,255,.032) 0%,transparent 55%); pointer-events:none; border-radius:inherit; }
+.vc:hover { transform:translateY(-2px); box-shadow:0 14px 40px rgba(0,0,0,.5); }
+.vc::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; background:var(--lime); transform:scaleX(0); transform-origin:left; transition:transform .75s cubic-bezier(.16,1,.3,1); }
+.vc.in::before { transform:scaleX(1); }
+.vm { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink3); margin-bottom:8px; }
+.vn { font-family:'Bebas Neue',sans-serif; font-size:50px; line-height:1; color:var(--lime); letter-spacing:.02em; text-shadow:0 0 30px rgba(200,240,58,.18); }
+.vu { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); letter-spacing:.05em; margin-top:2px; }
+.vbar { margin-top:12px; height:2px; background:rgba(255,255,255,.05); border-radius:2px; overflow:hidden; }
+.vf { height:100%; background:var(--lime); border-radius:2px; transition:width .85s cubic-bezier(.16,1,.3,1); width:0; box-shadow:0 0 6px rgba(200,240,58,.4); }
+.vc.in .vf { width:var(--fill); }
+.vs { font-size:11px; color:var(--ink3); margin-top:5px; font-style:italic; }
+
+/* ────────────────── SCHEDULE */
+.sched { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+@media(min-width:500px){ .sched{ grid-template-columns:repeat(3,1fr); } }
+@media(min-width:800px){ .sched{ grid-template-columns:repeat(7,1fr); } }
+.sc {
+  border-radius:var(--r2); padding:16px 14px;
+  background:rgba(255,255,255,.025);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--edge); border-top-color:var(--glass-s);
+  box-shadow:0 4px 16px rgba(0,0,0,.35);
+  transition:transform .18s, opacity .18s;
+  position:relative; overflow:hidden;
+}
+.sc::after { content:''; position:absolute; top:0;left:0; width:38%; height:100%; background:linear-gradient(140deg,rgba(255,255,255,.028) 0%,transparent 58%); pointer-events:none; }
+.sc:hover { transform:translateY(-2px); }
+.sc.act { border-color:rgba(200,240,58,.25); border-top-color:rgba(200,240,58,.42); background:rgba(200,240,58,.05); }
+.sc.off { opacity:.42; }
+.sc.off:hover { opacity:.72; }
+.sc-d { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink3); display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.sc-tag { font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:.06em; padding:2px 8px; border-radius:100px; }
+.tag-u { background:rgba(200,240,58,.1); color:var(--lime); border:1px solid rgba(200,240,58,.2); }
+.tag-l { background:rgba(86,170,255,.1); color:var(--blue); border:1px solid rgba(86,170,255,.2); }
+.tag-r { background:rgba(255,255,255,.04); color:var(--ink3); border:1px solid var(--edge); }
+.sc-n { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:.04em; line-height:1; color:var(--ink); margin-bottom:3px; }
+.sc.act .sc-n { color:var(--lime); }
+.sc.off .sc-n { color:var(--ink3); }
+.sc-f { font-size:10px; color:var(--ink3); margin-bottom:10px; font-style:italic; }
+.chips { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px; }
+.chip { font-family:'JetBrains Mono',monospace; font-size:8px; padding:2px 7px; border-radius:4px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); color:var(--ink3); letter-spacing:.03em; }
+.sc-b { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--blue); letter-spacing:.05em; padding-top:10px; border-top:1px solid rgba(255,255,255,.05); }
+.sc-b.d { color:var(--ink3); }
+.sc-rb { font-size:11px; color:var(--ink3); line-height:1.55; padding-top:10px; border-top:1px solid rgba(255,255,255,.05); font-style:italic; }
+.rec {
+  margin-top:10px; border-radius:var(--r2); padding:20px 22px;
+  background:rgba(255,255,255,.018);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--edge); border-top-color:var(--glass-s);
+  box-shadow:0 4px 16px rgba(0,0,0,.3);
+}
+.rec-l { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink3); margin-bottom:16px; }
+.rec-g { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+@media(min-width:580px){ .rec-g{ grid-template-columns:repeat(4,1fr); } }
+.rec-ll { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink3); margin-bottom:4px; }
+.rec-v { font-family:'Bebas Neue',sans-serif; font-size:30px; color:var(--lime); line-height:1; letter-spacing:.03em; text-shadow:0 0 20px rgba(200,240,58,.18); }
+.rec-n { font-size:10px; color:var(--ink3); margin-top:2px; font-style:italic; }
+
+/* ────────────────── RULES */
+.rg { display:grid; grid-template-columns:1fr; gap:10px; }
+@media(min-width:620px){ .rg{ grid-template-columns:repeat(2,1fr); } }
+.rc {
+  border-radius:var(--r2); padding:24px 22px;
+  background:rgba(255,255,255,.025);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--edge); border-top-color:var(--glass-s);
+  box-shadow:0 6px 24px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.06) inset;
+  position:relative; overflow:hidden;
+}
+.rc::after { content:''; position:absolute; top:0;left:0; width:38%; height:100%; background:linear-gradient(140deg,rgba(255,255,255,.028) 0%,transparent 55%); pointer-events:none; }
+.rc-t { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:.06em; color:var(--lime); margin-bottom:16px; text-shadow:0 0 20px rgba(200,240,58,.2); }
+.rc-l { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.rc-l li { font-size:13px; font-weight:300; color:var(--ink2); display:flex; gap:12px; line-height:1.65; }
+.rc-l li::before { content:'—'; font-family:'JetBrains Mono',monospace; font-size:10px; color:rgba(200,240,58,.4); flex-shrink:0; margin-top:2px; }
+
+/* ────────────────── FOOTER */
+.footer { border-top:1px solid var(--edge); padding:44px 0 68px; margin-top:80px; display:flex; flex-direction:column; gap:24px; }
+@media(min-width:640px){ .footer{ flex-direction:row; align-items:flex-end; justify-content:space-between; } }
+.f-l { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); letter-spacing:.1em; text-transform:uppercase; line-height:2; }
+.f-q { font-family:'Outfit',sans-serif; font-size:13px; font-style:italic; font-weight:300; color:var(--ink2); margin-top:10px; text-transform:none; letter-spacing:0; line-height:1.55; }
+.f-r { text-align:left; }
+@media(min-width:640px){ .f-r{ text-align:right; } }
+.f-n { font-family:'Bebas Neue',sans-serif; font-size:80px; line-height:.85; color:var(--lime); letter-spacing:.02em; text-shadow:0 0 48px rgba(200,240,58,.22); }
+.f-s { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); letter-spacing:.14em; text-transform:uppercase; }
+
+/* reveal */
+.r { opacity:0; transform:translateY(20px); transition:opacity .55s ease,transform .55s cubic-bezier(.16,1,.3,1); }
+.r.in { opacity:1; transform:none; }
+.r:nth-child(2){transition-delay:70ms}.r:nth-child(3){transition-delay:140ms}
+.r:nth-child(4){transition-delay:210ms}.r:nth-child(5){transition-delay:280ms}
+.r:nth-child(6){transition-delay:350ms}.r:nth-child(7){transition-delay:420ms}
+.r:nth-child(8){transition-delay:490ms}
+
+/* ────────────────── TODAY BANNER */
+.today-banner {
+  display:none; align-items:center; justify-content:space-between; gap:12px;
+  padding:12px 18px; border-radius:var(--r2); margin-bottom:10px;
+  background:rgba(200,240,58,.07); border:1px solid rgba(200,240,58,.25);
+  border-top-color:rgba(200,240,58,.4);
+  box-shadow:0 0 40px rgba(200,240,58,.06);
+  animation: pi .4s cubic-bezier(.16,1,.3,1);
+}
+.today-banner.show { display:flex; }
+.tb-l { display:flex; align-items:center; gap:10px; }
+.tb-dot { width:6px; height:6px; border-radius:50%; background:var(--lime); box-shadow:0 0 8px rgba(200,240,58,.6); animation:pulse 2.4s ease-in-out infinite; flex-shrink:0; }
+.tb-text { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--lime); }
+.tb-day { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:.04em; color:var(--lime); line-height:1; }
+.tb-btn { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:var(--bg); background:var(--lime); padding:6px 14px; border-radius:6px; cursor:pointer; transition:opacity .15s; flex-shrink:0; }
+.tb-btn:hover { opacity:.85; }
+
+/* ────────────────── SCHEDULE TODAY HIGHLIGHT */
+.sc.today-card {
+  border-color:rgba(200,240,58,.5) !important;
+  border-top-color:rgba(200,240,58,.7) !important;
+  box-shadow:0 0 0 1px rgba(200,240,58,.15), 0 8px 32px rgba(0,0,0,.5), 0 0 48px rgba(200,240,58,.08) !important;
+}
+.today-pill {
+  display:inline-block; font-family:'JetBrains Mono',monospace; font-size:7px;
+  letter-spacing:.1em; text-transform:uppercase; padding:2px 7px; border-radius:100px;
+  background:var(--lime); color:var(--bg); margin-left:4px; font-weight:600;
+  vertical-align:middle;
+}
+
+/* ────────────────── LOG TRACKER — fully responsive */
+@keyframes set-done { 0%{background:rgba(200,240,58,.18)} 100%{background:rgba(200,240,58,.055)} }
+@keyframes row-pop  { 0%{transform:scale(.97)} 60%{transform:scale(1.015)} 100%{transform:scale(1)} }
+@keyframes flash-in { 0%{opacity:0;transform:translateY(5px)} 100%{opacity:1;transform:none} }
+
+/* tracker container */
+.sl-wrap {
+  margin-top:12px;
+  border-radius:10px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(0,0,0,.2);
+}
+
+/* ── shared grid definition — num | prev | kg | reps | check */
+.sl-head,
+.sl-row {
+  display:grid;
+  /* mobile: set badge + prev shrinks, kg+reps flex, check fixed */
+  grid-template-columns: 32px 1fr 1fr 1fr 40px;
+  align-items:center;
+  gap:6px;
+  padding:7px 12px;
+}
+/* wider screens: previous column gets more room */
+@media(min-width:400px){
+  .sl-head,
+  .sl-row { grid-template-columns: 34px minmax(0,1.4fr) 1fr 1fr 40px; gap:8px; }
+}
+@media(min-width:560px){
+  .sl-head,
+  .sl-row { grid-template-columns: 36px minmax(0,2fr) 72px 72px 40px; gap:10px; padding:7px 16px; }
+}
+
+/* header labels */
+.sl-head {
+  background:rgba(255,255,255,.04);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  padding-top:8px; padding-bottom:8px;
+}
+.sl-head span {
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ink3); text-align:center; line-height:1;
+}
+.sl-head span:nth-child(1) { /* Set col */ }
+.sl-head span:nth-child(2) { text-align:left; } /* Previous */
+
+/* set rows */
+.sl-row {
+  border-bottom:1px solid rgba(255,255,255,.04);
+  transition:background .22s ease;
+  animation:flash-in .22s ease;
+}
+.sl-row:last-of-type  { border-bottom:none; }
+.sl-row.done          { background:rgba(200,240,58,.055); animation:set-done .5s ease forwards; }
+.sl-row.wu-row        { opacity:.5; }
+.sl-row.flash         { animation:set-done .6s ease forwards; }
+
+/* ── set number badge */
+.sl-num {
+  width:28px; height:28px; flex-shrink:0;
+  border-radius:7px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.1);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; font-weight:600; color:var(--ink3);
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto;
+  transition:all .2s;
+}
+.wu-label { background:rgba(245,184,48,.1); border-color:rgba(245,184,48,.22); color:var(--amber); }
+.sl-row.done .sl-num { background:rgba(200,240,58,.15); border-color:rgba(200,240,58,.3); color:var(--lime); }
+
+/* ── previous reference */
+.sl-prev {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; color:rgba(255,255,255,.2);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  letter-spacing:.02em;
+}
+@media(min-width:400px){ .sl-prev{ font-size:10px; } }
+.sl-row.done .sl-prev { color:rgba(200,240,58,.32); }
+
+/* ── input cells */
+.sl-cell {
+  background:rgba(255,255,255,.055);
+  border:1.5px solid rgba(255,255,255,.1);
+  border-radius:8px;
+  color:var(--ink);
+  font-family:'JetBrains Mono',monospace;
+  font-size:14px; font-weight:600;
+  text-align:center;
+  padding:8px 2px;
+  width:100%; min-width:0; outline:none;
+  transition:border-color .18s, background .18s, color .18s;
+  -moz-appearance:textfield;
+}
+@media(min-width:400px){ .sl-cell{ font-size:15px; padding:9px 4px; } }
+.sl-cell::-webkit-inner-spin-button,
+.sl-cell::-webkit-outer-spin-button { -webkit-appearance:none; }
+.sl-cell::placeholder { color:rgba(255,255,255,.16); font-size:10px; font-weight:400; }
+.sl-cell:focus { border-color:rgba(200,240,58,.5); background:rgba(200,240,58,.07); color:var(--ink); }
+.sl-row.done .sl-cell { border-color:rgba(200,240,58,.25); background:rgba(200,240,58,.06); color:var(--lime); }
+
+/* ── check button */
+.sl-check {
+  width:34px; height:34px; flex-shrink:0;
+  border-radius:8px;
+  border:1.5px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all .18s;
+  margin:0 auto; position:relative;
+}
+.sl-check::after {
+  content:'';
+  display:block; width:10px; height:6px;
+  border-left:2px solid rgba(255,255,255,.3);
+  border-bottom:2px solid rgba(255,255,255,.3);
+  transform:rotate(-45deg) translateY(-1px);
+  transition:border-color .18s;
+}
+.sl-check:hover { border-color:rgba(200,240,58,.5); background:rgba(200,240,58,.1); }
+.sl-check:hover::after { border-color:rgba(200,240,58,.75); }
+.sl-check.checked,
+.sl-row.done .sl-check {
+  background:var(--lime); border-color:var(--lime);
+  box-shadow:0 0 14px rgba(200,240,58,.4);
+  animation:row-pop .28s ease;
+}
+.sl-check.checked::after,
+.sl-row.done .sl-check::after { border-color:var(--bg); width:11px; height:7px; }
+
+/* ── add set button */
+.sl-add {
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  width:calc(100% - 24px); margin:8px 12px 10px;
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px dashed rgba(255,255,255,.1);
+  background:transparent;
+  color:rgba(255,255,255,.3);
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  cursor:pointer; transition:all .18s;
+}
+.sl-add::before { content:'+'; font-size:13px; font-weight:400; line-height:1; }
+.sl-add:hover { border-color:rgba(200,240,58,.35); color:var(--lime); background:rgba(200,240,58,.04); }
+
+/* trend strip */
+.pt-trend-row {
+  display:flex; align-items:center; gap:8px;
+  padding:6px 12px 8px;
+  border-top:1px solid rgba(255,255,255,.04);
+}
+.pt-trend-lbl { font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--ink3); letter-spacing:.08em; text-transform:uppercase; }
+.pt-trend { font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:500; }
+.pt-trend.up { color:#4ade80; }
+.pt-trend.dn { color:#f87171; }
+.pt-trend.eq { color:var(--ink3); }
+</style>
+</head>
+<body>
+<div class="page">
+<div class="wrap">
+
+<!-- BAR -->
+<div class="bar">
+  <div class="bar-l">HILV High Frequency &middot; Locked Final</div>
+  <div class="bar-r"><span class="pulse"></span>Active &middot; Cutting Phase</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <div class="hero-eyebrow">Natural Lifter &middot; 5 Days / Week &middot; Deficit Phase</div>
+    <div class="hero-h"><span class="c1">HIL</span><span class="c2">V</span><br>HIGH<br>FREQ</div>
+    <div class="hero-sub">Program dirancang di minimum effective dose &mdash; bukan maksimum toleransi. Strength retention adalah satu-satunya metrik yang relevan di fase cutting.</div>
+    <div class="hero-pills">
+      <span class="pill hi">Natural Lifter</span>
+      <span class="pill">5 Days / Week</span>
+      <span class="pill">Cutting Phase</span>
+      <span class="pill">Min. Effective Dose</span>
+    </div>
+  </div>
+  <div class="hero-score">
+    <div class="score-l">Program Score</div>
+    <div class="score-n">10</div>
+    <div class="score-s">out of 10</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="statbar">
+  <div class="stat"><div class="stat-n">5</div><div class="stat-l">Days / Week</div></div>
+  <div class="stat"><div class="stat-n">28</div><div class="stat-l">Exercises</div></div>
+  <div class="stat"><div class="stat-n">60&apos;</div><div class="stat-l">Cardio / Wk</div></div>
+  <div class="stat"><div class="stat-n">6&ndash;8</div><div class="stat-l">Rep Range</div></div>
+  <div class="stat"><div class="stat-n">MED</div><div class="stat-l">Volume Target</div></div>
+</div>
+
+<!-- ── PROGRAM ── -->
+<section class="sec">
+  <div class="sec-hd"><span class="sec-tag">01 &middot; Program</span><div class="sec-line"></div></div>
+  <div class="sec-title">Training Days</div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="sw(1)"><div class="td">Day 01 &middot; SAT</div><div class="tn">Upper A</div><div class="ts">Chest + Upper Back</div></button>
+    <button class="tab" onclick="sw(2)"><div class="td">Day 02 &middot; SUN</div><div class="tn">Lower A</div><div class="ts">Quad Focus</div></button>
+    <button class="tab" onclick="sw(3)"><div class="td">Day 03 &middot; TUE</div><div class="tn">Upper B</div><div class="ts">Back + Chest</div></button>
+    <button class="tab" onclick="sw(4)"><div class="td">Day 04 &middot; WED</div><div class="tn">Lower B</div><div class="ts">Hamstring + Glute</div></button>
+    <button class="tab" onclick="sw(5)"><div class="td">Day 05 &middot; THU</div><div class="tn">Upper C</div><div class="ts">Delts + Arms</div></button>
+  </div>
+
+  <!-- TODAY BANNER -->
+  <div class="today-banner" id="todayBanner">
+    <div class="tb-l">
+      <div class="tb-dot"></div>
+      <div>
+        <div class="tb-text">Sesi Hari Ini</div>
+        <div class="tb-day" id="todayName">—</div>
+      </div>
+    </div>
+    <button class="tb-btn" id="todayBtn" onclick="jumpToToday()">Buka Sesi →</button>
+  </div>
+
+  <!-- P1 UPPER A -->
+  <div class="panel on" id="p1"><div class="xt">
+    <div class="xh"><span>#</span><span>Exercise</span><span>Sets &times; Reps</span><span>Load</span><span style="text-align:right">RIR</span></div>
+    <div class="xr wu"><div class="xri"><div class="xrt"><span class="xi">WU</span><div class="xinfo"><div class="xname">Incline Dumbbell Press</div><div class="xnote">Warm-up set</div></div><div class="xrir"><span class="rb rbwu">WU</span></div></div><div class="xrm"><span class="xsets">1&times;5</span><span class="xload">50 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">01</span><div class="xinfo"><div class="xname">Incline Dumbbell Press</div><div class="xnote">Upper pec &middot; mechanical tension utama</div></div><div class="xrir"><span class="rb rb12">RIR 1&ndash;2</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;8</span><span class="xload">86 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">02</span><div class="xinfo"><div class="xname">High-to-Low Cable Fly</div><div class="xnote">Chest isolation &middot; stretch lengthened</div></div><div class="xrir"><span class="rb rb01">RIR 0&ndash;1</span></div></div><div class="xrm"><span class="xsets">1&times;6&ndash;10</span><span class="xload">40 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">03</span><div class="xinfo"><div class="xname">Chest-Supported Row (Wide Grip)</div><div class="xnote">Upper back &middot; rhomboid + mid trap</div></div><div class="xrir"><span class="rb rb12">RIR 1&ndash;2</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;8</span><span class="xload">130 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">04</span><div class="xinfo"><div class="xname">Single-Arm Cable Lateral Raise</div><div class="xnote">Lateral delt &middot; eksentrik terkontrol</div></div><div class="xrir"><span class="rb rb01">RIR 0&ndash;1</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;10</span><span class="xload">10 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">05</span><div class="xinfo"><div class="xname">Rope Tricep Pushdown</div><div class="xnote">Lateral head &middot; kontraksi penuh</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;10</span><span class="xload">27.5 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">06</span><div class="xinfo"><div class="xname">Seated Incline Dumbbell Curl</div><div class="xnote">Long head bicep &middot; stretch position</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;10</span><span class="xload">20 kg</span></div></div></div>
+    <div class="cardio"><div class="cardio-i">&#128694;</div><div><div class="cardio-t">Incline Treadmill Walk &middot; 20 Min</div><div class="cardio-s">8% incline &middot; 5.5 km/h</div></div></div>
+  </div></div>
+
+  <!-- P2 LOWER A -->
+  <div class="panel" id="p2"><div class="xt">
+    <div class="xh"><span>#</span><span>Exercise</span><span>Sets &times; Reps</span><span>Load</span><span style="text-align:right">RIR</span></div>
+    <div class="xr wu"><div class="xri"><div class="xrt"><span class="xi">WU</span><div class="xinfo"><div class="xname">Smith Machine Squat</div><div class="xnote">Warm-up set</div></div><div class="xrir"><span class="rb rbwu">WU</span></div></div><div class="xrm"><span class="xsets">1&times;5</span><span class="xload">65 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">01</span><div class="xinfo"><div class="xname">Smith Machine Squat</div><div class="xnote">Quad dominant &middot; depth penuh</div></div><div class="xrir"><span class="rb rb12">RIR 1&ndash;2</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;8</span><span class="xload">110 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">02</span><div class="xinfo"><div class="xname">Single-Leg Extension</div><div class="xnote">Quad isolation &middot; kontraksi puncak</div></div><div class="xrir"><span class="rb rb01">RIR 0&ndash;1</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;10</span><span class="xload">70 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">03</span><div class="xinfo"><div class="xname">Single-Leg Seated Leg Curl</div><div class="xnote">Hamstring isolation &middot; lengthened</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;10</span><span class="xload">70 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">04</span><div class="xinfo"><div class="xname">Hip Adduction Machine</div><div class="xnote">Inner thigh &middot; groin stability</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">1&times;6&ndash;10</span><span class="xload">60 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">05</span><div class="xinfo"><div class="xname">Standing Smith Machine Calf Raise</div><div class="xnote">Full ROM &middot; pause di stretch</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">2&times;10&ndash;15</span><span class="xload">110 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">06</span><div class="xinfo"><div class="xname">Hanging Leg Raise</div><div class="xnote">Core &middot; kontrol penuh, no swing</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">2 set</span><span class="xload">BW</span></div></div></div>
+  </div></div>
+
+  <!-- P3 UPPER B -->
+  <div class="panel" id="p3"><div class="xt">
+    <div class="xh"><span>#</span><span>Exercise</span><span>Sets &times; Reps</span><span>Load</span><span style="text-align:right">RIR</span></div>
+    <div class="xr wu"><div class="xri"><div class="xrt"><span class="xi">WU</span><div class="xinfo"><div class="xname">Lat Pulldown (Close Grip)</div><div class="xnote">Warm-up set</div></div><div class="xrir"><span class="rb rbwu">WU</span></div></div><div class="xrm"><span class="xsets">1&times;5</span><span class="xload">45 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">01</span><div class="xinfo"><div class="xname">Lat Pulldown (Close Grip)</div><div class="xnote">Lat shortened &middot; kontraksi kuat</div></div><div class="xrir"><span class="rb rb12">RIR 1&ndash;2</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;8</span><span class="xload">75 kg</span></div></div></div>
+    <div class="xr wu"><div class="xri"><div class="xrt"><span class="xi">WU</span><div class="xinfo"><div class="xname">Smith Machine Incline Press</div><div class="xnote">Warm-up set</div></div><div class="xrir"><span class="rb rbwu">WU</span></div></div><div class="xrm"><span class="xsets">1&times;5</span><span class="xload">50 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">02</span><div class="xinfo"><div class="xname">Smith Machine Incline Press</div><div class="xnote">Chest balance &middot; upper pec stimulus</div></div><div class="xrir"><span class="rb rb12">RIR 1&ndash;2</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;8</span><span class="xload">80 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">03</span><div class="xinfo"><div class="xname">Chest-Supported Row (Neutral Grip)</div><div class="xnote">Upper back &middot; brachialis secondary</div></div><div class="xrir"><span class="rb rb12">RIR 1&ndash;2</span></div></div><div class="xrm"><span class="xsets">1&times;6&ndash;8</span><span class="xload">130 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">04</span><div class="xinfo"><div class="xname">Pec Deck Fly</div><div class="xnote">Chest isolation &middot; peak kontraksi</div></div><div class="xrir"><span class="rb rb01">RIR 0&ndash;1</span></div></div><div class="xrm"><span class="xsets">1&times;6&ndash;10</span><span class="xload">75 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">05</span><div class="xinfo"><div class="xname">Straight-Arm Lat Pulldown</div><div class="xnote">Lat lengthened &middot; full ROM coverage</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">1&times;6&ndash;10</span><span class="xload">27.5 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">06</span><div class="xinfo"><div class="xname">Single-Arm Reverse Pec Deck</div><div class="xnote">Rear delt &middot; shoulder health</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;10</span><span class="xload">70 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">07</span><div class="xinfo"><div class="xname">Alternating Dumbbell Hammer Curl</div><div class="xnote">Brachialis + bicep neutral grip</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">1&times;6&ndash;10</span><span class="xload">28 kg</span></div></div></div>
+    <div class="cardio"><div class="cardio-i">&#128694;</div><div><div class="cardio-t">Incline Treadmill Walk &middot; 20 Min</div><div class="cardio-s">8% incline &middot; 5.5 km/h</div></div></div>
+  </div></div>
+
+  <!-- P4 LOWER B -->
+  <div class="panel" id="p4"><div class="xt">
+    <div class="xh"><span>#</span><span>Exercise</span><span>Sets &times; Reps</span><span>Load</span><span style="text-align:right">RIR</span></div>
+    <div class="xr wu"><div class="xri"><div class="xrt"><span class="xi">WU</span><div class="xinfo"><div class="xname">Romanian Deadlift (RDL)</div><div class="xnote">Warm-up set</div></div><div class="xrir"><span class="rb rbwu">WU</span></div></div><div class="xrm"><span class="xsets">1&times;5</span><span class="xload">50 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">01</span><div class="xinfo"><div class="xname">Romanian Deadlift (RDL)</div><div class="xnote">Hamstring + glute &middot; hip hinge strict form</div></div><div class="xrir"><span class="rb rb12">RIR 1&ndash;2</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;8</span><span class="xload">85 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">02</span><div class="xinfo"><div class="xname">Single-Leg Seated Leg Curl</div><div class="xnote">Hamstring isolation &middot; unilateral</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;10</span><span class="xload">70 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">03</span><div class="xinfo"><div class="xname">Leg Press (High Foot)</div><div class="xnote">Glute dominant &middot; knee drive minimal</div></div><div class="xrir"><span class="rb rb12">RIR 1&ndash;2</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;8</span><span class="xload">130 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">04</span><div class="xinfo"><div class="xname">Standing Smith Machine Calf Raise</div><div class="xnote">Full ROM &middot; pause di stretch</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">2&times;10&ndash;15</span><span class="xload">110 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">05</span><div class="xinfo"><div class="xname">Hanging Leg Raise</div><div class="xnote">Core &middot; kontrol penuh, no swing</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">2 set</span><span class="xload">BW</span></div></div></div>
+  </div></div>
+
+  <!-- P5 UPPER C -->
+  <div class="panel" id="p5"><div class="xt">
+    <div class="xh"><span>#</span><span>Exercise</span><span>Sets &times; Reps</span><span>Load</span><span style="text-align:right">RIR</span></div>
+    <div class="xr wu"><div class="xri"><div class="xrt"><span class="xi">WU</span><div class="xinfo"><div class="xname">Smith Machine Shoulder Press</div><div class="xnote">Warm-up set</div></div><div class="xrir"><span class="rb rbwu">WU</span></div></div><div class="xrm"><span class="xsets">1&times;5</span><span class="xload">45 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">01</span><div class="xinfo"><div class="xname">Smith Machine Shoulder Press</div><div class="xnote">Front + lateral delt &middot; compound utama</div></div><div class="xrir"><span class="rb rb12">RIR 1&ndash;2</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;8</span><span class="xload">75 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">02</span><div class="xinfo"><div class="xname">Single-Arm Cable Lateral Raise</div><div class="xnote">Lateral delt &middot; finisher setelah press</div></div><div class="xrir"><span class="rb rb01">RIR 0&ndash;1</span></div></div><div class="xrm"><span class="xsets">1&times;6&ndash;10</span><span class="xload">10 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">03</span><div class="xinfo"><div class="xname">Seated Face Pull</div><div class="xnote">Rear delt + external rotation &middot; shoulder health</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;10</span><span class="xload">45 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">04</span><div class="xinfo"><div class="xname">Barbell Shrug</div><div class="xnote">Trap &middot; ROM terkontrol, no axial load</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;10</span><span class="xload">85 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">05</span><div class="xinfo"><div class="xname">EZ-Bar Preacher Curl</div><div class="xnote">Bicep &middot; peak kontraksi, no swing</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;10</span><span class="xload">30 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">06</span><div class="xinfo"><div class="xname">EZ-Bar Reverse Curl</div><div class="xnote">Brachioradialis + forearm</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">1&times;6&ndash;10</span><span class="xload">35 kg</span></div></div></div>
+    <div class="xr"><div class="xri"><div class="xrt"><span class="xi">07</span><div class="xinfo"><div class="xname">Overhead Cable Triceps Extension</div><div class="xnote">Long head &middot; stretch position, stimulus tertinggi</div></div><div class="xrir"><span class="rb rb1">RIR 1</span></div></div><div class="xrm"><span class="xsets">2&times;6&ndash;10</span><span class="xload">32.5 kg</span></div></div></div>
+    <div class="cardio"><div class="cardio-i">&#128694;</div><div><div class="cardio-t">Incline Treadmill Walk &middot; 20 Min</div><div class="cardio-s">8% incline &middot; 5.5 km/h</div></div></div>
+  </div></div>
+</section>
+
+<!-- ── VOLUME ── -->
+<section class="sec">
+  <div class="sec-hd"><span class="sec-tag">02 &middot; Volume</span><div class="sec-line"></div></div>
+  <div class="sec-title">Per Muscle / Week</div>
+  <div class="vol">
+    <div class="vc r" style="--fill:52%"><div class="vm">Chest</div><div class="vn">4</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
+    <div class="vc r" style="--fill:52%"><div class="vm">Lat / Back</div><div class="vn">4</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
+    <div class="vc r" style="--fill:42%"><div class="vm">Lateral Delt</div><div class="vn">3</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
+    <div class="vc r" style="--fill:52%"><div class="vm">Rear Delt</div><div class="vn">4</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
+    <div class="vc r" style="--fill:50%"><div class="vm">Tricep</div><div class="vn">4</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
+    <div class="vc r" style="--fill:68%"><div class="vm">Bicep</div><div class="vn">6</div><div class="vu">sets &middot; 3 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
+    <div class="vc r" style="--fill:65%"><div class="vm">Quad</div><div class="vn">6</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
+    <div class="vc r" style="--fill:50%"><div class="vm">Hamstring</div><div class="vn">4</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
+  </div>
+</section>
+
+<!-- ── SCHEDULE ── -->
+<section class="sec">
+  <div class="sec-hd"><span class="sec-tag">03 &middot; Schedule</span><div class="sec-line"></div></div>
+  <div class="sec-title">Weekly Overview</div>
+  <div class="sched">
+    <div class="sc act r"><div class="sc-d">SAT <span class="sc-tag tag-u">Upper</span></div><div class="sc-n">Upper A</div><div class="sc-f">Chest &middot; Upper Back</div><div class="chips"><span class="chip">Chest</span><span class="chip">Back</span><span class="chip">Lat. Delt</span><span class="chip">Tricep</span><span class="chip">Bicep</span></div><div class="sc-b">&#128694; Incline Walk 20 min</div></div>
+    <div class="sc act r"><div class="sc-d">SUN <span class="sc-tag tag-l">Lower</span></div><div class="sc-n">Lower A</div><div class="sc-f">Quad Focus</div><div class="chips"><span class="chip">Quad</span><span class="chip">Hamstring</span><span class="chip">Adductor</span><span class="chip">Calf</span><span class="chip">Core</span></div><div class="sc-b d">No upper &middot; lower recovery</div></div>
+    <div class="sc off r"><div class="sc-d">MON <span class="sc-tag tag-r">Rest</span></div><div class="sc-n">Full Rest</div><div class="sc-f">Recovery Day</div><div class="sc-rb">Protein tetap &ge;2g/kg. Adaptasi dari Sat + Sun terjadi di sini.</div></div>
+    <div class="sc act r"><div class="sc-d">TUE <span class="sc-tag tag-u">Upper</span></div><div class="sc-n">Upper B</div><div class="sc-f">Back &middot; Chest Balance</div><div class="chips"><span class="chip">Lat</span><span class="chip">Chest</span><span class="chip">Rear Delt</span><span class="chip">Bicep</span></div><div class="sc-b">&#128694; Incline Walk 20 min</div></div>
+    <div class="sc act r"><div class="sc-d">WED <span class="sc-tag tag-l">Lower</span></div><div class="sc-n">Lower B</div><div class="sc-f">Hamstring &middot; Glute</div><div class="chips"><span class="chip">Hamstring</span><span class="chip">Glute</span><span class="chip">Quad</span><span class="chip">Calf</span><span class="chip">Core</span></div><div class="sc-b d">No upper &middot; posterior chain</div></div>
+    <div class="sc act r"><div class="sc-d">THU <span class="sc-tag tag-u">Upper</span></div><div class="sc-n">Upper C</div><div class="sc-f">Delts &middot; Arms &middot; Traps</div><div class="chips"><span class="chip">Fr. Delt</span><span class="chip">Lat. Delt</span><span class="chip">Rear Delt</span><span class="chip">Trap</span><span class="chip">Bicep</span><span class="chip">Tricep</span></div><div class="sc-b">&#128694; Incline Walk 20 min</div></div>
+    <div class="sc off r"><div class="sc-d">FRI <span class="sc-tag tag-r">Rest</span></div><div class="sc-n">Full Rest</div><div class="sc-f">Recovery Day</div><div class="sc-rb">Buffer sebelum siklus ulang Sabtu. Tidur 7&ndash;9 jam, defisit dijaga.</div></div>
+  </div>
+  <div class="rec">
+    <div class="rec-l">// Recovery Windows</div>
+    <div class="rec-g">
+      <div><div class="rec-ll">Upper A &rarr; Upper B</div><div class="rec-v">72h</div><div class="rec-n">Sat &rarr; Tue &middot; Mon buffer</div></div>
+      <div><div class="rec-ll">Lower A &rarr; Lower B</div><div class="rec-v">48h</div><div class="rec-n">Sun &rarr; Wed</div></div>
+      <div><div class="rec-ll">Upper B &rarr; Upper C</div><div class="rec-v">48h</div><div class="rec-n">Tue &rarr; Thu</div></div>
+      <div><div class="rec-ll">Upper C &rarr; Restart</div><div class="rec-v">48h</div><div class="rec-n">Thu &rarr; Sat &middot; Fri buffer</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── EXECUTION ── -->
+<section class="sec">
+  <div class="sec-hd"><span class="sec-tag">04 &middot; Execution</span><div class="sec-line"></div></div>
+  <div class="sec-title">Panduan Eksekusi</div>
+  <div class="rg">
+    <div class="rc r"><div class="rc-t">Rep Range &amp; Proximity to Failure</div><ul class="rc-l"><li>6&ndash;8 rep di compound adalah zona mechanical tension tertinggi &mdash; motor unit recruitment maksimal, metabolic fatigue belum dominasi recovery cost.</li><li>RIR 1&ndash;2 di compound menjaga bar speed terkontrol. Bar melambat signifikan = form breakdown dimulai tanpa tambahan stimulus berarti.</li><li>Isolation lebih dekat ke failure (RIR 0&ndash;1) karena failure mode-nya terisolir &mdash; recovery cost per set jauh lebih rendah dibanding compound.</li><li>Warm-up 1&times;5 bukan pemanasan &mdash; ini prime neuromuscular pathway dan kalibrasi RPE sebelum working set dimulai.</li></ul></div>
+    <div class="rc r"><div class="rc-t">Strength sebagai Metrik Utama</div><ul class="rc-l"><li>Strength adalah satu-satunya indikator yang bisa diukur objektif per sesi &mdash; proxy paling reliable untuk muscle retention di cutting.</li><li>Beban turun &gt;5&ndash;8% dari baseline tanpa sebab eksternal adalah sinyal: defisit terlalu dalam, protein kurang, atau volume melebihi recovery capacity.</li><li>Pump adalah hasil hyperemia &mdash; bukan indikator mechanical tension yang sufficient. DOMS juga bukan. Keduanya tidak berkorelasi dengan hypertrophy stimulus.</li><li>Catat beban, rep aktual, dan RPE per sesi. Tiga data point ini cukup untuk evaluasi mingguan yang akurat.</li></ul></div>
+    <div class="rc r"><div class="rc-t">Volume &amp; Recovery Budget</div><ul class="rc-l"><li>Program ini ada di minimum effective dose &mdash; titik terendah volume yang masih menghasilkan stimulus cukup, bukan maksimum yang bisa ditoleransi.</li><li>Tambah set mid-cycle = naikkan fatigue tanpa naikkan recovery capacity. Kalori defisit sudah memotong recovery &mdash; tambah volume hanya perbesar gap-nya.</li><li>DOMS &gt;48 jam post-lower adalah sinyal volume melewati recoverable threshold sebelum sesi berikutnya.</li><li>Lower days sengaja kosong dari upper work. RDL merekrut spinal erector yang sama dibutuhkan saat pressing dan rowing movement.</li></ul></div>
+    <div class="rc r"><div class="rc-t">Fisiologi Cutting: Ekspektasi Akurat</div><ul class="rc-l"><li>Muscle protein synthesis turun saat defisit kalori. Hypertrophy masih bisa terjadi di otot yang belum mature, tapi itu bonus &mdash; bukan yang dioptimasi.</li><li>Defisit agresif (&gt;500 kcal/hari) meningkatkan muscle protein breakdown dan menekan testosterone. Target 300&ndash;500 kcal, protein minimal 2g/kg BW.</li><li>Performa gym akan berfluktuasi &mdash; glycogen, tidur, stres harian semua mempengaruhi output. Tren beban yang penting, bukan angka per sesi.</li><li>&ldquo;Optimal&rdquo; bukan program terbanyak yang bisa dijalankan &mdash; optimal yang bisa dieksekusi konsisten, dengan teknik baik, selama durasi penuh cutting.</li></ul></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="f-l">
+    HILV High Frequency &middot; Locked Final<br>
+    Natural Lifter &middot; Cutting Phase &middot; 5 Days / Week<br>
+    SAT &middot; SUN &middot; &mdash; &middot; TUE &middot; WED &middot; THU &middot; &mdash;
+    <div class="f-q">&ldquo;Optimal bukan yang terbanyak. Optimal yang bisa disustain.&rdquo;</div>
+  </div>
+  <div class="f-r"><div class="f-n">10</div><div class="f-s">Program Score</div></div>
+</footer>
+
+</div></div>
+<script>
+/* ── TAB SWITCHER ── */
+function sw(n){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',i+1===n));
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('on',i+1===n));
+}
+
+/* ── SCROLL REVEAL ── */
+const io=new IntersectionObserver(e=>{
+  e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});
+},{threshold:.07});
+document.querySelectorAll('.r,.vc').forEach(el=>io.observe(el));
+
+/* ── STORAGE ── */
+const STORE_KEY='hilv_sets_v2';
+function loadAll(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); }catch(e){ return {}; } }
+function saveAll(d){ localStorage.setItem(STORE_KEY,JSON.stringify(d)); }
+
+/* get last session sets for an exercise (for PREVIOUS column) */
+function getPrevSets(exid){
+  const all=loadAll();
+  const sessions=(all[exid]||[]);
+  return sessions.length ? sessions[sessions.length-1] : null;
+}
+
+/* save current session sets */
+function saveSession(exid, sets){
+  const all=loadAll();
+  if(!all[exid]) all[exid]=[];
+  // avoid duplicate same-day sessions
+  const today=new Date().toDateString();
+  if(all[exid].length && all[exid][all[exid].length-1]._date===today){
+    all[exid][all[exid].length-1]=sets;
+  } else {
+    sets._date=today;
+    all[exid].push(sets);
+  }
+  if(all[exid].length>12) all[exid]=all[exid].slice(-12);
+  saveAll(all);
+}
+
+/* ── RENDER ONE SET ROW ── */
+function makeSetRow(exid, setIdx, isWu, prevSet){
+  const id=`${exid}-s${setIdx}`;
+  const prevText = prevSet ? `${prevSet.kg}kg × ${prevSet.reps}` : '—';
+  const wuClass = isWu ? ' wu-row' : '';
+  const numLabel = isWu
+    ? `<span class="sl-num wu-label">W</span>`
+    : `<span class="sl-num">${setIdx}</span>`;
+  return `
+    <div class="sl-row${wuClass}" data-exid="${exid}" data-set="${setIdx}">
+      ${numLabel}
+      <span class="sl-prev">${prevText}</span>
+      <input class="sl-cell" id="${id}-kg" type="number" placeholder="${prevSet?prevSet.kg:'—'}" step="2.5" min="0" inputmode="decimal">
+      <input class="sl-cell" id="${id}-rp" type="number" placeholder="${prevSet?prevSet.reps:'—'}" step="1" min="0" inputmode="numeric">
+      <button class="sl-check" id="${id}-ck" onclick="checkSet('${exid}',${setIdx})"></button>
+    </div>`;
+}
+
+/* ── CHECK / UNCHECK A SET ── */
+function checkSet(exid, setIdx){
+  const id=`${exid}-s${setIdx}`;
+  const kgEl=document.getElementById(id+'-kg');
+  const rpEl=document.getElementById(id+'-rp');
+  const ck=document.getElementById(id+'-ck');
+  const row=ck.closest('.sl-row');
+
+  // use placeholder as fallback (prefilled from previous)
+  const kg=parseFloat(kgEl.value)||parseFloat(kgEl.placeholder)||0;
+  const reps=parseInt(rpEl.value)||parseInt(rpEl.placeholder)||0;
+
+  const isDone=row.classList.toggle('done');
+  ck.classList.toggle('checked', isDone);
+
+  if(isDone){
+    // fill in values if empty
+    if(!kgEl.value) kgEl.value=kg||'';
+    if(!rpEl.value) rpEl.value=reps||'';
+    row.classList.add('flash');
+    setTimeout(()=>row.classList.remove('flash'),600);
+  }
+
+  // persist all checked sets for this exercise
+  persistChecked(exid);
+}
+
+function persistChecked(exid){
+  const container=document.getElementById('sl-'+exid);
+  if(!container) return;
+  const rows=container.querySelectorAll('.sl-row:not(.wu-row)');
+  const sets={_date:new Date().toDateString()};
+  rows.forEach((row,i)=>{
+    const si=i+1;
+    const id=`${exid}-s${si}`;
+    const kgEl=document.getElementById(id+'-kg');
+    const rpEl=document.getElementById(id+'-rp');
+    if(kgEl&&rpEl&&row.classList.contains('done')){
+      sets[si]={kg:parseFloat(kgEl.value)||0, reps:parseInt(rpEl.value)||0};
+    }
+  });
+  saveSession(exid, sets);
+}
+
+/* ── ADD SET ── */
+function addSet(exid){
+  const container=document.getElementById('sl-'+exid);
+  const addBtn=document.getElementById('sladd-'+exid);
+  const rows=container.querySelectorAll('.sl-row:not(.wu-row)');
+  const newIdx=rows.length+1;
+  const prev=getPrevSets(exid);
+  const prevSet=prev&&prev[newIdx] ? prev[newIdx] : (prev&&prev[rows.length] ? prev[rows.length] : null);
+  const div=document.createElement('div');
+  div.innerHTML=makeSetRow(exid,newIdx,false,prevSet);
+  container.insertBefore(div.firstElementChild, addBtn);
+}
+
+/* ── INJECT ALL TRACKERS ── */
+function injectTrackers(){
+  document.querySelectorAll('.xr').forEach(row=>{
+    const panel=row.closest('.panel');
+    if(!panel) return;
+    const pid=panel.id;
+    const xi=row.querySelector('.xi');
+    if(!xi) return;
+    const rawNum=xi.textContent.trim();
+    const isWu=rawNum==='WU';
+    const num=isWu?'WU':rawNum.padStart(2,'0');
+    const exid=pid+'-'+num;
+    const xinfo=row.querySelector('.xinfo');
+    if(!xinfo||xinfo.querySelector('.sl-wrap')) return;
+
+    // parse sets × reps from program
+    const xsets=row.querySelector('.xsets');
+    const xload=row.querySelector('.xload');
+    let progSets=[], progReps='', progKg='';
+    if(xsets){
+      const m=xsets.textContent.match(/(\d+)[×x](.+)/);
+      if(m){ progSets=parseInt(m[1]); progReps=m[2].trim().replace('–','-'); }
+    }
+    if(xload){ progKg=xload.textContent.replace('kg','').trim(); }
+
+    // build previous session data
+    const prev=isWu ? null : getPrevSets(exid);
+
+    // build set rows
+    let rowsHtml='';
+    if(isWu){
+      // warm-up: just 1 fixed row, no check
+      const prevWu=getPrevSets(pid+'-01'); // reference main exercise prev
+      rowsHtml+=makeSetRow(exid,1,true, prev&&prev[1]||null);
+    } else {
+      const n=progSets||2;
+      for(let i=1;i<=n;i++){
+        const prevSet=prev&&prev[i] ? prev[i] : null;
+        rowsHtml+=makeSetRow(exid,i,false,prevSet);
+      }
+    }
+
+    const wrap=document.createElement('div');
+    wrap.className='sl-wrap';
+    wrap.innerHTML=`
+      <div class="sl-head">
+        <span>Set</span><span>Previous</span><span>KG</span><span>Reps</span><span>✓</span>
+      </div>
+      <div id="sl-${exid}">
+        ${rowsHtml}
+        ${!isWu ? `<button class="sl-add" id="sladd-${exid}" onclick="addSet('${exid}')">＋ Add Set</button>` : ''}
+      </div>`;
+    xinfo.appendChild(wrap);
+  });
+}
+
+/* ── TODAY DETECTION ── */
+const DAY_SCHEDULE={
+  6:{tab:1,name:'Upper A — Sabtu'},
+  0:{tab:2,name:'Lower A — Minggu'},
+  1:null,
+  2:{tab:3,name:'Upper B — Selasa'},
+  3:{tab:4,name:'Lower B — Rabu'},
+  4:{tab:5,name:'Upper C — Kamis'},
+  5:null,
+};
+let todayTab=null;
+
+function initToday(){
+  const dow=new Date().getDay();
+  const session=DAY_SCHEDULE[dow];
+  const banner=document.getElementById('todayBanner');
+  const nameEl=document.getElementById('todayName');
+  const htmlDayOrder=[6,0,1,2,3,4,5];
+  document.querySelectorAll('.sched .sc').forEach((card,i)=>{
+    if(htmlDayOrder[i]===dow){
+      card.classList.add('today-card');
+      const dl=card.querySelector('.sc-d');
+      if(dl&&!dl.querySelector('.today-pill')){
+        const p=document.createElement('span');
+        p.className='today-pill'; p.textContent='TODAY';
+        dl.appendChild(p);
+      }
+    }
+  });
+  if(session){
+    todayTab=session.tab;
+    nameEl.textContent=session.name;
+    banner.classList.add('show');
+    sw(session.tab);
+  }
+}
+
+function jumpToToday(){
+  if(todayTab){
+    sw(todayTab);
+    document.querySelector('.sec').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+/* ── INIT ── */
+injectTrackers();
+initToday();
+</script>
+</body>
+</html>
