@@ -92,6 +92,21 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [1.3.0] — 2026-05-02
+
+**Added**
+- Progress Chart — modal grafik per exercise, muncul saat tap nama exercise
+- Line chart SVG dengan area fill gradient, dot per sesi, label nilai
+- 3 mode tampilan: KG · Reps · Volume (kg×reps total)
+- Stat strip: Best KG · Sessions · Trend (% perubahan dari sesi pertama)
+- Grid Y-axis dengan label nilai, X-axis dengan tanggal (M/D)
+- Last session dot lebih besar + selalu diberi label
+- Backdrop blur + card slide-in animation
+- Nama exercise berubah jadi clickable (hover: lime + ↗)
+- Empty state jika belum ada log
+
+---
+
 ### [1.2.0] — 2026-05-02
 
 **Added**

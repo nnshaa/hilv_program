@@ -397,6 +397,132 @@ body::after {
 .rc-l li::before { content:'—'; font-family:'JetBrains Mono',monospace; font-size:10px; color:rgba(200,240,58,.4); flex-shrink:0; margin-top:2px; }
 
 
+
+/* ────────────────── PROGRESS CHART MODAL */
+@keyframes modal-in  { from{opacity:0;transform:translateY(12px) scale(.97)} to{opacity:1;transform:none} }
+@keyframes modal-out { from{opacity:1;transform:none} to{opacity:0;transform:translateY(12px) scale(.97)} }
+
+#pc-backdrop {
+  position:fixed; inset:0; z-index:8000;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(8px);
+  opacity:0; pointer-events:none;
+  transition:opacity .25s ease;
+}
+#pc-backdrop.show { opacity:1; pointer-events:auto; }
+
+#pc-modal {
+  position:fixed; inset:0; z-index:8001;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px 16px;
+  pointer-events:none;
+}
+#pc-modal.show { pointer-events:auto; }
+
+#pc-card {
+  width:100%; max-width:480px;
+  background:linear-gradient(160deg,#14141e 0%,#0d0d14 100%);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 32px 80px rgba(0,0,0,.7);
+  opacity:0; transform:translateY(12px) scale(.97);
+  transition:opacity .25s ease, transform .25s cubic-bezier(.32,1.1,.42,1);
+}
+#pc-card.show { opacity:1; transform:none; }
+
+.pc-hd {
+  display:flex; align-items:flex-start; justify-content:space-between;
+  padding:18px 20px 14px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.pc-title {
+  font-size:14px; font-weight:500; color:var(--ink);
+  line-height:1.3; flex:1; padding-right:12px;
+}
+.pc-sub {
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink3); margin-top:3px;
+}
+.pc-close {
+  width:28px; height:28px; border-radius:50%; flex-shrink:0;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all .15s; color:var(--ink3); font-size:13px;
+}
+.pc-close:hover { background:rgba(255,255,255,.12); color:var(--ink); }
+
+/* stat strip */
+.pc-stats {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.pc-stat {
+  padding:12px 16px;
+  border-right:1px solid rgba(255,255,255,.06);
+}
+.pc-stat:last-child { border-right:none; }
+.pc-stat-v {
+  font-family:'JetBrains Mono',monospace;
+  font-size:18px; font-weight:600; color:var(--lime); line-height:1;
+}
+.pc-stat-v.neutral { color:var(--ink); }
+.pc-stat-v.down    { color:#f87171; }
+.pc-stat-l {
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink3); margin-top:4px;
+}
+
+/* SVG chart */
+.pc-chart-wrap {
+  padding:16px 16px 8px;
+  position:relative;
+}
+.pc-chart-svg {
+  width:100%; height:160px; overflow:visible;
+  display:block;
+}
+
+/* empty state */
+.pc-empty {
+  padding:40px 20px;
+  text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink3);
+}
+
+/* toggle tabs */
+.pc-tabs {
+  display:flex; gap:6px; padding:0 16px 14px;
+}
+.pc-tab {
+  padding:6px 12px; border-radius:7px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.1em; text-transform:uppercase; font-weight:600;
+  border:1.5px solid rgba(255,255,255,.08);
+  background:transparent; color:var(--ink3);
+  cursor:pointer; transition:all .15s;
+}
+.pc-tab.on {
+  border-color:rgba(200,240,58,.3);
+  background:rgba(200,240,58,.08);
+  color:var(--lime);
+}
+
+/* clickable exercise name */
+.xname { cursor:pointer; transition:color .15s; }
+.xname:hover { color:var(--lime); }
+.xname::after {
+  content:' ↗';
+  font-size:10px; opacity:0;
+  transition:opacity .15s;
+  color:var(--lime);
+}
+.xname:hover::after { opacity:1; }
+
 /* ────────────────── EXPORT CSV */
 .export-btn {
   display:inline-flex; align-items:center; gap:8px;
@@ -1145,6 +1271,13 @@ function injectTrackers(){
         ${!isWu ? `<button class="sl-add" id="sladd-${exid}" onclick="addSet('${exid}')">＋ Add Set</button>` : ''}
       </div>`;
     xinfo.appendChild(wrap);
+
+    // make exercise name clickable for progress chart
+    const xnameEl = xinfo.querySelector('.xname');
+    if(xnameEl && !isWu) {
+      const exName = xnameEl.textContent.trim();
+      xnameEl.onclick = () => pcOpen(exid, exName);
+    }
   });
 }
 
@@ -1193,6 +1326,151 @@ function jumpToToday(){
 }
 
 
+
+
+/* ── PROGRESS CHART ── */
+let PC = { exid: null, name: null, mode: 'kg' };
+
+function pcOpen(exid, name) {
+  PC.exid = exid; PC.name = name; PC.mode = 'kg';
+  document.getElementById('pc-title').textContent = name;
+  // reset tabs
+  document.querySelectorAll('.pc-tab').forEach((t,i) => t.classList.toggle('on', i===0));
+  pcRender();
+  document.getElementById('pc-backdrop').classList.add('show');
+  document.getElementById('pc-modal').classList.add('show');
+  setTimeout(() => document.getElementById('pc-card').classList.add('show'), 10);
+}
+
+function pcClose() {
+  document.getElementById('pc-card').classList.remove('show');
+  setTimeout(() => {
+    document.getElementById('pc-backdrop').classList.remove('show');
+    document.getElementById('pc-modal').classList.remove('show');
+  }, 220);
+}
+
+function pcSetMode(mode, btn) {
+  PC.mode = mode;
+  document.querySelectorAll('.pc-tab').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+  pcRender();
+}
+
+function pcGetPoints() {
+  const all = loadAll();
+  const sessions = all[PC.exid] || [];
+  return sessions.map(sess => {
+    const sets = Object.entries(sess).filter(([k]) => k !== '_date');
+    if(!sets.length) return null;
+    const maxKg   = Math.max(...sets.map(([,v]) => v.kg  || 0));
+    const maxReps = Math.max(...sets.map(([,v]) => v.reps || 0));
+    const totalVol= sets.reduce((s,[,v]) => s + (v.kg||0)*(v.reps||0), 0);
+    return { date: sess._date, kg: maxKg, reps: maxReps, volume: totalVol };
+  }).filter(Boolean);
+}
+
+function pcRender() {
+  const points = pcGetPoints();
+  const svg    = document.getElementById('pc-svg');
+  const sub    = document.getElementById('pc-sub');
+  const bestEl = document.getElementById('pc-best');
+  const sessEl = document.getElementById('pc-sessions');
+  const trendEl= document.getElementById('pc-trend');
+
+  if(!points.length) {
+    svg.innerHTML = '<text x="220" y="80" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="rgba(255,255,255,.18)" letter-spacing="2">NO DATA YET</text>';
+    bestEl.textContent = '—'; sessEl.textContent = '0'; trendEl.textContent = '—';
+    sub.textContent = 'Belum ada log';
+    return;
+  }
+
+  const vals = points.map(p => p[PC.mode]);
+  const minV = Math.min(...vals);
+  const maxV = Math.max(...vals);
+  const range = maxV - minV || 1;
+
+  // stats
+  sessEl.textContent = points.length;
+  sub.textContent    = points[0].date + (points.length > 1 ? ' — ' + points[points.length-1].date : '');
+
+  if(PC.mode === 'kg') {
+    bestEl.textContent = maxV + ' kg';
+    bestEl.className   = 'pc-stat-v';
+  } else if(PC.mode === 'reps') {
+    bestEl.textContent = maxV + ' reps';
+    bestEl.className   = 'pc-stat-v';
+  } else {
+    bestEl.textContent = maxV + ' vol';
+    bestEl.className   = 'pc-stat-v';
+  }
+
+  // trend (last vs first)
+  if(points.length >= 2) {
+    const delta = vals[vals.length-1] - vals[0];
+    const pct   = ((delta / (vals[0]||1)) * 100).toFixed(1);
+    trendEl.textContent = (delta >= 0 ? '+' : '') + pct + '%';
+    trendEl.className   = 'pc-stat-v ' + (delta > 0 ? '' : delta < 0 ? 'down' : 'neutral');
+  } else {
+    trendEl.textContent = '—'; trendEl.className = 'pc-stat-v neutral';
+  }
+
+  // SVG dimensions
+  const W = 440, H = 160, PAD = { t:16, r:16, b:32, l:40 };
+  const cW = W - PAD.l - PAD.r;
+  const cH = H - PAD.t - PAD.b;
+  const n  = points.length;
+
+  const xOf = i => PAD.l + (n === 1 ? cW/2 : (i / (n-1)) * cW);
+  const yOf = v => PAD.t + cH - ((v - minV) / range) * cH;
+
+  // Y grid lines (3 lines)
+  let grid = '';
+  [0, 0.5, 1].forEach(f => {
+    const y   = PAD.t + cH - f * cH;
+    const val = (minV + f * range).toFixed(f === 0 ? 0 : 1);
+    grid += `<line x1="${PAD.l}" y1="${y}" x2="${W-PAD.r}" y2="${y}" stroke="rgba(255,255,255,.05)" stroke-width="1"/>`;
+    grid += `<text x="${PAD.l - 6}" y="${y+4}" text-anchor="end" font-family="JetBrains Mono,monospace" font-size="9" fill="rgba(255,255,255,.25)">${val}</text>`;
+  });
+
+  // path
+  const pathD = points.map((p,i) => `${i===0?'M':'L'}${xOf(i).toFixed(1)},${yOf(p[PC.mode]).toFixed(1)}`).join(' ');
+
+  // area fill
+  const areaD = pathD + ` L${xOf(n-1).toFixed(1)},${(PAD.t+cH).toFixed(1)} L${xOf(0).toFixed(1)},${(PAD.t+cH).toFixed(1)} Z`;
+
+  // dots + labels
+  let dots = '';
+  points.forEach((p, i) => {
+    const x = xOf(i), y = yOf(p[PC.mode]);
+    const isLast = i === n-1;
+    const label  = PC.mode === 'volume' ? p[PC.mode] : p[PC.mode];
+    dots += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${isLast ? 5 : 3.5}" fill="${isLast ? 'var(--lime)' : '#1a1a2e'}" stroke="var(--lime)" stroke-width="2"/>`;
+    if(isLast || n <= 6) {
+      const labelY = y < PAD.t + 18 ? y + 18 : y - 10;
+      dots += `<text x="${x.toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" font-weight="600" fill="var(--lime)">${label}</text>`;
+    }
+    // x-axis date label (short)
+    if(n <= 8) {
+      const d = new Date(p.date);
+      const lbl = isNaN(d) ? '' : (d.getMonth()+1)+'/'+(d.getDate());
+      dots += `<text x="${x.toFixed(1)}" y="${(H-6).toFixed(1)}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(255,255,255,.22)">${lbl}</text>`;
+    }
+  });
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="pc-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="rgba(200,240,58,.18)"/>
+        <stop offset="100%" stop-color="rgba(200,240,58,0)"/>
+      </linearGradient>
+    </defs>
+    ${grid}
+    <path d="${areaD}" fill="url(#pc-grad)"/>
+    <path d="${pathD}" fill="none" stroke="var(--lime)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${dots}
+  `;
+}
 
 /* ── EXPORT CSV ── */
 function exportCSV() {
@@ -1378,6 +1656,33 @@ function rtSet(secs) {
 injectTrackers();
 initToday();
 </script>
+
+<!-- ── PROGRESS CHART ── -->
+<div id="pc-backdrop" onclick="pcClose()"></div>
+<div id="pc-modal">
+  <div id="pc-card">
+    <div class="pc-hd">
+      <div>
+        <div class="pc-title" id="pc-title">Exercise</div>
+        <div class="pc-sub" id="pc-sub">Progress</div>
+      </div>
+      <button class="pc-close" onclick="pcClose()">✕</button>
+    </div>
+    <div class="pc-stats">
+      <div class="pc-stat"><div class="pc-stat-v" id="pc-best">—</div><div class="pc-stat-l">Best KG</div></div>
+      <div class="pc-stat"><div class="pc-stat-v neutral" id="pc-sessions">—</div><div class="pc-stat-l">Sessions</div></div>
+      <div class="pc-stat"><div class="pc-stat-v" id="pc-trend">—</div><div class="pc-stat-l">Trend</div></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab on" onclick="pcSetMode('kg',this)">KG</button>
+      <button class="pc-tab"    onclick="pcSetMode('reps',this)">Reps</button>
+      <button class="pc-tab"    onclick="pcSetMode('volume',this)">Volume</button>
+    </div>
+    <div class="pc-chart-wrap">
+      <svg class="pc-chart-svg" id="pc-svg" viewBox="0 0 440 160" preserveAspectRatio="none"></svg>
+    </div>
+  </div>
+</div>
 
 <!-- ── CSV TOAST ── -->
 <div id="csv-toast">✓ Log berhasil diexport</div>
