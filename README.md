@@ -92,6 +92,18 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [1.2.0] — 2026-05-02
+
+**Added**
+- Export Log CSV — tombol di footer, download otomatis ke file `hilv-log-YYYY-MM-DD.csv`
+- Kolom CSV: Date · Session · Exercise · Set · KG · Reps
+- Nama exercise diambil langsung dari DOM — selalu sinkron dengan program
+- Toast notification saat export berhasil (jumlah set yang diexport)
+- Toast amber jika belum ada log tersimpan
+- Haptic feedback saat export
+
+---
+
 ### [1.1.0] — 2026-05-02
 
 **Added**

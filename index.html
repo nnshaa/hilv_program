@@ -396,6 +396,47 @@ body::after {
 .rc-l li { font-size:13px; font-weight:300; color:var(--ink2); display:flex; gap:12px; line-height:1.65; }
 .rc-l li::before { content:'—'; font-family:'JetBrains Mono',monospace; font-size:10px; color:rgba(200,240,58,.4); flex-shrink:0; margin-top:2px; }
 
+
+/* ────────────────── EXPORT CSV */
+.export-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  margin-top:16px;
+  padding:10px 18px;
+  border-radius:10px;
+  border:1.5px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+  color:var(--ink3);
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase; font-weight:600;
+  cursor:pointer; transition:all .18s;
+}
+.export-btn:hover {
+  border-color:rgba(200,240,58,.35);
+  color:var(--lime);
+  background:rgba(200,240,58,.05);
+}
+.export-btn svg { width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+/* toast */
+@keyframes toast-in  { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+@keyframes toast-out { from{opacity:1;transform:none} to{opacity:0;transform:translateY(8px)} }
+#csv-toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+  z-index:9999;
+  background:#1a1a24;
+  border:1px solid rgba(200,240,58,.25);
+  border-radius:10px;
+  padding:11px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:var(--lime); letter-spacing:.06em;
+  white-space:nowrap;
+  pointer-events:none;
+  opacity:0;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+}
+#csv-toast.show { animation:toast-in .22s ease forwards; }
+#csv-toast.hide { animation:toast-out .22s ease forwards; }
+
 /* ────────────────── FOOTER */
 .footer { border-top:1px solid var(--edge); padding:44px 0 68px; margin-top:80px; display:flex; flex-direction:column; gap:24px; }
 @media(min-width:640px){ .footer{ flex-direction:row; align-items:flex-end; justify-content:space-between; } }
@@ -924,6 +965,10 @@ body::after {
     Natural Lifter &middot; Cutting Phase &middot; 5 Days / Week<br>
     SAT &middot; SUN &middot; &mdash; &middot; TUE &middot; WED &middot; THU &middot; &mdash;
     <div class="f-q">&ldquo;Optimal bukan yang terbanyak. Optimal yang bisa disustain.&rdquo;</div>
+    <button class="export-btn" onclick="exportCSV()">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export Log CSV
+    </button>
   </div>
   <div class="f-r"><div class="f-n">10</div><div class="f-s">Program Score</div></div>
 </footer>
@@ -1148,6 +1193,91 @@ function jumpToToday(){
 }
 
 
+
+/* ── EXPORT CSV ── */
+function exportCSV() {
+  const all = loadAll();
+  if(!Object.keys(all).length){
+    showToast('Belum ada log tersimpan', false); return;
+  }
+
+  // build exercise name map from DOM
+  const nameMap = {};
+  document.querySelectorAll('.panel').forEach(panel => {
+    const pid = panel.id;
+    panel.querySelectorAll('.xr').forEach(row => {
+      const xi = row.querySelector('.xi');
+      const xname = row.querySelector('.xname');
+      if(!xi || !xname) return;
+      const raw = xi.textContent.trim();
+      const isWu = raw === 'WU';
+      const num = isWu ? 'WU' : raw.padStart(2,'0');
+      const exid = pid + '-' + num;
+      nameMap[exid] = (isWu ? '[WU] ' : '') + xname.textContent.trim();
+    });
+  });
+
+  // session label map
+  const sessionNames = {
+    p1:'Upper A', p2:'Lower A', p3:'Upper B', p4:'Lower B', p5:'Upper C'
+  };
+
+  // build rows
+  const rows = [['Date','Session','Exercise','Set','KG','Reps']];
+
+  Object.entries(all).forEach(([exid, sessions]) => {
+    const pid = exid.split('-')[0];
+    const session = sessionNames[pid] || pid;
+    const exName = nameMap[exid] || exid;
+
+    sessions.forEach(sess => {
+      const date = sess._date || '—';
+      Object.entries(sess).forEach(([key, val]) => {
+        if(key === '_date') return;
+        const setNum = key;
+        rows.push([date, session, exName, setNum, val.kg, val.reps]);
+      });
+    });
+  });
+
+  // convert to CSV string
+  const csv = rows.map(r =>
+    r.map(cell => {
+      const s = String(cell ?? '');
+      return s.includes(',') || s.includes('"') || s.includes('\n')
+        ? '"' + s.replace(/"/g, '""') + '"'
+        : s;
+    }).join(',')
+  ).join('\n');
+
+  // trigger download
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'hilv-log-' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast('✓ ' + (rows.length - 1) + ' set diexport ke CSV');
+  if(navigator.vibrate) navigator.vibrate(30);
+}
+
+function showToast(msg, success = true) {
+  const el = document.getElementById('csv-toast');
+  el.textContent = msg;
+  el.style.borderColor = success ? 'rgba(200,240,58,.25)' : 'rgba(245,184,48,.25)';
+  el.style.color = success ? 'var(--lime)' : 'var(--amber)';
+  el.className = 'show';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => {
+    el.className = 'hide';
+    setTimeout(() => el.className = '', 250);
+  }, 2800);
+}
+
 /* ── REST TIMER ── */
 const RT = {
   total: 90, remaining: 90, running: false,
@@ -1248,6 +1378,9 @@ function rtSet(secs) {
 injectTrackers();
 initToday();
 </script>
+
+<!-- ── CSV TOAST ── -->
+<div id="csv-toast">✓ Log berhasil diexport</div>
 
 <!-- ── REST TIMER ── -->
 <div id="rt-backdrop" onclick="rtClose()"></div>
