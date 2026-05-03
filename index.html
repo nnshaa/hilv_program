@@ -398,6 +398,100 @@ body::after {
 
 
 
+
+/* ────────────────── NOTES PER SET */
+.sl-notes-row {
+  display:flex; align-items:center; gap:8px;
+  padding:4px 12px 6px;
+  animation:flash-in .2s ease;
+}
+.sl-notes-input {
+  flex:1; background:rgba(255,255,255,.04);
+  border:1.5px solid rgba(255,255,255,.07);
+  border-radius:8px; outline:none;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; color:var(--ink2);
+  padding:7px 10px; resize:none; height:32px;
+  line-height:1.4; transition:border-color .18s, background .18s;
+  overflow:hidden;
+}
+.sl-notes-input::placeholder { color:rgba(255,255,255,.18); }
+.sl-notes-input:focus { border-color:rgba(200,240,58,.3); background:rgba(200,240,58,.04); }
+.sl-notes-input.has-note { border-color:rgba(200,240,58,.18); color:var(--ink); }
+.sl-notes-tag {
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px; letter-spacing:.1em; text-transform:uppercase;
+  color:rgba(255,255,255,.18); white-space:nowrap; flex-shrink:0;
+}
+
+/* ────────────────── RESET LOG */
+.sl-reset-btn {
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  width:calc(100% - 24px); margin:0 12px 10px;
+  padding:9px 12px;
+  border-radius:8px;
+  border:1px dashed rgba(255,80,80,.15);
+  background:transparent;
+  color:rgba(255,100,100,.35);
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  cursor:pointer; transition:all .18s;
+}
+.sl-reset-btn:hover {
+  border-color:rgba(255,80,80,.35);
+  color:rgba(255,120,120,.8);
+  background:rgba(255,50,50,.05);
+}
+
+/* confirm dialog */
+#reset-confirm {
+  position:fixed; inset:0; z-index:9500;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(8px);
+  opacity:0; pointer-events:none;
+  transition:opacity .2s ease;
+}
+#reset-confirm.show { opacity:1; pointer-events:auto; }
+.rc-card {
+  width:100%; max-width:320px;
+  background:linear-gradient(160deg,#16161f 0%,#0e0e16 100%);
+  border:1px solid rgba(255,80,80,.2);
+  border-radius:14px;
+  padding:24px 20px 20px;
+  transform:scale(.95); transition:transform .2s cubic-bezier(.32,1.1,.42,1);
+}
+#reset-confirm.show .rc-card { transform:scale(1); }
+.rc-title {
+  font-size:14px; font-weight:500; color:var(--ink); margin-bottom:6px;
+}
+.rc-sub {
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; color:var(--ink3); margin-bottom:20px; line-height:1.6;
+}
+.rc-ex {
+  color:var(--lime); font-weight:600;
+}
+.rc-btns { display:flex; gap:8px; }
+.rc-btn {
+  flex:1; padding:12px;
+  border-radius:10px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; letter-spacing:.1em; text-transform:uppercase; font-weight:600;
+  cursor:pointer; transition:all .18s;
+}
+.rc-cancel {
+  border:1.5px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04); color:var(--ink3);
+}
+.rc-cancel:hover { color:var(--ink); border-color:rgba(255,255,255,.2); }
+.rc-delete {
+  border:1.5px solid rgba(255,80,80,.3);
+  background:rgba(255,50,50,.08); color:#f87171;
+}
+.rc-delete:hover { background:rgba(255,50,50,.16); border-color:rgba(255,80,80,.5); }
+
 /* ────────────────── PROGRESS CHART MODAL */
 @keyframes modal-in  { from{opacity:0;transform:translateY(12px) scale(.97)} to{opacity:1;transform:none} }
 @keyframes modal-out { from{opacity:1;transform:none} to{opacity:0;transform:translateY(12px) scale(.97)} }
@@ -1224,8 +1318,11 @@ function persistChecked(exid){
     const id=`${exid}-s${si}`;
     const kgEl=document.getElementById(id+'-kg');
     const rpEl=document.getElementById(id+'-rp');
+    const noteEl=document.getElementById(id+'-note');
     if(kgEl&&rpEl&&row.classList.contains('done')){
-      sets[si]={kg:parseFloat(kgEl.value)||0, reps:parseInt(rpEl.value)||0};
+      const entry={kg:parseFloat(kgEl.value)||0, reps:parseInt(rpEl.value)||0};
+      if(noteEl&&noteEl.value.trim()) entry.note=noteEl.value.trim();
+      sets[si]=entry;
     }
   });
   saveSession(exid, sets);
@@ -1295,14 +1392,37 @@ function injectTrackers(){
       <div id="sl-${exid}">
         ${rowsHtml}
         ${!isWu ? `<button class="sl-add" id="sladd-${exid}" onclick="addSet('${exid}')">＋ Add Set</button>` : ''}
+        ${!isWu ? `<button class="sl-reset-btn" onclick="askReset('${exid}','${exid}')">✕ Reset log</button>` : ''}
       </div>`;
     xinfo.appendChild(wrap);
 
     // make exercise name clickable for progress chart
     const xnameEl = xinfo.querySelector('.xname');
+    const exName = xnameEl ? xnameEl.textContent.trim() : exid;
     if(xnameEl && !isWu) {
-      const exName = xnameEl.textContent.trim();
       xnameEl.onclick = () => pcOpen(exid, exName);
+    }
+
+    // update reset button label with exercise name
+    const resetBtn = wrap.querySelector('.sl-reset-btn');
+    if(resetBtn) resetBtn.onclick = () => askReset(exid, exName);
+
+    // restore today's notes from storage
+    if(!isWu) {
+      const todaySess = getPrevSets(exid);
+      const todayISO  = new Date().toISOString().slice(0,10);
+      const allSess   = loadAll()[exid] || [];
+      const todayData = allSess.find(s => s._date === todayISO);
+      if(todayData) {
+        Object.entries(todayData).forEach(([k, v]) => {
+          if(k.startsWith('_') || !v.note) return;
+          const noteEl = document.getElementById(`${exid}-s${k}-note`);
+          if(noteEl) {
+            noteEl.value = v.note;
+            noteEl.classList.add('has-note');
+          }
+        });
+      }
     }
   });
 }
@@ -1501,6 +1621,69 @@ function pcRender() {
     <path d="${pathD}" fill="none" stroke="var(--lime)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     ${dots}
   `;
+}
+
+
+/* ── NOTES PER SET ── */
+function makeNotesRow(exid, setIdx, savedNote) {
+  const id = `${exid}-s${setIdx}-note`;
+  const val = savedNote || '';
+  return `
+    <div class="sl-notes-row" id="nr-${exid}-${setIdx}">
+      <span class="sl-notes-tag">Note</span>
+      <textarea class="sl-notes-input${val ? ' has-note' : ''}" id="${id}"
+        placeholder="RPE, feeling, teknik…" rows="1"
+        oninput="noteChanged('${exid}',${setIdx},this)"
+        onblur="persistChecked('${exid}')"
+      >${val}</textarea>
+    </div>`;
+}
+
+function noteChanged(exid, setIdx, el) {
+  el.classList.toggle('has-note', el.value.trim().length > 0);
+  // auto-resize
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+/* ── RESET LOG ── */
+let _resetExid = null;
+let _resetName = null;
+
+function askReset(exid, name) {
+  _resetExid = exid; _resetName = name;
+  document.getElementById('rc-exname').textContent = name;
+  document.getElementById('reset-confirm').classList.add('show');
+}
+
+function resetCancel() {
+  document.getElementById('reset-confirm').classList.remove('show');
+  _resetExid = null; _resetName = null;
+}
+
+function resetConfirm() {
+  if(!_resetExid) return;
+  const all = loadAll();
+  delete all[_resetExid];
+  saveAll(all);
+  // clear UI — remove done class, clear inputs, clear notes
+  const container = document.getElementById('sl-' + _resetExid);
+  if(container) {
+    container.querySelectorAll('.sl-row').forEach(r => {
+      r.classList.remove('done','flash');
+      r.querySelectorAll('.sl-cell').forEach(inp => inp.value = '');
+      r.querySelectorAll('.sl-check').forEach(ck => ck.classList.remove('checked'));
+    });
+    container.querySelectorAll('.sl-notes-input').forEach(ta => {
+      ta.value = ''; ta.classList.remove('has-note');
+      ta.style.height = 'auto';
+    });
+    // remove dynamically added sets (keep original rows)
+    const origRows = container.querySelectorAll('.sl-row');
+  }
+  resetCancel();
+  showToast('✓ Log ' + _resetName + ' dihapus');
+  if(navigator.vibrate) navigator.vibrate([30,20,30]);
 }
 
 /* ── EXPORT CSV ── */
@@ -1711,6 +1894,18 @@ initToday();
     </div>
     <div class="pc-chart-wrap">
       <svg class="pc-chart-svg" id="pc-svg" viewBox="0 0 440 160" preserveAspectRatio="none"></svg>
+    </div>
+  </div>
+</div>
+
+<!-- ── RESET CONFIRM ── -->
+<div id="reset-confirm">
+  <div class="rc-card">
+    <div class="rc-title">Hapus semua log?</div>
+    <div class="rc-sub">Seluruh history <span class="rc-ex" id="rc-exname">exercise ini</span> akan dihapus permanen.</div>
+    <div class="rc-btns">
+      <button class="rc-btn rc-cancel" onclick="resetCancel()">Batal</button>
+      <button class="rc-btn rc-delete" onclick="resetConfirm()">Hapus</button>
     </div>
   </div>
 </div>

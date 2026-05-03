@@ -92,6 +92,31 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [1.4.0] — 2026-05-03
+
+**Added**
+- Notes per set — textarea muncul di bawah setiap set row, simpan RPE/feeling/teknik
+- Notes ikut tersimpan di localStorage dan di-restore saat buka ulang
+- Auto-resize textarea sesuai konten, border lime jika ada isi
+- Notes ikut ter-export ke CSV sebagai kolom tambahan
+- Reset log per exercise — tombol merah di bawah set tracker
+- Confirm dialog sebelum hapus: nama exercise + warning permanen
+- Reset hapus semua history exercise dari localStorage + clear UI
+- Toast konfirmasi setelah reset berhasil
+
+---
+
+### [1.3.1] — 2026-05-02
+
+**Fixed**
+- Chart hanya tampil 1 titik meski sudah ada data dari minggu lalu
+- Format tanggal tidak konsisten — `toDateString()` diganti ke ISO `"YYYY-MM-DD"` sebagai `_date`, display label disimpan terpisah di `_dateLabel`
+- Same-day detection gagal saat format `_date` berbeda (ISO vs toDateString) — sekarang cek keduanya
+- `pcGetPoints` ikut menghitung `_dateLabel` sebagai set data — fix filter ke `!k.startsWith('_')`
+- `loadAll` kini auto-migrate data lama ke format baru saat pertama dibuka — tidak perlu reset localStorage
+
+---
+
 ### [1.3.0] — 2026-05-02
 
 **Added**
