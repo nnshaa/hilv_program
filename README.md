@@ -92,6 +92,19 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [1.6.0] — 2026-05-03
+
+**Added**
+- iOS Install Hint — banner muncul di Safari iPhone dengan instruksi "Tap ↑ Share → Add to Home Screen", tidak muncul kalau sudah standalone
+- PR Detection — otomatis deteksi Personal Record saat set di-check, bandingkan vs seluruh history sebelum hari ini
+- PR Toast — notifikasi slide-in di atas layar dengan nama exercise + nilai PR baru, haptic pola khusus
+- Weekly Summary section — tampil di bawah program, auto-hitung dari localStorage
+- 4 stat cards: Sets Done · Total Volume · Sessions · New PRs, masing-masing ada delta % vs minggu lalu
+- PR list minggu ini — daftar exercise yang tembus PR, sorted by exercise
+- Week range label (M/D — M/D) auto-update setiap hari
+
+---
+
 ### [1.5.0] — 2026-05-03
 
 **Added**

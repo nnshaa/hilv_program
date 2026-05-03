@@ -407,6 +407,166 @@ body::after {
 
 
 
+
+/* ────────────────── iOS INSTALL HINT */
+@keyframes ios-hint-in { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+
+#ios-hint {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+  z-index:9800; display:none;
+  flex-direction:column; align-items:center; gap:0;
+  pointer-events:none;
+  animation:ios-hint-in .35s ease;
+}
+#ios-hint.show { display:flex; }
+.ios-card {
+  background:rgba(18,18,28,.97);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(200,240,58,.18);
+  border-radius:14px;
+  padding:14px 18px;
+  display:flex; align-items:center; gap:12px;
+  max-width:300px; pointer-events:auto;
+  box-shadow:0 16px 48px rgba(0,0,0,.6);
+}
+.ios-icon { font-size:22px; flex-shrink:0; }
+.ios-text { flex:1; }
+.ios-text-t { font-size:12px; font-weight:500; color:var(--ink); line-height:1.3; }
+.ios-text-s {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; color:var(--ink3); margin-top:3px; letter-spacing:.03em; line-height:1.5;
+}
+.ios-text-s b { color:var(--lime); font-weight:600; }
+.ios-close {
+  width:24px; height:24px; border-radius:50%; flex-shrink:0;
+  background:rgba(255,255,255,.08); border:none;
+  color:var(--ink3); font-size:12px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+/* arrow pointing down toward share button */
+.ios-arrow {
+  width:0; height:0;
+  border-left:8px solid transparent;
+  border-right:8px solid transparent;
+  border-top:8px solid rgba(200,240,58,.18);
+  margin-top:-1px;
+}
+
+/* ────────────────── PR BADGE */
+@keyframes pr-pop { 0%{transform:scale(0) rotate(-12deg)} 70%{transform:scale(1.15) rotate(2deg)} 100%{transform:scale(1) rotate(0)} }
+
+.pr-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:2px 8px;
+  border-radius:6px;
+  background:rgba(200,240,58,.12);
+  border:1px solid rgba(200,240,58,.3);
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--lime);
+  margin-left:6px;
+  animation:pr-pop .4s cubic-bezier(.32,1.2,.42,1);
+  vertical-align:middle;
+}
+.pr-badge::before { content:'★'; font-size:9px; }
+
+.pr-toast-wrap {
+  position:fixed; top:80px; left:50%; transform:translateX(-50%);
+  z-index:9900; pointer-events:none;
+  display:flex; flex-direction:column; gap:8px; align-items:center;
+}
+@keyframes pr-toast-in  { from{opacity:0;transform:translateY(-8px) scale(.95)} to{opacity:1;transform:none} }
+@keyframes pr-toast-out { from{opacity:1} to{opacity:0;transform:translateY(-8px) scale(.95)} }
+.pr-toast {
+  background:rgba(12,12,20,.96);
+  border:1px solid rgba(200,240,58,.3);
+  border-radius:12px; padding:12px 18px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:var(--lime); letter-spacing:.06em;
+  white-space:nowrap;
+  box-shadow:0 8px 32px rgba(200,240,58,.15);
+  animation:pr-toast-in .25s ease forwards;
+}
+.pr-toast.out { animation:pr-toast-out .25s ease forwards; }
+
+/* ────────────────── WEEKLY SUMMARY */
+.wsum-section {
+  margin:60px 0 0;
+  padding-top:40px;
+  border-top:1px solid rgba(255,255,255,.05);
+}
+.wsum-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(28px,6vw,42px);
+  letter-spacing:.04em; color:var(--ink);
+  margin-bottom:6px;
+}
+.wsum-sub {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink3); margin-bottom:28px;
+}
+.wsum-grid {
+  display:grid;
+  grid-template-columns: repeat(2,1fr);
+  gap:10px;
+  margin-bottom:24px;
+}
+@media(min-width:480px){ .wsum-grid{ grid-template-columns:repeat(4,1fr); } }
+
+.wsum-card {
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px; padding:16px 14px;
+  transition:border-color .2s;
+}
+.wsum-card:hover { border-color:rgba(200,240,58,.2); }
+.wsum-card-v {
+  font-family:'JetBrains Mono',monospace;
+  font-size:26px; font-weight:600; color:var(--lime); line-height:1;
+}
+.wsum-card-v.neutral { color:var(--ink); }
+.wsum-card-l {
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink3); margin-top:6px;
+}
+.wsum-card-delta {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; margin-top:4px;
+}
+.wsum-card-delta.up { color:#4ade80; }
+.wsum-card-delta.dn { color:#f87171; }
+.wsum-card-delta.eq { color:var(--ink3); }
+
+/* PR list */
+.wsum-pr-title {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink3); margin-bottom:10px;
+}
+.wsum-pr-list { display:flex; flex-direction:column; gap:6px; }
+.wsum-pr-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 14px;
+  background:rgba(200,240,58,.04);
+  border:1px solid rgba(200,240,58,.12);
+  border-radius:10px;
+}
+.wsum-pr-name {
+  font-size:12px; font-weight:500; color:var(--ink);
+  flex:1; padding-right:12px;
+}
+.wsum-pr-val {
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px; font-weight:600; color:var(--lime);
+}
+.wsum-empty {
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; color:var(--ink3); letter-spacing:.06em;
+  padding:20px 0; text-align:center;
+}
+
 /* ────────────────── PWA INSTALL BANNER */
 @keyframes banner-slide { from{transform:translateY(-100%);opacity:0} to{transform:translateY(0);opacity:1} }
 
@@ -1244,6 +1404,22 @@ body::after {
   </div>
 </section>
 
+<!-- WEEKLY SUMMARY -->
+<section class="wsum-section r">
+  <div class="wsum-title">Weekly Summary</div>
+  <div class="wsum-sub" id="wsum-range">Loading…</div>
+  <div class="wsum-grid" id="wsum-grid">
+    <div class="wsum-card"><div class="wsum-card-v neutral" id="ws-sets">—</div><div class="wsum-card-l">Sets Done</div><div class="wsum-card-delta eq" id="ws-sets-d"></div></div>
+    <div class="wsum-card"><div class="wsum-card-v neutral" id="ws-vol">—</div><div class="wsum-card-l">Total Volume</div><div class="wsum-card-delta eq" id="ws-vol-d"></div></div>
+    <div class="wsum-card"><div class="wsum-card-v neutral" id="ws-sess">—</div><div class="wsum-card-l">Sessions</div><div class="wsum-card-delta eq" id="ws-sess-d"></div></div>
+    <div class="wsum-card"><div class="wsum-card-v neutral" id="ws-pr">—</div><div class="wsum-card-l">New PRs</div><div class="wsum-card-delta eq" id="ws-pr-d"></div></div>
+  </div>
+  <div class="wsum-pr-title">Personal Records This Week</div>
+  <div class="wsum-pr-list" id="wsum-pr-list">
+    <div class="wsum-empty">Log beberapa sesi dulu untuk melihat PR</div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer class="footer">
   <div class="f-l">
@@ -1366,6 +1542,12 @@ function checkSet(exid, setIdx){
     if(!rpEl.value) rpEl.value=reps||'';
     row.classList.add('flash');
     setTimeout(()=>row.classList.remove('flash'),600);
+    // PR check
+    if(!row.classList.contains('wu-row')) {
+      const exName = (document.querySelector(`[data-exid='${exid}'] .xname`) ||
+                      row.closest('.xinfo')?.querySelector('.xname'))?.textContent?.trim() || exid;
+      checkPR(exid, exName, kg, reps);
+    }
     // start rest timer (skip for warm-up rows)
     if(!row.classList.contains('wu-row')) rtOpen();
   }
@@ -1690,6 +1872,179 @@ function pcRender() {
 }
 
 
+
+
+/* ── iOS INSTALL HINT ── */
+(function(){
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  if(isIOS && !isStandalone && !sessionStorage.getItem('ios-hint-dismissed')){
+    setTimeout(() => document.getElementById('ios-hint').classList.add('show'), 2000);
+  }
+})();
+function iosHintDismiss(){
+  document.getElementById('ios-hint').classList.remove('show');
+  sessionStorage.setItem('ios-hint-dismissed','1');
+}
+
+/* ── PR DETECTION ── */
+function checkPR(exid, exName, kg, reps) {
+  const all  = loadAll();
+  const sess = all[exid] || [];
+  // find best KG across all historical sessions (excluding today)
+  const todayISO = new Date().toISOString().slice(0,10);
+  let bestKg = 0, bestReps = 0;
+  sess.forEach(s => {
+    if(s._date === todayISO) return; // skip today
+    Object.entries(s).forEach(([k, v]) => {
+      if(k.startsWith('_')) return;
+      if((v.kg||0) > bestKg) bestKg = v.kg||0;
+      if((v.reps||0) > bestReps) bestReps = v.reps||0;
+    });
+  });
+  const isPR_kg   = bestKg   > 0 && kg   > bestKg;
+  const isPR_reps = bestReps > 0 && reps > bestReps && kg >= bestKg;
+  if(isPR_kg || isPR_reps) {
+    const type = isPR_kg ? `${kg}kg` : `${reps} reps @ ${kg}kg`;
+    showPRToast(exName, type);
+    return true;
+  }
+  return false;
+}
+
+function showPRToast(name, value) {
+  const wrap = document.getElementById('pr-toast-wrap');
+  const el   = document.createElement('div');
+  el.className = 'pr-toast';
+  el.textContent = `★ PR — ${name}: ${value}`;
+  wrap.appendChild(el);
+  if(navigator.vibrate) navigator.vibrate([40,30,40,30,80]);
+  setTimeout(() => {
+    el.classList.add('out');
+    setTimeout(() => el.remove(), 280);
+  }, 3500);
+}
+
+/* ── WEEKLY SUMMARY ── */
+function getWeekRange(offset = 0) {
+  const now  = new Date();
+  const day  = now.getDay(); // 0=Sun
+  const mon  = new Date(now); mon.setDate(now.getDate() - ((day+6)%7) + offset*7);
+  const sun  = new Date(mon); sun.setDate(mon.getDate() + 6);
+  mon.setHours(0,0,0,0); sun.setHours(23,59,59,999);
+  return { start: mon, end: sun };
+}
+
+function isoInRange(iso, range) {
+  const d = new Date(iso + 'T00:00:00');
+  return d >= range.start && d <= range.end;
+}
+
+function calcWeekStats(weekRange) {
+  const all   = loadAll();
+  let sets=0, volume=0, sessions=new Set(), prs=[];
+
+  // build exercise name map
+  const nameMap = {};
+  document.querySelectorAll('.panel').forEach(panel => {
+    panel.querySelectorAll('.xr').forEach(row => {
+      const xi = row.querySelector('.xi');
+      const xn = row.querySelector('.xname');
+      if(!xi||!xn) return;
+      const raw = xi.textContent.trim();
+      const num = raw==='WU'?'WU':raw.padStart(2,'0');
+      nameMap[panel.id+'-'+num] = xn.textContent.trim();
+    });
+  });
+
+  Object.entries(all).forEach(([exid, exSessions]) => {
+    exSessions.forEach(sess => {
+      if(!isoInRange(sess._date||'', weekRange)) return;
+      sessions.add(sess._date);
+      const setSets = Object.entries(sess).filter(([k])=>!k.startsWith('_'));
+      setSets.forEach(([,v]) => {
+        sets++;
+        volume += (v.kg||0)*(v.reps||0);
+      });
+    });
+
+    // PR detection for the week
+    const allSess     = exSessions;
+    const weekSessions= allSess.filter(s=>isoInRange(s._date||'',weekRange));
+    const prevSessions= allSess.filter(s=>!isoInRange(s._date||'',weekRange));
+
+    let histBest = 0;
+    prevSessions.forEach(s => {
+      Object.entries(s).filter(([k])=>!k.startsWith('_')).forEach(([,v])=>{
+        if((v.kg||0)>histBest) histBest=v.kg||0;
+      });
+    });
+
+    let weekBest=0;
+    weekSessions.forEach(s=>{
+      Object.entries(s).filter(([k])=>!k.startsWith('_')).forEach(([,v])=>{
+        if((v.kg||0)>weekBest) weekBest=v.kg||0;
+      });
+    });
+
+    if(weekBest>0 && weekBest>histBest) {
+      prs.push({ name: nameMap[exid]||exid, kg: weekBest });
+    }
+  });
+
+  return { sets, volume, sessions: sessions.size, prs };
+}
+
+function fmtVol(v) {
+  return v >= 1000 ? (v/1000).toFixed(1)+'k' : String(v);
+}
+
+function renderWeeklySummary() {
+  const thisWeek = getWeekRange(0);
+  const lastWeek = getWeekRange(-1);
+  const cur  = calcWeekStats(thisWeek);
+  const prev = calcWeekStats(lastWeek);
+
+  // date range label
+  const fmt = d => (d.getMonth()+1)+'/'+d.getDate();
+  document.getElementById('wsum-range').textContent =
+    fmt(thisWeek.start) + ' — ' + fmt(thisWeek.end);
+
+  function setCard(valId, deltaId, cur, prev, suffix='') {
+    const el = document.getElementById(valId);
+    const dl = document.getElementById(deltaId);
+    el.textContent = suffix ? fmtVol(cur)+suffix : cur;
+    el.className   = 'wsum-card-v' + (cur>0?' ':' neutral');
+    if(prev>0) {
+      const d = cur-prev;
+      const p = ((d/prev)*100).toFixed(0);
+      dl.textContent = (d>=0?'+':'')+p+'% vs last week';
+      dl.className   = 'wsum-card-delta ' + (d>0?'up':d<0?'dn':'eq');
+    } else {
+      dl.textContent=''; dl.className='wsum-card-delta eq';
+    }
+  }
+
+  setCard('ws-sets',  'ws-sets-d',  cur.sets,     prev.sets);
+  setCard('ws-vol',   'ws-vol-d',   cur.volume,   prev.volume, ' kg');
+  setCard('ws-sess',  'ws-sess-d',  cur.sessions, prev.sessions);
+  document.getElementById('ws-pr').textContent = cur.prs.length||'—';
+  document.getElementById('ws-pr').className   = cur.prs.length?'wsum-card-v':'wsum-card-v neutral';
+  document.getElementById('ws-pr-d').textContent = '';
+
+  // PR list
+  const list = document.getElementById('wsum-pr-list');
+  if(!cur.prs.length) {
+    list.innerHTML = '<div class="wsum-empty">Belum ada PR minggu ini — keep pushing 💪</div>';
+  } else {
+    list.innerHTML = cur.prs.map(pr=>
+      `<div class="wsum-pr-item">
+        <div class="wsum-pr-name">${pr.name}</div>
+        <div class="wsum-pr-val">★ ${pr.kg} kg</div>
+      </div>`
+    ).join('');
+  }
+}
 
 /* ── PWA: MANIFEST (inline as data URI) ── */
 (function(){
@@ -2046,6 +2401,7 @@ function rtSet(secs) {
 /* ── INIT ── */
 injectTrackers();
 initToday();
+renderWeeklySummary();
 </script>
 
 <!-- ── PROGRESS CHART ── -->
@@ -2074,6 +2430,20 @@ initToday();
     </div>
   </div>
 </div>
+
+<!-- ── iOS INSTALL HINT ── -->
+<div id="ios-hint">
+  <div class="ios-card">
+    <div class="ios-icon">🏋️</div>
+    <div class="ios-text">
+      <div class="ios-text-t">Install HILV ke Homescreen</div>
+      <div class="ios-text-s">Tap <b>↑ Share</b> lalu pilih<br><b>"Add to Home Screen"</b></div>
+    </div>
+    <button class="ios-close" onclick="iosHintDismiss()">✕</button>
+  </div>
+  <div class="ios-arrow"></div>
+</div>
+<div class="pr-toast-wrap" id="pr-toast-wrap"></div>
 
 <!-- ── PWA INSTALL BANNER ── -->
 <div id="pwa-banner">
