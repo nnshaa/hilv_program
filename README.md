@@ -92,6 +92,20 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [1.5.0] — 2026-05-03
+
+**Added**
+- PWA support — app bisa diinstall ke homescreen Android & iOS
+- Manifest inline sebagai Blob URL — zero file tambahan, tetap single file
+- Service Worker via Blob URL — cache-first strategy, fallback ke index.html
+- Offline mode — app tetap bisa diakses tanpa koneksi, toast "⚡ Offline mode" muncul otomatis
+- Install banner slide-down muncul 1.5 detik setelah buka app (sekali per sesi)
+- Tombol dismiss — banner tidak muncul lagi di sesi yang sama (`sessionStorage`)
+- `appinstalled` event — toast konfirmasi setelah install berhasil
+- Cache versioning `hilv-v1.4` — old cache otomatis dihapus saat update
+
+---
+
 ### [1.4.0] — 2026-05-03
 
 **Added**

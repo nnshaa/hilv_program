@@ -10,6 +10,13 @@
 <meta property="og:description" content="Natural Lifter · Cutting Phase · 5 Days/Week · Minimum Effective Dose">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏋️</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2305050A'/><text y='.9em' font-size='90'>🏋️</text></svg>">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HILV">
+<meta name="application-name" content="HILV">
+<link rel="manifest" id="pwa-manifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -398,6 +405,65 @@ body::after {
 
 
 
+
+
+/* ────────────────── PWA INSTALL BANNER */
+@keyframes banner-slide { from{transform:translateY(-100%);opacity:0} to{transform:translateY(0);opacity:1} }
+
+#pwa-banner {
+  position:fixed; top:0; left:0; right:0; z-index:9800;
+  display:none;
+  align-items:center; gap:12px;
+  padding:12px 16px 12px;
+  padding-top:calc(12px + env(safe-area-inset-top, 0px));
+  background:rgba(10,10,18,.96);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(200,240,58,.15);
+  animation:banner-slide .35s cubic-bezier(.32,1.1,.42,1);
+}
+#pwa-banner.show { display:flex; }
+.pwa-icon {
+  width:40px; height:40px; border-radius:10px; flex-shrink:0;
+  background:rgba(200,240,58,.1); border:1px solid rgba(200,240,58,.2);
+  display:flex; align-items:center; justify-content:center; font-size:22px;
+}
+.pwa-text { flex:1; min-width:0; }
+.pwa-text-t {
+  font-size:13px; font-weight:500; color:var(--ink); line-height:1.2;
+}
+.pwa-text-s {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; color:var(--ink3); margin-top:2px; letter-spacing:.04em;
+}
+.pwa-install {
+  padding:9px 16px; border-radius:9px; flex-shrink:0;
+  background:var(--lime); border:none;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--bg); cursor:pointer; transition:opacity .15s;
+}
+.pwa-install:hover { opacity:.85; }
+.pwa-dismiss {
+  width:28px; height:28px; border-radius:50%; flex-shrink:0;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink3); font-size:13px; transition:all .15s;
+}
+.pwa-dismiss:hover { color:var(--ink); background:rgba(255,255,255,.12); }
+
+/* offline toast */
+#offline-toast {
+  position:fixed; bottom:80px; left:50%; transform:translateX(-50%);
+  z-index:9999;
+  background:#1a1a24;
+  border:1px solid rgba(245,184,48,.3);
+  border-radius:10px; padding:11px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:var(--amber); letter-spacing:.06em;
+  white-space:nowrap; pointer-events:none;
+  opacity:0; transition:opacity .3s;
+}
+#offline-toast.show { opacity:1; }
 
 /* ────────────────── NOTES PER SET */
 .sl-notes-row {
@@ -1624,6 +1690,117 @@ function pcRender() {
 }
 
 
+
+/* ── PWA: MANIFEST (inline as data URI) ── */
+(function(){
+  const manifest = {
+    name: "HILV — High Frequency Program",
+    short_name: "HILV",
+    description: "Natural Lifter · Cutting Phase · 5 Days/Week",
+    start_url: "./",
+    display: "standalone",
+    background_color: "#05050A",
+    theme_color: "#05050A",
+    orientation: "portrait-primary",
+    icons: [
+      {
+        src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='112' fill='%2305050A'/><text y='380' x='60' font-size='380'>🏋️</text></svg>",
+        sizes: "512x512", type: "image/svg+xml", purpose: "any maskable"
+      }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
+})();
+
+/* ── PWA: SERVICE WORKER (inline as blob) ── */
+(function(){
+  const CACHE = 'hilv-v1.4';
+  const swCode = `
+const CACHE = '${('hilv-v1.4')}';
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(c => c.addAll(['./', './index.html']))
+      .then(() => self.skipWaiting())
+  );
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
+});
+self.addEventListener('fetch', e => {
+  if(e.request.method !== 'GET') return;
+  e.respondWith(
+    fetch(e.request)
+      .then(res => {
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return res;
+      })
+      .catch(() => caches.match(e.request).then(r => r || caches.match('./index.html')))
+  );
+});
+  `;
+  if('serviceWorker' in navigator){
+    const swBlob = new Blob([swCode], {type:'application/javascript'});
+    const swUrl  = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl, {scope:'./'})
+      .then(reg => console.log('[SW] registered', reg.scope))
+      .catch(err => console.warn('[SW] register failed:', err));
+  }
+})();
+
+/* ── PWA: INSTALL PROMPT ── */
+let _deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredPrompt = e;
+  // show banner only if not dismissed this session
+  if(!sessionStorage.getItem('pwa-dismissed')) {
+    setTimeout(() => document.getElementById('pwa-banner').classList.add('show'), 1500);
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('pwa-banner').classList.remove('show');
+  _deferredPrompt = null;
+  showToast('✓ HILV berhasil diinstall');
+});
+
+function pwaInstall() {
+  if(!_deferredPrompt) return;
+  _deferredPrompt.prompt();
+  _deferredPrompt.userChoice.then(res => {
+    if(res.outcome === 'accepted') {
+      document.getElementById('pwa-banner').classList.remove('show');
+    }
+    _deferredPrompt = null;
+  });
+}
+
+function pwaDismiss() {
+  document.getElementById('pwa-banner').classList.remove('show');
+  sessionStorage.setItem('pwa-dismissed', '1');
+}
+
+/* ── PWA: OFFLINE DETECTION ── */
+function updateOnlineStatus() {
+  const toast = document.getElementById('offline-toast');
+  if(!navigator.onLine) {
+    toast.classList.add('show');
+  } else {
+    toast.classList.remove('show');
+  }
+}
+window.addEventListener('online',  updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+// check on load
+if(!navigator.onLine) document.getElementById('offline-toast').classList.add('show');
+
 /* ── NOTES PER SET ── */
 function makeNotesRow(exid, setIdx, savedNote) {
   const id = `${exid}-s${setIdx}-note`;
@@ -1897,6 +2074,18 @@ initToday();
     </div>
   </div>
 </div>
+
+<!-- ── PWA INSTALL BANNER ── -->
+<div id="pwa-banner">
+  <div class="pwa-icon">🏋️</div>
+  <div class="pwa-text">
+    <div class="pwa-text-t">Install HILV</div>
+    <div class="pwa-text-s">Akses offline · Homescreen shortcut</div>
+  </div>
+  <button class="pwa-install" onclick="pwaInstall()">Install</button>
+  <button class="pwa-dismiss" onclick="pwaDismiss()" aria-label="Tutup">✕</button>
+</div>
+<div id="offline-toast">⚡ Offline mode</div>
 
 <!-- ── RESET CONFIRM ── -->
 <div id="reset-confirm">
