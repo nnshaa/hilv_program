@@ -1115,7 +1115,28 @@ document.querySelectorAll('.r,.vc').forEach(el=>io.observe(el));
 
 /* ── STORAGE ── */
 const STORE_KEY='hilv_sets_v2';
-function loadAll(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); }catch(e){ return {}; } }
+function loadAll(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(STORE_KEY)||'{}');
+    // migrate: convert old toDateString() _date → ISO + _dateLabel
+    let dirty = false;
+    Object.values(raw).forEach(sessions => {
+      sessions.forEach(sess => {
+        if(sess._date && sess._date.length > 10 && !sess._dateLabel){
+          // old format e.g. "Sat May 02 2026"
+          const d = new Date(sess._date);
+          if(!isNaN(d)){
+            sess._dateLabel = sess._date;
+            sess._date      = d.toISOString().slice(0,10);
+            dirty = true;
+          }
+        }
+      });
+    });
+    if(dirty) localStorage.setItem(STORE_KEY, JSON.stringify(raw));
+    return raw;
+  }catch(e){ return {}; }
+}
 function saveAll(d){ localStorage.setItem(STORE_KEY,JSON.stringify(d)); }
 
 /* get last session sets for an exercise (for PREVIOUS column) */
@@ -1129,12 +1150,17 @@ function getPrevSets(exid){
 function saveSession(exid, sets){
   const all=loadAll();
   if(!all[exid]) all[exid]=[];
-  // avoid duplicate same-day sessions
-  const today=new Date().toDateString();
-  if(all[exid].length && all[exid][all[exid].length-1]._date===today){
-    all[exid][all[exid].length-1]=sets;
+  // ISO date string for reliable sorting + parsing
+  const todayISO = new Date().toISOString().slice(0,10); // "2026-05-02"
+  const todayStr = new Date().toDateString();
+  // always stamp _date
+  sets._date     = todayISO;
+  sets._dateLabel= todayStr;
+  // same-day: overwrite last entry
+  const last = all[exid][all[exid].length-1];
+  if(all[exid].length && (last._date===todayISO || last._dateLabel===todayStr || last._date===todayStr)){
+    all[exid][all[exid].length-1] = sets;
   } else {
-    sets._date=today;
     all[exid].push(sets);
   }
   if(all[exid].length>12) all[exid]=all[exid].slice(-12);
@@ -1361,13 +1387,20 @@ function pcGetPoints() {
   const all = loadAll();
   const sessions = all[PC.exid] || [];
   return sessions.map(sess => {
-    const sets = Object.entries(sess).filter(([k]) => k !== '_date');
+    // filter out metadata keys
+    const sets = Object.entries(sess).filter(([k]) => !k.startsWith('_'));
     if(!sets.length) return null;
-    const maxKg   = Math.max(...sets.map(([,v]) => v.kg  || 0));
+    const maxKg   = Math.max(...sets.map(([,v]) => v.kg   || 0));
     const maxReps = Math.max(...sets.map(([,v]) => v.reps || 0));
     const totalVol= sets.reduce((s,[,v]) => s + (v.kg||0)*(v.reps||0), 0);
-    return { date: sess._date, kg: maxKg, reps: maxReps, volume: totalVol };
-  }).filter(Boolean);
+    // prefer ISO date (_date) for parsing; fallback to _dateLabel
+    const rawDate = sess._date || sess._dateLabel || '';
+    const parsed  = new Date(rawDate);
+    const label   = !isNaN(parsed)
+      ? (parsed.getMonth()+1) + '/' + parsed.getDate()
+      : rawDate.split(' ').slice(1,3).join(' '); // "May 02" from toDateString
+    return { date: rawDate, label, kg: maxKg, reps: maxReps, volume: totalVol };
+  }).filter(p => p && (p.kg > 0 || p.reps > 0));
 }
 
 function pcRender() {
@@ -1392,7 +1425,7 @@ function pcRender() {
 
   // stats
   sessEl.textContent = points.length;
-  sub.textContent    = points[0].date + (points.length > 1 ? ' — ' + points[points.length-1].date : '');
+  sub.textContent    = points[0].label + (points.length > 1 ? ' — ' + points[points.length-1].label : '');
 
   if(PC.mode === 'kg') {
     bestEl.textContent = maxV + ' kg';
@@ -1451,10 +1484,8 @@ function pcRender() {
       dots += `<text x="${x.toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" font-weight="600" fill="var(--lime)">${label}</text>`;
     }
     // x-axis date label (short)
-    if(n <= 8) {
-      const d = new Date(p.date);
-      const lbl = isNaN(d) ? '' : (d.getMonth()+1)+'/'+(d.getDate());
-      dots += `<text x="${x.toFixed(1)}" y="${(H-6).toFixed(1)}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(255,255,255,.22)">${lbl}</text>`;
+    if(n <= 10) {
+      dots += `<text x="${x.toFixed(1)}" y="${(H-6).toFixed(1)}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(255,255,255,.22)">${p.label}</text>`;
     }
   });
 
