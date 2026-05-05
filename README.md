@@ -92,6 +92,24 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [1.7.0] — 2026-05-03
+
+**Added**
+- Dark/Light mode toggle — tombol ☀️/🌙 di bar, state tersimpan di localStorage
+- Light mode full: background, card, input, modal, semua elemen ikut berubah
+- Onboarding — 4-step walkthrough muncul saat pertama buka app, bisa di-skip
+- Custom Exercise — tambah exercise sendiri ke sesi manapun (nama, muscle, sets, load)
+- Custom exercise tersimpan di localStorage, muncul kembali saat reload
+- Badge "custom" di setiap exercise yang ditambah sendiri
+- Custom exercise punya tracker, chart progress, dan reset log seperti exercise bawaan
+- Tombol "+ Custom Exercise" muncul di bawah setiap panel sesi
+- Deload Week mode — aktifkan via footer, beban otomatis dikurangi 40%
+- Banner deload muncul di atas panel saat mode aktif
+- Strikethrough beban asli + tampilkan beban deload di sebelahnya
+- State deload tersimpan di localStorage, persist setelah reload
+
+---
+
 ### [1.6.0] — 2026-05-03
 
 **Added**

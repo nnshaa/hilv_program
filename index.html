@@ -408,6 +408,244 @@ body::after {
 
 
 
+
+/* ────────────────── LIGHT MODE */
+:root[data-theme="light"] {
+  --bg:  #F4F2ED;
+  --ink: #0E0D0B;
+  --ink2:#5A5850;
+  --ink3:#B0ADA6;
+  --lime:#6A9C00;
+  --lime-a:rgba(106,156,0,.1);
+  --lime-b:rgba(106,156,0,.06);
+  --blue:#2A6FCC;
+  --amber:#B87000;
+  --edge:rgba(0,0,0,.08);
+}
+:root[data-theme="light"] body { background:var(--bg); }
+:root[data-theme="light"] .bar { background:rgba(244,242,237,.9); border-bottom-color:rgba(0,0,0,.07); }
+:root[data-theme="light"] .sl-wrap { background:rgba(0,0,0,.03); border-color:rgba(0,0,0,.08); }
+:root[data-theme="light"] .sl-head { background:rgba(0,0,0,.025); }
+:root[data-theme="light"] .sl-num  { background:rgba(0,0,0,.05); border-color:rgba(0,0,0,.1); }
+:root[data-theme="light"] .sl-cell { background:rgba(0,0,0,.04); border-color:rgba(0,0,0,.1); }
+:root[data-theme="light"] .sl-check { background:rgba(0,0,0,.04); border-color:rgba(0,0,0,.12); }
+:root[data-theme="light"] .sl-add  { border-color:rgba(0,0,0,.1); color:rgba(0,0,0,.3); }
+:root[data-theme="light"] .sl-reset-btn { border-color:rgba(200,0,0,.15); color:rgba(180,0,0,.4); }
+:root[data-theme="light"] #rt-sheet,
+:root[data-theme="light"] #pc-card,
+:root[data-theme="light"] .rc-card  { background:linear-gradient(160deg,#eeeae3,#e8e4dc); border-color:rgba(0,0,0,.1); }
+:root[data-theme="light"] .rt-track { stroke:rgba(0,0,0,.07); }
+:root[data-theme="light"] .xr:hover { background:rgba(0,0,0,.02); }
+:root[data-theme="light"] .wsum-card { background:rgba(0,0,0,.03); border-color:rgba(0,0,0,.07); }
+:root[data-theme="light"] .hero-h .c1 { color:var(--ink); }
+:root[data-theme="light"] .noise { opacity:.015; }
+
+/* theme toggle button */
+.theme-btn {
+  width:32px; height:32px; border-radius:8px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05);
+  color:var(--ink3); font-size:15px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all .18s; flex-shrink:0;
+}
+:root[data-theme="light"] .theme-btn { border-color:rgba(0,0,0,.1); background:rgba(0,0,0,.04); }
+.theme-btn:hover { border-color:rgba(200,240,58,.3); color:var(--lime); background:rgba(200,240,58,.06); }
+
+/* ────────────────── ONBOARDING */
+#onboard-overlay {
+  position:fixed; inset:0; z-index:9999;
+  background:rgba(5,5,10,.97);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px 20px;
+  opacity:0; pointer-events:none;
+  transition:opacity .3s ease;
+}
+#onboard-overlay.show { opacity:1; pointer-events:auto; }
+.ob-card {
+  width:100%; max-width:360px;
+  background:linear-gradient(160deg,#13131c,#0c0c14);
+  border:1px solid rgba(200,240,58,.15);
+  border-radius:20px; overflow:hidden;
+  transform:translateY(16px) scale(.97);
+  transition:transform .35s cubic-bezier(.32,1.1,.42,1);
+}
+#onboard-overlay.show .ob-card { transform:none; }
+
+.ob-steps { display:flex; overflow:hidden; }
+.ob-step {
+  min-width:100%; padding:32px 28px 24px;
+  display:flex; flex-direction:column; align-items:center; gap:0;
+  text-align:center;
+  transition:transform .35s cubic-bezier(.32,1.1,.42,1);
+}
+.ob-emoji { font-size:48px; margin-bottom:16px; }
+.ob-title { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:.06em; color:var(--ink); margin-bottom:8px; }
+.ob-desc  { font-size:13px; color:var(--ink2); line-height:1.6; max-width:260px; }
+
+.ob-dots {
+  display:flex; gap:6px; justify-content:center;
+  padding:16px 0 0;
+}
+.ob-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:rgba(255,255,255,.15); transition:all .2s;
+}
+.ob-dot.on { background:var(--lime); width:18px; border-radius:3px; }
+
+.ob-actions {
+  display:flex; gap:8px; padding:16px 28px 28px;
+}
+.ob-skip {
+  flex:1; padding:12px;
+  border-radius:10px;
+  border:1.5px solid rgba(255,255,255,.08);
+  background:transparent; color:var(--ink3);
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  cursor:pointer; transition:all .15s;
+}
+.ob-skip:hover { color:var(--ink); border-color:rgba(255,255,255,.18); }
+.ob-next {
+  flex:2; padding:12px;
+  border-radius:10px;
+  border:none; background:var(--lime); color:var(--bg);
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  cursor:pointer; transition:opacity .15s;
+}
+.ob-next:hover { opacity:.85; }
+
+/* ────────────────── CUSTOM EXERCISE MODAL */
+#custom-ex-modal {
+  position:fixed; inset:0; z-index:8500;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px 16px;
+  background:rgba(0,0,0,.65); backdrop-filter:blur(10px);
+  opacity:0; pointer-events:none;
+  transition:opacity .22s ease;
+}
+#custom-ex-modal.show { opacity:1; pointer-events:auto; }
+.cex-card {
+  width:100%; max-width:400px;
+  background:linear-gradient(160deg,#14141e,#0d0d14);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:16px; overflow:hidden;
+  transform:translateY(10px) scale(.97);
+  transition:transform .25s cubic-bezier(.32,1.1,.42,1);
+}
+#custom-ex-modal.show .cex-card { transform:none; }
+.cex-hd {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 20px 14px; border-bottom:1px solid rgba(255,255,255,.06);
+}
+.cex-title { font-size:14px; font-weight:500; color:var(--ink); }
+.cex-close {
+  width:28px; height:28px; border-radius:50%;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink3); font-size:13px; transition:all .15s;
+}
+.cex-close:hover { background:rgba(255,255,255,.12); color:var(--ink); }
+.cex-body { padding:18px 20px; display:flex; flex-direction:column; gap:12px; }
+.cex-label {
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink3); margin-bottom:4px;
+}
+.cex-input {
+  width:100%; background:rgba(255,255,255,.05);
+  border:1.5px solid rgba(255,255,255,.09); border-radius:9px;
+  color:var(--ink); font-family:'Outfit',sans-serif; font-size:13px;
+  padding:10px 12px; outline:none; transition:border-color .18s;
+  box-sizing:border-box;
+}
+.cex-input:focus { border-color:rgba(200,240,58,.4); }
+.cex-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.cex-select {
+  width:100%; background:rgba(255,255,255,.05);
+  border:1.5px solid rgba(255,255,255,.09); border-radius:9px;
+  color:var(--ink); font-family:'JetBrains Mono',monospace; font-size:11px;
+  padding:10px 12px; outline:none; cursor:pointer;
+  appearance:none; transition:border-color .18s;
+}
+.cex-select:focus { border-color:rgba(200,240,58,.4); }
+.cex-footer { padding:0 20px 20px; display:flex; gap:8px; }
+.cex-cancel {
+  flex:1; padding:12px; border-radius:10px;
+  border:1.5px solid rgba(255,255,255,.08); background:transparent;
+  color:var(--ink3); font-family:'JetBrains Mono',monospace;
+  font-size:10px; letter-spacing:.1em; text-transform:uppercase; cursor:pointer;
+}
+.cex-save {
+  flex:2; padding:12px; border-radius:10px;
+  border:none; background:var(--lime); color:var(--bg);
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  cursor:pointer; transition:opacity .15s;
+}
+.cex-save:hover { opacity:.85; }
+
+/* add custom exercise button */
+.add-custom-btn {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; margin:8px 0 4px;
+  padding:11px;
+  border-radius:9px;
+  border:1px dashed rgba(200,240,58,.2);
+  background:rgba(200,240,58,.03);
+  color:rgba(200,240,58,.5);
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  cursor:pointer; transition:all .18s;
+}
+.add-custom-btn:hover { border-color:rgba(200,240,58,.4); color:var(--lime); background:rgba(200,240,58,.06); }
+.add-custom-btn::before { content:'＋'; font-size:13px; }
+
+/* custom exercise row badge */
+.custom-badge {
+  display:inline-flex; padding:1px 6px; border-radius:4px; margin-left:6px;
+  background:rgba(86,170,255,.08); border:1px solid rgba(86,170,255,.2);
+  font-family:'JetBrains Mono',monospace;
+  font-size:7px; letter-spacing:.1em; text-transform:uppercase; color:var(--blue);
+  vertical-align:middle;
+}
+
+/* ────────────────── DELOAD MODE */
+.deload-banner {
+  display:none; align-items:center; gap:12px;
+  padding:12px 16px;
+  background:rgba(245,184,48,.06);
+  border:1px solid rgba(245,184,48,.2);
+  border-radius:12px; margin-bottom:16px;
+}
+.deload-banner.show { display:flex; }
+.deload-banner-icon { font-size:20px; flex-shrink:0; }
+.deload-banner-text { flex:1; }
+.deload-banner-t { font-size:12px; font-weight:500; color:var(--amber); }
+.deload-banner-s {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; color:var(--ink3); margin-top:2px; letter-spacing:.03em;
+}
+.deload-toggle {
+  padding:7px 14px; border-radius:8px; flex-shrink:0;
+  border:1.5px solid rgba(245,184,48,.3); background:rgba(245,184,48,.08);
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.1em; text-transform:uppercase; font-weight:600;
+  color:var(--amber); cursor:pointer; transition:all .15s;
+}
+.deload-toggle:hover { background:rgba(245,184,48,.16); }
+
+/* deload: dim load cell when active */
+body.deload-active .xload { opacity:.5; text-decoration:line-through; }
+body.deload-active .xload::after {
+  content:attr(data-deload);
+  display:inline-block; margin-left:8px;
+  opacity:1; text-decoration:none; color:var(--amber); font-weight:600;
+}
+body.deload-active .sl-wrap { border-color:rgba(245,184,48,.15); }
+body.deload-active .sl-head { background:rgba(245,184,48,.04); }
+
 /* ────────────────── iOS INSTALL HINT */
 @keyframes ios-hint-in { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
 
@@ -1229,7 +1467,10 @@ body::after {
 <!-- BAR -->
 <div class="bar">
   <div class="bar-l">HILV High Frequency &middot; Locked Final</div>
-  <div class="bar-r"><span class="pulse"></span>Active &middot; Cutting Phase</div>
+  <div class="bar-r">
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+    <span class="pulse"></span>Active &middot; Cutting Phase
+  </div>
 </div>
 
 <!-- HERO -->
@@ -1284,6 +1525,16 @@ body::after {
       </div>
     </div>
     <button class="tb-btn" id="todayBtn" onclick="jumpToToday()">Buka Sesi →</button>
+  </div>
+
+  <!-- DELOAD BANNER -->
+  <div class="deload-banner" id="deload-banner">
+    <div class="deload-banner-icon">🔄</div>
+    <div class="deload-banner-text">
+      <div class="deload-banner-t">Deload Week Aktif</div>
+      <div class="deload-banner-s">Beban otomatis dikurangi 40% · Volume dipertahankan</div>
+    </div>
+    <button class="deload-toggle" onclick="toggleDeload()">Nonaktifkan</button>
   </div>
 
   <!-- P1 UPPER A -->
@@ -1430,6 +1681,14 @@ body::after {
     <button class="export-btn" onclick="exportCSV()">
       <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Export Log CSV
+    </button>
+    <button class="export-btn" onclick="cexOpen()" style="margin-top:6px">
+      <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Custom Exercise
+    </button>
+    <button class="export-btn" id="deload-footer-btn" onclick="toggleDeload()" style="margin-top:6px">
+      <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Deload Week
     </button>
   </div>
   <div class="f-r"><div class="f-n">10</div><div class="f-s">Program Score</div></div>
@@ -1873,6 +2132,207 @@ function pcRender() {
 
 
 
+
+
+/* ── THEME TOGGLE ── */
+(function(){
+  const saved = localStorage.getItem('hilv-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  // emoji update after DOM ready
+  window.addEventListener('DOMContentLoaded', () => updateThemeBtn(saved));
+})();
+
+function updateThemeBtn(theme) {
+  const btn = document.getElementById('theme-btn');
+  if(btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+function toggleTheme() {
+  const cur  = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('hilv-theme', next);
+  updateThemeBtn(next);
+}
+
+/* ── ONBOARDING ── */
+(function(){
+  if(!localStorage.getItem('hilv-onboarded')) {
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => document.getElementById('onboard-overlay').classList.add('show'), 300);
+    });
+  }
+})();
+
+let _obStep = 0;
+const OB_TOTAL = 4;
+
+function obNext() {
+  _obStep++;
+  if(_obStep >= OB_TOTAL) { obDismiss(); return; }
+  const steps = document.getElementById('ob-steps');
+  steps.style.transform = `translateX(-${_obStep * 100}%)`;
+  document.querySelectorAll('.ob-dot').forEach((d,i) => d.classList.toggle('on', i === _obStep));
+  const btn = document.getElementById('ob-next');
+  btn.textContent = _obStep === OB_TOTAL - 1 ? 'Mulai! 🔥' : 'Lanjut →';
+}
+
+function obDismiss() {
+  document.getElementById('onboard-overlay').classList.remove('show');
+  localStorage.setItem('hilv-onboarded', '1');
+}
+
+/* ── CUSTOM EXERCISE ── */
+const CEX_KEY = 'hilv_custom_ex';
+
+function loadCustomEx() {
+  try { return JSON.parse(localStorage.getItem(CEX_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveCustomEx(arr) { localStorage.setItem(CEX_KEY, JSON.stringify(arr)); }
+
+function cexOpen(panelId) {
+  if(panelId) document.getElementById('cex-session').value = panelId;
+  document.getElementById('cex-name').value = '';
+  document.getElementById('cex-muscle').value = '';
+  document.getElementById('cex-sets').value = '';
+  document.getElementById('cex-load').value = '';
+  document.getElementById('custom-ex-modal').classList.add('show');
+  setTimeout(() => document.getElementById('cex-name').focus(), 100);
+}
+
+function cexClose() {
+  document.getElementById('custom-ex-modal').classList.remove('show');
+}
+
+function cexSave() {
+  const name   = document.getElementById('cex-name').value.trim();
+  const muscle = document.getElementById('cex-muscle').value.trim();
+  const sets   = parseInt(document.getElementById('cex-sets').value) || 2;
+  const load   = parseFloat(document.getElementById('cex-load').value) || 0;
+  const pid    = document.getElementById('cex-session').value;
+
+  if(!name) { document.getElementById('cex-name').focus(); return; }
+
+  // save to custom list
+  const customs = loadCustomEx();
+  const exid    = pid + '-cx' + Date.now();
+  const ex      = { exid, name, muscle, sets, load, pid };
+  customs.push(ex);
+  saveCustomEx(customs);
+
+  // inject into DOM
+  injectCustomEx(ex);
+  cexClose();
+  showToast('✓ ' + name + ' ditambahkan');
+  if(navigator.vibrate) navigator.vibrate(30);
+}
+
+function injectCustomEx(ex) {
+  const panel = document.getElementById(ex.pid);
+  if(!panel) return;
+  const xt = panel.querySelector('.xt');
+  if(!xt) return;
+
+  // find add-custom-btn or append before it
+  const row = document.createElement('div');
+  row.className = 'xr';
+  row.dataset.customExid = ex.exid;
+  row.innerHTML = `
+    <div class="xri">
+      <div class="xrt">
+        <span class="xi">${String(xt.querySelectorAll('.xr:not(.wu)').length).padStart(2,'0')}</span>
+        <div class="xinfo">
+          <div class="xname" style="cursor:pointer">${ex.name}<span class="custom-badge">custom</span></div>
+          <div class="xnote">${ex.muscle || 'Custom exercise'}</div>
+        </div>
+        <div class="xrir"><span class="rb rb1">RIR 1</span></div>
+      </div>
+      <div class="xrm">
+        <span class="xsets">${ex.sets}×6–10</span>
+        <span class="xload">${ex.load > 0 ? ex.load + ' kg' : 'BW'}</span>
+      </div>
+    </div>`;
+
+  // inject before add-custom-btn if exists, else append to xt
+  const addBtn = xt.querySelector('.add-custom-btn');
+  if(addBtn) xt.insertBefore(row, addBtn);
+  else xt.appendChild(row);
+
+  // observe for scroll reveal
+  io.observe(row);
+
+  // inject tracker for this custom exercise
+  const xi    = row.querySelector('.xi');
+  const xinfo = row.querySelector('.xinfo');
+  const prev  = getPrevSets(ex.exid);
+  let rowsHtml = '';
+  for(let i=1; i<=ex.sets; i++) {
+    rowsHtml += makeSetRow(ex.exid, i, false, prev&&prev[i]||null);
+  }
+  const wrap = document.createElement('div');
+  wrap.className = 'sl-wrap';
+  wrap.innerHTML = `
+    <div class="sl-head">
+      <span>Set</span><span>Previous</span><span>KG</span><span>Reps</span><span>✓</span>
+    </div>
+    <div id="sl-${ex.exid}">
+      ${rowsHtml}
+      <button class="sl-add" id="sladd-${ex.exid}" onclick="addSet('${ex.exid}')">＋ Add Set</button>
+      <button class="sl-reset-btn" onclick="askReset('${ex.exid}','${ex.name}')">✕ Reset log</button>
+    </div>`;
+  xinfo.appendChild(wrap);
+
+  // make name clickable for chart
+  const xnameEl = xinfo.querySelector('.xname');
+  xnameEl.onclick = () => pcOpen(ex.exid, ex.name);
+}
+
+function initAllCustomEx() {
+  loadCustomEx().forEach(injectCustomEx);
+  // inject add-custom-btn into each panel
+  document.querySelectorAll('.panel').forEach(panel => {
+    const xt = panel.querySelector('.xt');
+    if(!xt || xt.querySelector('.add-custom-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'add-custom-btn';
+    btn.textContent = 'Custom Exercise';
+    btn.onclick = () => cexOpen(panel.id);
+    xt.appendChild(btn);
+  });
+}
+
+/* ── DELOAD MODE ── */
+let _deloadActive = localStorage.getItem('hilv-deload') === '1';
+
+function applyDeload() {
+  document.body.classList.toggle('deload-active', _deloadActive);
+  const banner = document.getElementById('deload-banner');
+  if(banner) banner.classList.toggle('show', _deloadActive);
+  const footerBtn = document.getElementById('deload-footer-btn');
+  if(footerBtn) {
+    footerBtn.style.borderColor = _deloadActive ? 'rgba(245,184,48,.4)' : '';
+    footerBtn.style.color       = _deloadActive ? 'var(--amber)' : '';
+    footerBtn.querySelector('svg').style.stroke = _deloadActive ? 'var(--amber)' : '';
+  }
+  // set deload load values on xload elements (60% of original)
+  document.querySelectorAll('.xload').forEach(el => {
+    const raw = parseFloat(el.textContent);
+    if(isNaN(raw)) return;
+    if(!el.dataset.original) el.dataset.original = raw;
+    el.dataset.deload = (Math.round(raw * 0.6 / 2.5) * 2.5) + ' kg';
+  });
+  // update deload banner toggle text
+  const toggleBtn = document.querySelector('.deload-toggle');
+  if(toggleBtn) toggleBtn.textContent = _deloadActive ? 'Nonaktifkan' : 'Aktifkan';
+}
+
+function toggleDeload() {
+  _deloadActive = !_deloadActive;
+  localStorage.setItem('hilv-deload', _deloadActive ? '1' : '0');
+  applyDeload();
+  showToast(_deloadActive ? '🔄 Deload week aktif — beban -40%' : '✓ Kembali ke beban normal');
+  if(navigator.vibrate) navigator.vibrate(_deloadActive ? [30,20,30] : 30);
+}
 
 /* ── iOS INSTALL HINT ── */
 (function(){
@@ -2400,6 +2860,8 @@ function rtSet(secs) {
 
 /* ── INIT ── */
 injectTrackers();
+initAllCustomEx();
+applyDeload();
 initToday();
 renderWeeklySummary();
 </script>
@@ -2444,6 +2906,88 @@ renderWeeklySummary();
   <div class="ios-arrow"></div>
 </div>
 <div class="pr-toast-wrap" id="pr-toast-wrap"></div>
+
+<!-- ── ONBOARDING ── -->
+<div id="onboard-overlay">
+  <div class="ob-card">
+    <div class="ob-steps" id="ob-steps">
+      <div class="ob-step">
+        <div class="ob-emoji">🏋️</div>
+        <div class="ob-title">Welcome to HILV</div>
+        <div class="ob-desc">Program tracker untuk natural lifter di fase cutting. 5 hari per minggu, minimum effective dose.</div>
+      </div>
+      <div class="ob-step">
+        <div class="ob-emoji">✅</div>
+        <div class="ob-title">Log Setiap Set</div>
+        <div class="ob-desc">Isi KG dan Reps, lalu tap tombol centang. Rest timer otomatis muncul. Data tersimpan otomatis.</div>
+      </div>
+      <div class="ob-step">
+        <div class="ob-emoji">📈</div>
+        <div class="ob-title">Track Progress</div>
+        <div class="ob-desc">Tap nama exercise untuk lihat grafik progress. Weekly summary otomatis terhitung setiap minggu.</div>
+      </div>
+      <div class="ob-step">
+        <div class="ob-emoji">⚡</div>
+        <div class="ob-title">Siap Latihan!</div>
+        <div class="ob-desc">Tab hari ini sudah aktif otomatis. Semua data tersimpan offline di device kamu.</div>
+      </div>
+    </div>
+    <div class="ob-dots" id="ob-dots">
+      <div class="ob-dot on"></div>
+      <div class="ob-dot"></div>
+      <div class="ob-dot"></div>
+      <div class="ob-dot"></div>
+    </div>
+    <div class="ob-actions">
+      <button class="ob-skip" onclick="obDismiss()">Skip</button>
+      <button class="ob-next" id="ob-next" onclick="obNext()">Lanjut →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CUSTOM EXERCISE MODAL ── -->
+<div id="custom-ex-modal">
+  <div class="cex-card">
+    <div class="cex-hd">
+      <div class="cex-title">Tambah Custom Exercise</div>
+      <button class="cex-close" onclick="cexClose()">✕</button>
+    </div>
+    <div class="cex-body">
+      <div>
+        <div class="cex-label">Nama Exercise</div>
+        <input class="cex-input" id="cex-name" placeholder="e.g. Cable Fly, DB Press…" maxlength="60">
+      </div>
+      <div>
+        <div class="cex-label">Muscle Group</div>
+        <input class="cex-input" id="cex-muscle" placeholder="e.g. Chest, Lat, Delt…" maxlength="40">
+      </div>
+      <div class="cex-row">
+        <div>
+          <div class="cex-label">Sets</div>
+          <input class="cex-input" id="cex-sets" type="number" placeholder="2" min="1" max="10">
+        </div>
+        <div>
+          <div class="cex-label">Load (kg)</div>
+          <input class="cex-input" id="cex-load" type="number" placeholder="0" min="0" step="2.5">
+        </div>
+      </div>
+      <div>
+        <div class="cex-label">Tambah ke Sesi</div>
+        <select class="cex-select" id="cex-session">
+          <option value="p1">Upper A (Sabtu)</option>
+          <option value="p2">Lower A (Minggu)</option>
+          <option value="p3">Upper B (Selasa)</option>
+          <option value="p4">Lower B (Rabu)</option>
+          <option value="p5">Upper C (Kamis)</option>
+        </select>
+      </div>
+    </div>
+    <div class="cex-footer">
+      <button class="cex-cancel" onclick="cexClose()">Batal</button>
+      <button class="cex-save" onclick="cexSave()">Tambahkan</button>
+    </div>
+  </div>
+</div>
 
 <!-- ── PWA INSTALL BANNER ── -->
 <div id="pwa-banner">
