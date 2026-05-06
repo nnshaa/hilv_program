@@ -865,6 +865,140 @@ body.deload-active .sl-head { background:rgba(245,184,48,.04); }
 
 
 
+
+/* ────────────────── EDIT BEBAN & SETS */
+@keyframes load-edit-in { from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
+
+/* inline tap-to-edit on xload and xsets in edit mode */
+.xt.edit-mode .xload,
+.xt.edit-mode .xsets {
+  cursor:pointer; border-radius:6px;
+  padding:2px 6px; margin:-2px -6px;
+  transition:background .15s;
+  position:relative;
+}
+.xt.edit-mode .xload:hover { background:rgba(200,240,58,.12); }
+.xt.edit-mode .xsets:hover { background:rgba(255,255,255,.08); }
+.xt.edit-mode .xload::after { content:' ✎'; font-size:9px; opacity:.5; }
+.xt.edit-mode .xsets::after { content:' ✎'; font-size:8px; opacity:.4; }
+
+/* edit exercise modal */
+#edit-ex-modal {
+  position:fixed; inset:0; z-index:8600;
+  display:flex; align-items:flex-end; justify-content:center;
+  background:rgba(0,0,0,.6); backdrop-filter:blur(10px);
+  opacity:0; pointer-events:none; transition:opacity .22s;
+}
+#edit-ex-modal.show { opacity:1; pointer-events:auto; }
+
+.eex-sheet {
+  width:100%; max-width:480px;
+  background:linear-gradient(175deg,#13131c,#0b0b13);
+  border:1px solid rgba(255,255,255,.1); border-bottom:none;
+  border-radius:20px 20px 0 0;
+  padding:0 0 env(safe-area-inset-bottom,20px);
+  transform:translateY(100%);
+  transition:transform .32s cubic-bezier(.32,1.2,.42,1);
+}
+#edit-ex-modal.show .eex-sheet { transform:translateY(0); }
+
+.eex-handle { width:36px; height:4px; background:rgba(255,255,255,.12); border-radius:99px; margin:12px auto 0; }
+.eex-hd {
+  padding:16px 20px 12px; border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex; align-items:flex-start; justify-content:space-between;
+}
+.eex-hd-text { flex:1; padding-right:12px; }
+.eex-title { font-size:13px; font-weight:500; color:var(--ink); line-height:1.3; }
+.eex-sub { font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--ink3); margin-top:3px; letter-spacing:.06em; text-transform:uppercase; }
+.eex-close {
+  width:28px; height:28px; border-radius:50%; flex-shrink:0;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink3); font-size:13px; transition:all .15s;
+}
+.eex-close:hover { background:rgba(255,255,255,.12); color:var(--ink); }
+
+.eex-body { padding:18px 20px; display:flex; flex-direction:column; gap:14px; }
+
+.eex-field { display:flex; flex-direction:column; gap:6px; }
+.eex-label {
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink3);
+}
+
+/* stepper row */
+.eex-stepper {
+  display:flex; align-items:center; gap:0;
+  background:rgba(255,255,255,.05);
+  border:1.5px solid rgba(255,255,255,.1); border-radius:10px;
+  overflow:hidden;
+}
+.eex-step-btn {
+  width:48px; height:52px; flex-shrink:0;
+  background:transparent; color:var(--ink2);
+  font-size:22px; font-weight:300; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all .15s;
+}
+.eex-step-btn:hover { background:rgba(255,255,255,.07); color:var(--ink); }
+.eex-step-btn:active { background:rgba(200,240,58,.1); color:var(--lime); }
+.eex-step-val {
+  flex:1; text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:22px; font-weight:600; color:var(--ink);
+  border:none; background:transparent; outline:none;
+  padding:0; cursor:text;
+  -moz-appearance:textfield;
+}
+.eex-step-val::-webkit-inner-spin-button,
+.eex-step-val::-webkit-outer-spin-button { -webkit-appearance:none; }
+.eex-step-unit {
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:var(--ink3); padding-right:14px; align-self:center;
+}
+
+/* sets row — number + rep range */
+.eex-sets-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.eex-mini-input {
+  background:rgba(255,255,255,.05); border:1.5px solid rgba(255,255,255,.1);
+  border-radius:9px; color:var(--ink);
+  font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:600;
+  text-align:center; padding:12px 4px; outline:none; width:100%;
+  transition:border-color .18s;
+  -moz-appearance:textfield;
+}
+.eex-mini-input::-webkit-inner-spin-button,
+.eex-mini-input::-webkit-outer-spin-button { -webkit-appearance:none; }
+.eex-mini-input:focus { border-color:rgba(200,240,58,.45); }
+
+/* quick presets */
+.eex-presets { display:flex; gap:6px; flex-wrap:wrap; }
+.eex-preset {
+  padding:5px 12px; border-radius:7px; flex-shrink:0;
+  border:1.5px solid rgba(255,255,255,.08);
+  background:transparent; color:var(--ink3);
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; font-weight:600; letter-spacing:.04em;
+  cursor:pointer; transition:all .15s;
+}
+.eex-preset:hover { border-color:rgba(200,240,58,.3); color:var(--lime); background:rgba(200,240,58,.06); }
+.eex-preset.on { border-color:var(--lime); color:var(--lime); background:rgba(200,240,58,.1); }
+
+/* save button */
+.eex-save {
+  margin:0 20px 4px; width:calc(100% - 40px);
+  padding:14px; border-radius:12px;
+  border:none; background:var(--lime); color:var(--bg);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  cursor:pointer; transition:opacity .15s;
+}
+.eex-save:hover { opacity:.88; }
+
+/* saved flash on xload */
+@keyframes load-saved { 0%{color:var(--lime)} 100%{color:inherit} }
+.xload.just-saved { animation: load-saved 1s ease; }
+
 /* ────────────────── EDIT MODE */
 @keyframes edit-wobble { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-.5deg)} 75%{transform:rotate(.5deg)} }
 
@@ -2705,6 +2839,142 @@ function bkClearAll() {
 }
 
 
+
+/* ── EDIT BEBAN & SETS ── */
+const EX_LOAD_KEY = 'hilv_ex_loads'; // { exid: { load, sets, reps } }
+
+function loadExLoads() { try{ return JSON.parse(localStorage.getItem(EX_LOAD_KEY)||'{}'); }catch(e){ return {}; } }
+function saveExLoads(d){ localStorage.setItem(EX_LOAD_KEY, JSON.stringify(d)); }
+
+let _eexData = null; // { exid, name, loadEl, setsEl, originalLoad, originalSets, originalReps }
+
+function eexOpen(row) {
+  const loadEl  = row.querySelector('.xload');
+  const setsEl  = row.querySelector('.xsets');
+  if(!loadEl || !setsEl) return;
+
+  const exid    = row.dataset.editExid;
+  const name    = row.querySelector('.xname')?.textContent?.replace(/custom/,'').trim() || '';
+
+  // parse current values
+  const rawLoad = loadEl.dataset.original || loadEl.textContent.replace(' kg','').replace('BW','0').trim();
+  const rawSets = setsEl.textContent; // e.g. "2×6–8" or "2 set"
+  const setsMatch = rawSets.match(/^(\d+)/);
+  const repsMatch = rawSets.match(/×(.+)$/);
+  const curSets   = setsMatch ? parseInt(setsMatch[1]) : 2;
+  const curReps   = repsMatch ? repsMatch[1] : '6–10';
+  const curLoad   = parseFloat(rawLoad) || 0;
+
+  _eexData = { exid, name, loadEl, setsEl, originalLoad: curLoad, originalSets: curSets, originalReps: curReps };
+
+  // populate modal
+  document.getElementById('eex-title').textContent = name;
+  document.getElementById('eex-sub').textContent   = row.closest('.panel')?.id || '';
+  document.getElementById('eex-load-val').value    = curLoad;
+  document.getElementById('eex-sets-val').value    = curSets;
+  document.getElementById('eex-reps-val').value    = curReps;
+
+  // quick load presets (±5, ±10, ±20% from current)
+  const presetsEl = document.getElementById('eex-load-presets');
+  presetsEl.innerHTML = '';
+  const presets = curLoad > 0
+    ? [
+        { label:'-10%', val: Math.round(curLoad*0.9/2.5)*2.5 },
+        { label:'-5%',  val: Math.round(curLoad*0.95/2.5)*2.5 },
+        { label:'+5%',  val: Math.round(curLoad*1.05/2.5)*2.5 },
+        { label:'+10%', val: Math.round(curLoad*1.1/2.5)*2.5 },
+      ]
+    : [
+        { label:'5 kg',   val:5   },
+        { label:'10 kg',  val:10  },
+        { label:'20 kg',  val:20  },
+        { label:'BW',     val:0   },
+      ];
+  presets.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'eex-preset' + (p.val === curLoad ? ' on' : '');
+    btn.textContent = p.label;
+    btn.onclick = () => {
+      document.getElementById('eex-load-val').value = p.val;
+      presetsEl.querySelectorAll('.eex-preset').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+    };
+    presetsEl.appendChild(btn);
+  });
+
+  document.getElementById('edit-ex-modal').classList.add('show');
+  if(navigator.vibrate) navigator.vibrate(10);
+}
+
+function eexClose() {
+  document.getElementById('edit-ex-modal').classList.remove('show');
+  _eexData = null;
+}
+
+function eexStep(field, delta) {
+  const el  = document.getElementById(`eex-${field}-val`);
+  const cur = parseFloat(el.value) || 0;
+  const raw = cur + delta;
+  el.value  = Math.max(0, Math.round(raw / 2.5) * 2.5);
+  // update preset highlight
+  const presetsEl = document.getElementById('eex-load-presets');
+  presetsEl.querySelectorAll('.eex-preset').forEach(b => {
+    b.classList.toggle('on', parseFloat(b.dataset?.val || b.textContent) === parseFloat(el.value));
+  });
+  if(navigator.vibrate) navigator.vibrate(8);
+}
+
+function eexSave() {
+  if(!_eexData) return;
+  const { exid, loadEl, setsEl } = _eexData;
+
+  const newLoad = parseFloat(document.getElementById('eex-load-val').value) || 0;
+  const newSets = parseInt(document.getElementById('eex-sets-val').value) || 1;
+  const newReps = document.getElementById('eex-reps-val').value.trim() || '6–10';
+
+  // update DOM
+  const loadText = newLoad > 0 ? newLoad + ' kg' : 'BW';
+  loadEl.textContent     = loadText;
+  loadEl.dataset.original = newLoad; // for deload calc
+  setsEl.textContent     = newReps ? `${newSets}×${newReps}` : `${newSets} set`;
+
+  // re-apply deload if active
+  if(_deloadActive) {
+    loadEl.dataset.deload = (Math.max(5, Math.round(newLoad*0.6/2.5)*2.5)) + ' kg';
+  }
+
+  // flash animation
+  loadEl.classList.add('just-saved');
+  setTimeout(() => loadEl.classList.remove('just-saved'), 1000);
+
+  // persist to localStorage
+  const loads = loadExLoads();
+  loads[exid] = { load: newLoad, sets: newSets, reps: newReps };
+  saveExLoads(loads);
+
+  eexClose();
+  showToast(`✓ ${_eexData.name} — ${loadText} · ${newSets}×${newReps}`);
+  if(navigator.vibrate) navigator.vibrate(30);
+}
+
+/* apply saved loads on page load */
+function applyExLoads() {
+  const loads = loadExLoads();
+  Object.entries(loads).forEach(([exid, data]) => {
+    const row    = document.querySelector(`[data-edit-exid="${exid}"]`);
+    if(!row) return;
+    const loadEl = row.querySelector('.xload');
+    const setsEl = row.querySelector('.xsets');
+    if(loadEl && data.load !== undefined) {
+      loadEl.textContent      = data.load > 0 ? data.load + ' kg' : 'BW';
+      loadEl.dataset.original = data.load;
+    }
+    if(setsEl && data.sets) {
+      setsEl.textContent = data.reps ? `${data.sets}×${data.reps}` : `${data.sets} set`;
+    }
+  });
+}
+
 /* ── EXERCISE EDIT MODE ── */
 const EX_HIDDEN_KEY  = 'hilv_ex_hidden';   // { exid: { name, pid, idx } }
 const EX_ORDER_KEY   = 'hilv_ex_order';    // { pid: [exid, exid, ...] }
@@ -2780,6 +3050,16 @@ function wireEditRows(pid) {
         <button class="xr-del-btn"  title="Sembunyikan" onclick="hideExercise('${exid}','${name}','${pid}',this.closest('.xr'))">−</button>`;
       xrir.appendChild(actions);
     }
+
+    // tap xload / xsets to edit in edit mode
+    const loadEl2 = row.querySelector('.xload');
+    const setsEl2 = row.querySelector('.xsets');
+    if(loadEl2) loadEl2.onclick = (e) => {
+      if(row.closest('.xt')?.classList.contains('edit-mode')) { e.stopPropagation(); eexOpen(row); }
+    };
+    if(setsEl2) setsEl2.onclick = (e) => {
+      if(row.closest('.xt')?.classList.contains('edit-mode')) { e.stopPropagation(); eexOpen(row); }
+    };
 
     // drag & drop
     setupDrag(row, pid);
@@ -3591,6 +3871,7 @@ injectTrackers();
 initAllCustomEx();
 initEditMode();
 applyMovedExercises();
+applyExLoads();
 applyDeload();
 initToday();
 renderWeeklySummary();
@@ -3730,6 +4011,48 @@ renderWeeklySummary();
   <button class="pwa-dismiss" onclick="pwaDismiss()" aria-label="Tutup">✕</button>
 </div>
 <div id="offline-toast">⚡ Offline mode</div>
+
+<!-- ── EDIT BEBAN & SETS MODAL ── -->
+<div id="edit-ex-modal">
+  <div class="eex-sheet">
+    <div class="eex-handle"></div>
+    <div class="eex-hd">
+      <div class="eex-hd-text">
+        <div class="eex-title" id="eex-title">Edit Exercise</div>
+        <div class="eex-sub" id="eex-sub">Beban & Sets</div>
+      </div>
+      <button class="eex-close" onclick="eexClose()">✕</button>
+    </div>
+    <div class="eex-body">
+      <!-- Load stepper -->
+      <div class="eex-field">
+        <div class="eex-label">Beban (KG)</div>
+        <div class="eex-stepper">
+          <button class="eex-step-btn" onclick="eexStep('load',-2.5)">−</button>
+          <input class="eex-step-val" id="eex-load-val" type="number" step="2.5" min="0" inputmode="decimal">
+          <span class="eex-step-unit">kg</span>
+          <button class="eex-step-btn" onclick="eexStep('load',2.5)">+</button>
+        </div>
+        <div class="eex-presets" id="eex-load-presets"></div>
+      </div>
+      <!-- Sets & rep range -->
+      <div class="eex-field">
+        <div class="eex-label">Sets & Rep Range</div>
+        <div class="eex-sets-row">
+          <div>
+            <div class="eex-label" style="margin-bottom:4px">Sets</div>
+            <input class="eex-mini-input" id="eex-sets-val" type="number" min="1" max="10" inputmode="numeric">
+          </div>
+          <div>
+            <div class="eex-label" style="margin-bottom:4px">Rep Range</div>
+            <input class="eex-mini-input" id="eex-reps-val" type="text" placeholder="6–10" maxlength="8">
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="eex-save" onclick="eexSave()">Simpan Perubahan</button>
+  </div>
+</div>
 
 <!-- ── MOVE EXERCISE MODAL ── -->
 <div id="move-ex-modal">

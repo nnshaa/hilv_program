@@ -92,6 +92,19 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [2.0.0] — 2026-05-03
+
+**Added**
+- Edit beban & sets langsung dari UI — tap `.xload` atau `.xsets` saat edit mode aktif
+- Bottom sheet dengan stepper ±2.5kg untuk beban, input sets & rep range
+- Quick preset buttons: −10%, −5%, +5%, +10% dari beban saat ini (atau fixed value untuk BW)
+- Perubahan tersimpan di localStorage (`hilv_ex_loads`), persist setelah reload
+- Auto-apply ke deload mode — kalau deload aktif, beban baru langsung dihitung -40%
+- Flash animation pada `.xload` setelah simpan
+- Toast konfirmasi dengan nilai baru
+
+---
+
 ### [1.9.0] — 2026-05-03
 
 **Added**
