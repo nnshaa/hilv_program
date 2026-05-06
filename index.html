@@ -2099,10 +2099,23 @@ const io=new IntersectionObserver(e=>{
 document.querySelectorAll('.r,.vc').forEach(el=>io.observe(el));
 
 /* ── STORAGE ── */
-const STORE_KEY='hilv_sets_v2';
+const STORE_KEY     = 'hilv_sets_v2';
+const CEX_KEY_CONST = 'hilv_custom_ex';    // alias — CEX_KEY defined later, this for early use
+const ALL_KEYS = {
+  log:     'hilv_sets_v2',
+  custom:  'hilv_custom_ex',
+  loads:   'hilv_ex_loads',
+  hidden:  'hilv_ex_hidden',
+  order:   'hilv_ex_order',
+  moved:   'hilv_ex_moved',
+  theme:   'hilv-theme',
+  deload:  'hilv-deload',
+  onboard: 'hilv-onboarded',
+};
 function loadAll(){
   try{
     const raw = JSON.parse(localStorage.getItem(STORE_KEY)||'{}');
+    if(typeof raw !== 'object' || Array.isArray(raw)) return {}; // corrupt guard
     // migrate: convert old toDateString() _date → ISO + _dateLabel
     let dirty = false;
     Object.values(raw).forEach(sessions => {
@@ -2122,7 +2135,15 @@ function loadAll(){
     return raw;
   }catch(e){ return {}; }
 }
-function saveAll(d){ localStorage.setItem(STORE_KEY,JSON.stringify(d)); }
+function saveAll(d){
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(d));
+  } catch(e) {
+    if(e.name === 'QuotaExceededError') {
+      showToast('⚠️ Storage penuh — hapus data lama', false);
+    }
+  }
+}
 
 /* get last session sets for an exercise (for PREVIOUS column) */
 function getPrevSets(exid){
@@ -2624,7 +2645,7 @@ function cexSave() {
 
   // save to custom list
   const customs = loadCustomEx();
-  const exid    = pid + '-cx' + Date.now();
+  const exid    = pid + '-cx' + (crypto.randomUUID ? crypto.randomUUID().slice(0,8) : Date.now().toString(36));
   const ex      = { exid, name, muscle, sets, load, pid };
   customs.push(ex);
   saveCustomEx(customs);
@@ -2736,12 +2757,17 @@ function bkClose() {
 
 function bkExport() {
   const payload = {
-    version: '1.8.0',
+    version: '2.0.0',
     exported: new Date().toISOString(),
     log:     loadAll(),
     custom:  loadCustomEx(),
-    theme:   localStorage.getItem('hilv-theme') || 'dark',
-    deload:  localStorage.getItem('hilv-deload') || '0',
+    loads:   loadExLoads(),
+    hidden:  loadHidden(),
+    order:   loadOrder(),
+    moved:   loadMoved(),
+    theme:   localStorage.getItem(ALL_KEYS.theme)   || 'dark',
+    deload:  localStorage.getItem(ALL_KEYS.deload)  || '0',
+    onboard: localStorage.getItem(ALL_KEYS.onboard) || '',
   };
   const json = JSON.stringify(payload, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
@@ -2810,9 +2836,13 @@ function bkParseFile(file) {
         saveCustomEx(existingCustom);
       }
 
-      // restore theme & deload
-      if(data.theme) { localStorage.setItem('hilv-theme', data.theme); }
-      if(data.deload) { localStorage.setItem('hilv-deload', data.deload); }
+      // restore all extra keys
+      if(data.theme)   localStorage.setItem(ALL_KEYS.theme,   data.theme);
+      if(data.deload)  localStorage.setItem(ALL_KEYS.deload,  data.deload);
+      if(data.loads)   localStorage.setItem(ALL_KEYS.loads,   JSON.stringify(data.loads));
+      if(data.hidden)  localStorage.setItem(ALL_KEYS.hidden,  JSON.stringify(data.hidden));
+      if(data.order)   localStorage.setItem(ALL_KEYS.order,   JSON.stringify(data.order));
+      if(data.moved)   localStorage.setItem(ALL_KEYS.moved,   JSON.stringify(data.moved));
 
       const sessCount = Object.values(data.log).reduce((s,a)=>s+a.length,0);
       bkClose();
@@ -2830,8 +2860,8 @@ function bkParseFile(file) {
 
 function bkClearAll() {
   if(!confirm('Hapus SEMUA data log? Ini tidak bisa dibatalkan.')) return;
-  localStorage.removeItem('hilv_sets_v2');
-  localStorage.removeItem(CEX_KEY);
+  // clear every known key
+  Object.values(ALL_KEYS).forEach(k => localStorage.removeItem(k));
   bkClose();
   showToast('✓ Semua data dihapus');
   if(navigator.vibrate) navigator.vibrate([50,30,50,30,100]);
@@ -2939,8 +2969,10 @@ function eexSave() {
   setsEl.textContent     = newReps ? `${newSets}×${newReps}` : `${newSets} set`;
 
   // re-apply deload if active
-  if(_deloadActive) {
+  if(_deloadActive && newLoad > 0) {
     loadEl.dataset.deload = (Math.max(5, Math.round(newLoad*0.6/2.5)*2.5)) + ' kg';
+  } else if(_deloadActive) {
+    loadEl.dataset.deload = 'BW';
   }
 
   // flash animation
@@ -3220,6 +3252,9 @@ function mexMove(targetPid) {
     const moved = loadMoved();
     moved[exid] = targetPid;
     saveMoved(moved);
+    // update hidden record if this exercise was hidden
+    const hidden = loadHidden();
+    if(hidden[exid]) { hidden[exid].pid = targetPid; saveHidden(hidden); }
   }, 220);
 
   mexClose();
@@ -3806,6 +3841,7 @@ function rtTick() {
   const timeEl   = document.getElementById('rt-time');
   const statusEl = document.getElementById('rt-status');
   const prog     = document.getElementById('rt-prog');
+  if(!timeEl || !statusEl || !prog) { clearInterval(RT.interval); return; }
 
   timeEl.textContent = m + ':' + String(s).padStart(2,'0');
 

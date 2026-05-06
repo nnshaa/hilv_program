@@ -92,6 +92,22 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [2.0.1] — 2026-05-03
+
+**Fixed**
+- `bkClearAll` hanya hapus 2 dari 9 localStorage key — sekarang hapus semua via `ALL_KEYS`
+- `bkExport` tidak menyertakan `loads`, `hidden`, `order`, `moved` — sekarang backup lengkap
+- `bkParseFile` tidak restore `loads/hidden/order/moved` saat import — sekarang restore semua
+- `loadAll` tidak ada guard untuk data corrupt (non-object) — tambah early return
+- `saveAll` tidak handle `QuotaExceededError` — sekarang tampil toast warning
+- Custom exercise exid pakai `Date.now()` (collision risk di rapid create) — ganti ke `crypto.randomUUID()`
+- Deload + edit beban: kalau beban di-set ke 0/BW, deload label sekarang tampil `BW` bukan `NaN kg`
+- Pindah exercise lalu sembunyikan: `hidden[exid].pid` tidak terupdate — sekarang sync saat `mexMove`
+- `rtTick` akses DOM element tanpa null check — bisa crash kalau sheet di-remove prematur
+- Semua storage key di-centralize di `ALL_KEYS` constant untuk menghindari typo
+
+---
+
 ### [2.0.0] — 2026-05-03
 
 **Added**
