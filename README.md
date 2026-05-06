@@ -92,6 +92,23 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [3.0.0] — 2026-05-03
+
+**Added**
+- Program Manager — buat, edit, switch, hapus program via modal bottom sheet
+- Program switcher di bar kanan — tap untuk ganti program aktif
+- Program Builder — fullscreen editor: nama, ikon emoji, tambah/edit/hapus sesi
+- Session Editor — bottom sheet per sesi: nama, focus/subtitle, pilih hari latihan
+- Exercise Library — 40 exercise default kategorized by muscle group, searchable, filterable
+- Multi-select exercise dari library → tambah ke sesi sekaligus
+- Dynamic tabs & panels — rebuild dari data program aktif, bukan hardcoded HTML
+- HILV program auto-extract dari DOM sebagai template default (pertama kali buka)
+- Multiple programs support — setiap program punya sessions & exercises sendiri
+- Custom program dari nol: mulai kosong, tambah sesi, isi exercise dari library
+- Semua storage key baru (`hilv_programs`, `hilv_active_prog`, `hilv_ex_library`) masuk `ALL_KEYS`
+
+---
+
 ### [2.1.0] — 2026-05-03
 
 **Added**

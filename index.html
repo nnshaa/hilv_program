@@ -867,6 +867,373 @@ body.deload-active .sl-head { background:rgba(245,184,48,.04); }
 
 
 
+
+/* ────────────────── PROGRAM MANAGER */
+@keyframes prog-card-in { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+/* program switcher in bar */
+.prog-switcher {
+  display:flex; align-items:center; gap:8px;
+  padding:5px 10px 5px 14px; border-radius:20px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+  cursor:pointer; transition:all .18s; max-width:180px;
+}
+.prog-switcher:hover { border-color:rgba(200,240,58,.3); background:rgba(200,240,58,.05); }
+.prog-switcher-name {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; font-weight:600; letter-spacing:.08em;
+  color:var(--ink); white-space:nowrap; overflow:hidden;
+  text-overflow:ellipsis; flex:1;
+}
+.prog-switcher-arrow { color:var(--ink3); font-size:10px; flex-shrink:0; }
+
+/* program manager modal */
+#prog-modal {
+  position:fixed; inset:0; z-index:9100;
+  display:flex; align-items:flex-end; justify-content:center;
+  background:rgba(0,0,0,.7); backdrop-filter:blur(12px);
+  opacity:0; pointer-events:none; transition:opacity .25s;
+}
+#prog-modal.show { opacity:1; pointer-events:auto; }
+.pm-sheet {
+  width:100%; max-width:520px;
+  background:linear-gradient(175deg,#13131c,#0b0b13);
+  border:1px solid rgba(255,255,255,.1); border-bottom:none;
+  border-radius:20px 20px 0 0;
+  max-height:88vh; overflow-y:auto;
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.32,1.2,.42,1);
+  padding-bottom:env(safe-area-inset-bottom,16px);
+}
+#prog-modal.show .pm-sheet { transform:translateY(0); }
+.pm-handle { width:36px; height:4px; background:rgba(255,255,255,.12); border-radius:99px; margin:12px auto 0; }
+.pm-hd {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px 12px; border-bottom:1px solid rgba(255,255,255,.06);
+  position:sticky; top:0; background:#13131c; z-index:1;
+}
+.pm-title { font-size:14px; font-weight:500; color:var(--ink); }
+.pm-close {
+  width:28px; height:28px; border-radius:50%;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink3); font-size:13px;
+}
+.pm-close:hover { background:rgba(255,255,255,.12); color:var(--ink); }
+
+/* program cards */
+.pm-list { padding:12px 16px; display:flex; flex-direction:column; gap:8px; }
+.pm-card {
+  display:flex; align-items:center; gap:12px;
+  padding:14px 16px; border-radius:12px;
+  border:1.5px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.03);
+  cursor:pointer; transition:all .18s;
+  animation:prog-card-in .2s ease;
+}
+.pm-card:hover { border-color:rgba(200,240,58,.25); background:rgba(200,240,58,.04); }
+.pm-card.active {
+  border-color:rgba(200,240,58,.4);
+  background:rgba(200,240,58,.06);
+}
+.pm-card-icon {
+  width:40px; height:40px; border-radius:10px; flex-shrink:0;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);
+  display:flex; align-items:center; justify-content:center; font-size:20px;
+}
+.pm-card.active .pm-card-icon { background:rgba(200,240,58,.1); border-color:rgba(200,240,58,.2); }
+.pm-card-info { flex:1; min-width:0; }
+.pm-card-name { font-size:13px; font-weight:500; color:var(--ink); }
+.pm-card-meta {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; color:var(--ink3); margin-top:3px; letter-spacing:.04em;
+}
+.pm-card-badge {
+  font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:.1em;
+  padding:2px 8px; border-radius:5px; text-transform:uppercase;
+  background:rgba(200,240,58,.1); border:1px solid rgba(200,240,58,.2); color:var(--lime);
+  flex-shrink:0;
+}
+.pm-card-actions {
+  display:flex; gap:6px; flex-shrink:0;
+}
+.pm-card-btn {
+  width:28px; height:28px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; cursor:pointer; transition:all .15s;
+  border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04);
+  color:var(--ink3);
+}
+.pm-card-btn:hover { color:var(--ink); border-color:rgba(255,255,255,.2); }
+.pm-card-btn.del:hover { color:#f87171; border-color:rgba(255,80,80,.3); background:rgba(255,50,50,.06); }
+
+/* new program button */
+.pm-new-btn {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  margin:4px 16px 16px; padding:13px;
+  border-radius:10px; border:1.5px dashed rgba(200,240,58,.2);
+  background:rgba(200,240,58,.03); color:rgba(200,240,58,.6);
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  cursor:pointer; transition:all .18s;
+}
+.pm-new-btn:hover { border-color:rgba(200,240,58,.4); color:var(--lime); background:rgba(200,240,58,.06); }
+.pm-new-btn::before { content:'＋'; font-size:14px; }
+
+/* ────────────────── PROGRAM BUILDER */
+#prog-builder {
+  position:fixed; inset:0; z-index:9200;
+  background:rgba(5,5,10,.98);
+  opacity:0; pointer-events:none;
+  transition:opacity .25s;
+  overflow-y:auto;
+}
+#prog-builder.show { opacity:1; pointer-events:auto; }
+.pb-header {
+  position:sticky; top:0; z-index:10;
+  display:flex; align-items:center; gap:12px;
+  padding:16px 20px;
+  background:rgba(5,5,10,.96); backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.pb-back {
+  width:36px; height:36px; border-radius:10px; flex-shrink:0;
+  border:1.5px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink3); font-size:16px; transition:all .15s;
+}
+.pb-back:hover { color:var(--ink); border-color:rgba(255,255,255,.2); }
+.pb-header-title { flex:1; font-size:14px; font-weight:500; color:var(--ink); }
+.pb-save-btn {
+  padding:9px 18px; border-radius:9px; flex-shrink:0;
+  border:none; background:var(--lime); color:var(--bg);
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  cursor:pointer; transition:opacity .15s;
+}
+.pb-save-btn:hover { opacity:.85; }
+.pb-body { padding:20px; display:flex; flex-direction:column; gap:20px; }
+
+/* program meta */
+.pb-field { display:flex; flex-direction:column; gap:6px; }
+.pb-label {
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink3);
+}
+.pb-input {
+  background:rgba(255,255,255,.05); border:1.5px solid rgba(255,255,255,.1);
+  border-radius:10px; color:var(--ink); font-family:'Outfit',sans-serif;
+  font-size:14px; padding:12px 14px; outline:none; transition:border-color .18s;
+  box-sizing:border-box; width:100%;
+}
+.pb-input:focus { border-color:rgba(200,240,58,.4); }
+.pb-emoji-row { display:flex; gap:8px; flex-wrap:wrap; }
+.pb-emoji-btn {
+  width:40px; height:40px; border-radius:10px; font-size:20px;
+  border:1.5px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04);
+  cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:center;
+}
+.pb-emoji-btn.on { border-color:rgba(200,240,58,.4); background:rgba(200,240,58,.1); }
+
+/* sessions list in builder */
+.pb-sessions-title {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink3);
+  margin-bottom:8px;
+}
+.pb-session-card {
+  background:rgba(255,255,255,.03); border:1.5px solid rgba(255,255,255,.07);
+  border-radius:12px; overflow:hidden; margin-bottom:8px;
+}
+.pb-session-hd {
+  display:flex; align-items:center; gap:10px; padding:12px 14px;
+  cursor:pointer; transition:background .15s;
+}
+.pb-session-hd:hover { background:rgba(255,255,255,.03); }
+.pb-session-day {
+  width:36px; height:36px; border-radius:9px; flex-shrink:0;
+  background:rgba(200,240,58,.08); border:1px solid rgba(200,240,58,.15);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--lime);
+}
+.pb-session-info { flex:1; min-width:0; }
+.pb-session-name { font-size:13px; font-weight:500; color:var(--ink); }
+.pb-session-meta { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); margin-top:2px; }
+.pb-session-actions { display:flex; gap:6px; }
+.pb-sess-btn {
+  width:28px; height:28px; border-radius:7px; flex-shrink:0;
+  border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink3); font-size:12px; transition:all .15s;
+}
+.pb-sess-btn:hover { color:var(--ink); }
+.pb-sess-btn.del:hover { color:#f87171; border-color:rgba(255,80,80,.3); }
+
+/* exercises in session */
+.pb-ex-list { padding:0 14px 10px; }
+.pb-ex-item {
+  display:flex; align-items:center; gap:10px; padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.pb-ex-item:last-of-type { border-bottom:none; }
+.pb-ex-name { flex:1; font-size:12px; color:var(--ink); }
+.pb-ex-meta { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); }
+.pb-ex-del {
+  width:22px; height:22px; border-radius:50%; flex-shrink:0;
+  border:1px solid rgba(255,80,80,.2); background:rgba(255,50,50,.05);
+  color:#f87171; font-size:11px; cursor:pointer; transition:all .15s;
+  display:flex; align-items:center; justify-content:center;
+}
+.pb-ex-del:hover { background:rgba(255,50,50,.15); }
+.pb-add-ex-btn {
+  display:flex; align-items:center; gap:6px;
+  padding:8px 14px 10px; cursor:pointer; transition:color .15s;
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+  color:rgba(200,240,58,.5);
+}
+.pb-add-ex-btn:hover { color:var(--lime); }
+.pb-add-ex-btn::before { content:'＋'; font-size:12px; }
+
+.pb-add-session {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:13px; border-radius:10px;
+  border:1.5px dashed rgba(255,255,255,.1); background:transparent;
+  color:var(--ink3); font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.12em; text-transform:uppercase;
+  cursor:pointer; transition:all .18s;
+}
+.pb-add-session:hover { border-color:rgba(200,240,58,.3); color:var(--lime); }
+.pb-add-session::before { content:'＋'; font-size:14px; }
+
+/* ────────────────── EXERCISE LIBRARY */
+#ex-library-modal {
+  position:fixed; inset:0; z-index:9300;
+  display:flex; align-items:flex-end; justify-content:center;
+  background:rgba(0,0,0,.7); backdrop-filter:blur(12px);
+  opacity:0; pointer-events:none; transition:opacity .22s;
+}
+#ex-library-modal.show { opacity:1; pointer-events:auto; }
+.exl-sheet {
+  width:100%; max-width:520px;
+  background:#12121a; border:1px solid rgba(255,255,255,.09); border-bottom:none;
+  border-radius:20px 20px 0 0;
+  max-height:85vh; display:flex; flex-direction:column;
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.32,1.2,.42,1);
+  padding-bottom:env(safe-area-inset-bottom,8px);
+}
+#ex-library-modal.show .exl-sheet { transform:translateY(0); }
+.exl-handle { width:36px; height:4px; background:rgba(255,255,255,.12); border-radius:99px; margin:12px auto 0; flex-shrink:0; }
+.exl-hd { padding:14px 16px 10px; border-bottom:1px solid rgba(255,255,255,.06); flex-shrink:0; }
+.exl-hd-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.exl-title { font-size:13px; font-weight:500; color:var(--ink); }
+.exl-close {
+  width:28px; height:28px; border-radius:50%;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink3); font-size:13px;
+}
+.exl-search {
+  width:100%; background:rgba(255,255,255,.05);
+  border:1.5px solid rgba(255,255,255,.1); border-radius:9px;
+  color:var(--ink); font-family:'Outfit',sans-serif; font-size:13px;
+  padding:9px 12px; outline:none; box-sizing:border-box;
+  transition:border-color .18s;
+}
+.exl-search:focus { border-color:rgba(200,240,58,.4); }
+.exl-filters { display:flex; gap:6px; overflow-x:auto; padding:8px 0 2px; flex-shrink:0;
+  scrollbar-width:none; }
+.exl-filters::-webkit-scrollbar { display:none; }
+.exl-filter {
+  padding:5px 12px; border-radius:20px; white-space:nowrap; flex-shrink:0;
+  border:1.5px solid rgba(255,255,255,.08); background:transparent;
+  font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--ink3); cursor:pointer; transition:all .15s;
+}
+.exl-filter.on { border-color:rgba(200,240,58,.35); background:rgba(200,240,58,.08); color:var(--lime); }
+.exl-list { flex:1; overflow-y:auto; padding:8px 0; }
+.exl-item {
+  display:flex; align-items:center; gap:12px;
+  padding:10px 16px; cursor:pointer; transition:background .12s;
+}
+.exl-item:hover { background:rgba(255,255,255,.03); }
+.exl-item.selected { background:rgba(200,240,58,.06); }
+.exl-item-icon {
+  width:36px; height:36px; border-radius:9px; flex-shrink:0;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.07);
+  display:flex; align-items:center; justify-content:center; font-size:16px;
+}
+.exl-item-info { flex:1; min-width:0; }
+.exl-item-name { font-size:12px; font-weight:500; color:var(--ink); }
+.exl-item-muscle { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); margin-top:2px; }
+.exl-item-check {
+  width:24px; height:24px; border-radius:6px; flex-shrink:0;
+  border:1.5px solid rgba(255,255,255,.1); background:transparent;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; color:transparent; transition:all .15s;
+}
+.exl-item.selected .exl-item-check {
+  background:var(--lime); border-color:var(--lime); color:var(--bg);
+}
+.exl-footer { padding:10px 16px; border-top:1px solid rgba(255,255,255,.06); flex-shrink:0; }
+.exl-add-btn {
+  width:100%; padding:13px; border-radius:10px;
+  border:none; background:var(--lime); color:var(--bg);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  cursor:pointer; transition:opacity .15s;
+}
+.exl-add-btn:hover { opacity:.85; }
+.exl-divider {
+  padding:6px 16px 4px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink3);
+  border-top:1px solid rgba(255,255,255,.05);
+}
+
+/* session editor bottom sheet */
+#sess-editor {
+  position:fixed; inset:0; z-index:9250;
+  display:flex; align-items:flex-end; justify-content:center;
+  background:rgba(0,0,0,.65); backdrop-filter:blur(10px);
+  opacity:0; pointer-events:none; transition:opacity .22s;
+}
+#sess-editor.show { opacity:1; pointer-events:auto; }
+.se-sheet {
+  width:100%; max-width:480px;
+  background:#13131c; border:1px solid rgba(255,255,255,.1); border-bottom:none;
+  border-radius:20px 20px 0 0;
+  padding-bottom:env(safe-area-inset-bottom,16px);
+  transform:translateY(100%);
+  transition:transform .32s cubic-bezier(.32,1.2,.42,1);
+}
+#sess-editor.show .se-sheet { transform:translateY(0); }
+.se-handle { width:36px; height:4px; background:rgba(255,255,255,.12); border-radius:99px; margin:12px auto 0; }
+.se-hd { padding:14px 20px 12px; border-bottom:1px solid rgba(255,255,255,.06); }
+.se-title { font-size:13px; font-weight:500; color:var(--ink); }
+.se-body { padding:16px 20px; display:flex; flex-direction:column; gap:12px; }
+.se-label { font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink3); margin-bottom:4px; }
+.se-input {
+  width:100%; background:rgba(255,255,255,.05); border:1.5px solid rgba(255,255,255,.1);
+  border-radius:9px; color:var(--ink); font-family:'Outfit',sans-serif;
+  font-size:13px; padding:10px 12px; outline:none; box-sizing:border-box; transition:border-color .18s;
+}
+.se-input:focus { border-color:rgba(200,240,58,.4); }
+.se-days { display:flex; gap:6px; flex-wrap:wrap; }
+.se-day {
+  padding:7px 12px; border-radius:8px; cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.08); background:transparent;
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; color:var(--ink3);
+  transition:all .15s;
+}
+.se-day.on { border-color:rgba(200,240,58,.4); background:rgba(200,240,58,.1); color:var(--lime); }
+.se-footer { padding:0 20px 4px; display:flex; gap:8px; }
+.se-cancel { flex:1; padding:12px; border-radius:10px; border:1.5px solid rgba(255,255,255,.08); background:transparent; color:var(--ink3); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
+.se-save { flex:2; padding:12px; border-radius:10px; border:none; background:var(--lime); color:var(--bg); font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
+
 /* ────────────────── SWIPE TABS */
 .panels-wrap {
   overflow:hidden;
@@ -2017,8 +2384,11 @@ body.deload-active .sl-head { background:rgba(245,184,48,.04); }
 <div class="bar">
   <div class="bar-l">HILV High Frequency &middot; Locked Final</div>
   <div class="bar-r">
+    <button class="prog-switcher" id="prog-switcher" onclick="pmOpen()">
+      <span class="prog-switcher-name" id="prog-switcher-name">HILV</span>
+      <span class="prog-switcher-arrow">⌄</span>
+    </button>
     <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">☀️</button>
-    <span class="pulse"></span>Active &middot; Cutting Phase
   </div>
 </div>
 
@@ -2330,6 +2700,9 @@ const ALL_KEYS = {
   onboard: 'hilv-onboarded',
   bw:      'hilv_bw_log',
   streak:  'hilv_streak',
+  programs: 'hilv_programs',
+  activeProg:'hilv_active_prog',
+  library:  'hilv_ex_library',
 };
 function loadAll(){
   try{
@@ -2957,6 +3330,519 @@ function initAllCustomEx() {
 }
 
 
+
+
+/* ══════════════════════════════════════════
+   PROGRAM MANAGER — v3.0.0
+   ══════════════════════════════════════════ */
+
+const PROG_KEY        = 'hilv_programs';
+const ACTIVE_PROG_KEY = 'hilv_active_prog';
+const EX_LIB_KEY      = 'hilv_ex_library';
+
+/* ── default HILV program extracted from DOM ── */
+function extractHILVProgram() {
+  const sessions = [];
+  document.querySelectorAll('.panel').forEach((panel, i) => {
+    const tab  = document.querySelectorAll('.tab')[i];
+    const name = tab?.querySelector('.tn')?.textContent?.trim() || 'Session ' + (i+1);
+    const focus= tab?.querySelector('.ts')?.textContent?.trim() || '';
+    const dayTxt = tab?.querySelector('.td')?.textContent?.trim() || '';
+    // parse day abbreviation
+    const dayMap = {SAT:6,SUN:0,MON:1,TUE:2,WED:3,THU:4,FRI:5};
+    const dayMatch = dayTxt.match(/(SAT|SUN|MON|TUE|WED|THU|FRI)/);
+    const day = dayMatch ? (dayMap[dayMatch[1]] ?? -1) : -1;
+
+    const exercises = [];
+    panel.querySelectorAll('.xr:not(.wu)').forEach(row => {
+      const name2 = row.querySelector('.xname')?.textContent?.replace(/custom/,'').trim() || '';
+      const note  = row.querySelector('.xnote')?.textContent?.trim() || '';
+      const sets  = row.querySelector('.xsets')?.textContent?.trim() || '2×6–10';
+      const load  = parseFloat(row.querySelector('.xload')?.textContent) || 0;
+      const rir   = row.querySelector('.rb')?.textContent?.trim() || '';
+      const exid  = row.dataset.editExid || '';
+      if(name2) exercises.push({ id: exid, name: name2, note, sets, load, rir });
+    });
+
+    sessions.push({
+      id: panel.id,
+      name, focus, day,
+      exercises
+    });
+  });
+  return {
+    id: 'hilv-default',
+    name: 'HILV High Frequency',
+    emoji: '🏋️',
+    isDefault: true,
+    sessions
+  };
+}
+
+/* ── storage ── */
+function loadPrograms() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(PROG_KEY) || 'null');
+    if(Array.isArray(raw) && raw.length) return raw;
+  } catch(e) {}
+  // first time — extract HILV from DOM
+  const hilv = extractHILVProgram();
+  const arr  = [hilv];
+  localStorage.setItem(PROG_KEY, JSON.stringify(arr));
+  return arr;
+}
+function savePrograms(arr) { localStorage.setItem(PROG_KEY, JSON.stringify(arr)); }
+function getActiveProgId() { return localStorage.getItem(ACTIVE_PROG_KEY) || 'hilv-default'; }
+function setActiveProgId(id) { localStorage.setItem(ACTIVE_PROG_KEY, id); }
+function getActiveProg() {
+  const progs = loadPrograms();
+  return progs.find(p=>p.id===getActiveProgId()) || progs[0];
+}
+
+/* ── exercise library ── */
+const DEFAULT_LIBRARY = [
+  // Chest
+  {id:'lib-01',name:'Incline Dumbbell Press',muscle:'Chest',emoji:'💪',note:'Upper pec · mechanical tension'},
+  {id:'lib-02',name:'Flat Barbell Bench Press',muscle:'Chest',emoji:'💪',note:''},
+  {id:'lib-03',name:'High-to-Low Cable Fly',muscle:'Chest',emoji:'💪',note:'Chest isolation · stretch lengthened'},
+  {id:'lib-04',name:'Dumbbell Fly',muscle:'Chest',emoji:'💪',note:''},
+  {id:'lib-05',name:'Machine Chest Press',muscle:'Chest',emoji:'💪',note:''},
+  // Back
+  {id:'lib-06',name:'Chest-Supported Row (Wide Grip)',muscle:'Back',emoji:'🔙',note:'Upper back · rhomboid + mid trap'},
+  {id:'lib-07',name:'Pull Up',muscle:'Back',emoji:'🔙',note:''},
+  {id:'lib-08',name:'Lat Pulldown',muscle:'Back',emoji:'🔙',note:''},
+  {id:'lib-09',name:'Seated Cable Row',muscle:'Back',emoji:'🔙',note:''},
+  {id:'lib-10',name:'T-Bar Row',muscle:'Back',emoji:'🔙',note:''},
+  {id:'lib-11',name:'Single-Arm Dumbbell Row',muscle:'Back',emoji:'🔙',note:''},
+  // Shoulders
+  {id:'lib-12',name:'Single-Arm Cable Lateral Raise',muscle:'Shoulders',emoji:'🦾',note:'Lateral delt · eksentrik terkontrol'},
+  {id:'lib-13',name:'Overhead Press',muscle:'Shoulders',emoji:'🦾',note:''},
+  {id:'lib-14',name:'Dumbbell Lateral Raise',muscle:'Shoulders',emoji:'🦾',note:''},
+  {id:'lib-15',name:'Face Pull',muscle:'Shoulders',emoji:'🦾',note:'Rear delt · external rotation'},
+  {id:'lib-16',name:'Rear Delt Fly',muscle:'Shoulders',emoji:'🦾',note:''},
+  // Arms
+  {id:'lib-17',name:'Rope Tricep Pushdown',muscle:'Triceps',emoji:'💥',note:'Lateral head · kontraksi penuh'},
+  {id:'lib-18',name:'Overhead Tricep Extension',muscle:'Triceps',emoji:'💥',note:''},
+  {id:'lib-19',name:'Close Grip Bench Press',muscle:'Triceps',emoji:'💥',note:''},
+  {id:'lib-20',name:'Seated Incline Dumbbell Curl',muscle:'Biceps',emoji:'💪',note:'Long head · stretch position'},
+  {id:'lib-21',name:'EZ Bar Curl',muscle:'Biceps',emoji:'💪',note:''},
+  {id:'lib-22',name:'Hammer Curl',muscle:'Biceps',emoji:'💪',note:''},
+  {id:'lib-23',name:'Cable Curl',muscle:'Biceps',emoji:'💪',note:''},
+  // Legs
+  {id:'lib-24',name:'Smith Machine Squat',muscle:'Quads',emoji:'🦵',note:'Quad dominant · depth penuh'},
+  {id:'lib-25',name:'Leg Press',muscle:'Quads',emoji:'🦵',note:''},
+  {id:'lib-26',name:'Single-Leg Extension',muscle:'Quads',emoji:'🦵',note:'Quad isolation · kontraksi puncak'},
+  {id:'lib-27',name:'Bulgarian Split Squat',muscle:'Quads',emoji:'🦵',note:''},
+  {id:'lib-28',name:'Romanian Deadlift',muscle:'Hamstrings',emoji:'🦵',note:''},
+  {id:'lib-29',name:'Single-Leg Seated Leg Curl',muscle:'Hamstrings',emoji:'🦵',note:''},
+  {id:'lib-30',name:'Lying Leg Curl',muscle:'Hamstrings',emoji:'🦵',note:''},
+  {id:'lib-31',name:'Hip Thrust',muscle:'Glutes',emoji:'🍑',note:'Glute contraction peak'},
+  {id:'lib-32',name:'Adductor Machine',muscle:'Adductors',emoji:'🦵',note:''},
+  {id:'lib-33',name:'Standing Calf Raise',muscle:'Calves',emoji:'🦵',note:''},
+  {id:'lib-34',name:'Seated Calf Raise',muscle:'Calves',emoji:'🦵',note:''},
+  // Core
+  {id:'lib-35',name:'Cable Crunch',muscle:'Core',emoji:'🔥',note:''},
+  {id:'lib-36',name:'Hanging Leg Raise',muscle:'Core',emoji:'🔥',note:''},
+  {id:'lib-37',name:'Plank',muscle:'Core',emoji:'🔥',note:''},
+  // Cardio
+  {id:'lib-38',name:'Incline Treadmill Walk',muscle:'Cardio',emoji:'🚶',note:'20 min · 8% incline · 5.5 km/h'},
+  {id:'lib-39',name:'Stationary Bike',muscle:'Cardio',emoji:'🚴',note:''},
+  {id:'lib-40',name:'Rowing Machine',muscle:'Cardio',emoji:'🚣',note:''},
+];
+
+function loadLibrary() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(EX_LIB_KEY) || 'null');
+    if(Array.isArray(raw) && raw.length) {
+      // merge: ensure default items exist
+      const ids = new Set(raw.map(e=>e.id));
+      DEFAULT_LIBRARY.forEach(e => { if(!ids.has(e.id)) raw.push(e); });
+      return raw;
+    }
+  } catch(e) {}
+  const lib = [...DEFAULT_LIBRARY];
+  localStorage.setItem(EX_LIB_KEY, JSON.stringify(lib));
+  return lib;
+}
+function saveLibrary(lib) { localStorage.setItem(EX_LIB_KEY, JSON.stringify(lib)); }
+
+/* ══ PROGRAM MANAGER UI ══ */
+function pmOpen() {
+  renderPMList();
+  document.getElementById('prog-modal').classList.add('show');
+}
+function pmClose() { document.getElementById('prog-modal').classList.remove('show'); }
+
+function renderPMList() {
+  const progs    = loadPrograms();
+  const activeId = getActiveProgId();
+  const list     = document.getElementById('pm-list');
+  list.innerHTML = progs.map(p => `
+    <div class="pm-card${p.id===activeId?' active':''}" onclick="pmActivate('${p.id}')">
+      <div class="pm-card-icon">${p.emoji||'🏋️'}</div>
+      <div class="pm-card-info">
+        <div class="pm-card-name">${p.name}</div>
+        <div class="pm-card-meta">${p.sessions?.length||0} sesi · ${p.sessions?.reduce((s,ss)=>s+(ss.exercises?.length||0),0)||0} exercise</div>
+      </div>
+      ${p.id===activeId ? '<span class="pm-card-badge">Active</span>' : ''}
+      <div class="pm-card-actions">
+        <button class="pm-card-btn" onclick="event.stopPropagation();pbOpen('${p.id}')" title="Edit">✎</button>
+        ${!p.isDefault ? `<button class="pm-card-btn del" onclick="event.stopPropagation();pmDelete('${p.id}')" title="Hapus">✕</button>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function pmActivate(id) {
+  setActiveProgId(id);
+  renderPMList();
+  pmClose();
+  loadActiveProgram();
+  showToast('✓ Program aktif diganti');
+  if(navigator.vibrate) navigator.vibrate(30);
+}
+
+function pmDelete(id) {
+  if(!confirm('Hapus program ini?')) return;
+  const progs = loadPrograms().filter(p=>p.id!==id);
+  savePrograms(progs);
+  if(getActiveProgId()===id) setActiveProgId(progs[0]?.id||'hilv-default');
+  renderPMList();
+  loadActiveProgram();
+}
+
+/* ══ PROGRAM BUILDER ══ */
+const PROG_EMOJIS = ['🏋️','💪','🔥','⚡','🎯','🏃','🦵','🔙','💥','🧠','🏆','⚔️'];
+let _pbProg = null;  // current program being edited
+let _pbEditId = null;
+
+function pbOpen(progId) {
+  pmClose();
+  _pbEditId = progId;
+  const progs = loadPrograms();
+  _pbProg    = progId ? JSON.parse(JSON.stringify(progs.find(p=>p.id===progId)||{})) : {
+    id: 'prog-' + Date.now().toString(36),
+    name: '', emoji: '🏋️', sessions: []
+  };
+
+  document.getElementById('pb-header-title').textContent = progId ? 'Edit Program' : 'Program Baru';
+  document.getElementById('pb-name').value = _pbProg.name || '';
+
+  // emoji picker
+  const emojiRow = document.getElementById('pb-emoji-row');
+  emojiRow.innerHTML = PROG_EMOJIS.map(e =>
+    `<button class="pb-emoji-btn${e===(_pbProg.emoji||'🏋️')?' on':''}" onclick="pbPickEmoji('${e}')">${e}</button>`
+  ).join('');
+
+  pbRenderSessions();
+  document.getElementById('prog-builder').classList.add('show');
+}
+
+function pbClose() {
+  document.getElementById('prog-builder').classList.remove('show');
+  _pbProg = null; _pbEditId = null;
+}
+
+function pbPickEmoji(e) {
+  if(!_pbProg) return;
+  _pbProg.emoji = e;
+  document.querySelectorAll('.pb-emoji-btn').forEach(b => b.classList.toggle('on', b.textContent===e));
+}
+
+function pbRenderSessions() {
+  const list = document.getElementById('pb-sessions-list');
+  if(!_pbProg) return;
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  list.innerHTML = (_pbProg.sessions||[]).map((sess, si) => `
+    <div class="pb-session-card" id="pb-sess-${si}">
+      <div class="pb-session-hd">
+        <div class="pb-session-day">${DAYS[sess.day]||'?'}</div>
+        <div class="pb-session-info">
+          <div class="pb-session-name">${sess.name||'Sesi '+(si+1)}</div>
+          <div class="pb-session-meta">${sess.focus||''} · ${sess.exercises?.length||0} exercise</div>
+        </div>
+        <div class="pb-session-actions">
+          <button class="pb-sess-btn" onclick="seOpen(${si})" title="Edit">✎</button>
+          <button class="pb-sess-btn del" onclick="pbDeleteSession(${si})" title="Hapus">✕</button>
+        </div>
+      </div>
+      <div class="pb-ex-list">
+        ${(sess.exercises||[]).map((ex,ei) => `
+          <div class="pb-ex-item">
+            <div class="pb-ex-info">
+              <div class="pb-ex-name">${ex.name}</div>
+              <div class="pb-ex-meta">${ex.sets||'2×6–10'} · ${ex.load||0}kg</div>
+            </div>
+            <button class="pb-ex-del" onclick="pbDeleteEx(${si},${ei})">✕</button>
+          </div>`).join('')}
+        <div class="pb-add-ex-btn" onclick="exlOpen(${si})">Tambah Exercise</div>
+      </div>
+    </div>`).join('');
+}
+
+function pbAddSession() {
+  if(!_pbProg) return;
+  _pbProg.sessions.push({ id: 'sess-'+Date.now().toString(36), name:'Sesi Baru', focus:'', day:1, exercises:[] });
+  pbRenderSessions();
+  // open editor for new session immediately
+  seOpen(_pbProg.sessions.length-1);
+}
+
+function pbDeleteSession(si) {
+  if(!_pbProg) return;
+  _pbProg.sessions.splice(si,1);
+  pbRenderSessions();
+}
+
+function pbDeleteEx(si, ei) {
+  if(!_pbProg) return;
+  _pbProg.sessions[si].exercises.splice(ei,1);
+  pbRenderSessions();
+}
+
+function pbSave() {
+  if(!_pbProg) return;
+  _pbProg.name = document.getElementById('pb-name').value.trim() || 'My Program';
+  if(!_pbProg.name) { document.getElementById('pb-name').focus(); return; }
+
+  const progs = loadPrograms();
+  const idx   = progs.findIndex(p=>p.id===_pbProg.id);
+  if(idx>=0) progs[idx] = _pbProg;
+  else progs.push(_pbProg);
+  savePrograms(progs);
+
+  // if editing active or new — activate
+  if(!_pbEditId || getActiveProgId()===_pbProg.id) {
+    setActiveProgId(_pbProg.id);
+  }
+
+  pbClose();
+  loadActiveProgram();
+  showToast(`✓ "${_pbProg.name}" disimpan`);
+  if(navigator.vibrate) navigator.vibrate(30);
+}
+
+/* ══ SESSION EDITOR ══ */
+let _seIdx = null;
+const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function seOpen(sessIdx) {
+  if(!_pbProg) return;
+  _seIdx = sessIdx;
+  const sess = _pbProg.sessions[sessIdx];
+  document.getElementById('se-title').textContent  = 'Edit Sesi ' + (sessIdx+1);
+  document.getElementById('se-name').value         = sess.name  || '';
+  document.getElementById('se-focus').value        = sess.focus || '';
+  document.querySelectorAll('.se-day').forEach(btn => {
+    btn.classList.toggle('on', parseInt(btn.dataset.day) === sess.day);
+  });
+  document.getElementById('sess-editor').classList.add('show');
+}
+
+function seClose() { document.getElementById('sess-editor').classList.remove('show'); _seIdx=null; }
+
+function seToggleDay(btn) {
+  document.querySelectorAll('.se-day').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function seSave() {
+  if(_seIdx===null || !_pbProg) return;
+  const sess  = _pbProg.sessions[_seIdx];
+  sess.name   = document.getElementById('se-name').value.trim() || 'Sesi '+(_seIdx+1);
+  sess.focus  = document.getElementById('se-focus').value.trim();
+  const onDay = document.querySelector('.se-day.on');
+  if(onDay) sess.day = parseInt(onDay.dataset.day);
+  seClose();
+  pbRenderSessions();
+}
+
+/* ══ EXERCISE LIBRARY ══ */
+let _exlSessIdx = null;
+let _exlSelected = new Set();
+
+const EXL_MUSCLES = ['All','Chest','Back','Shoulders','Triceps','Biceps','Quads','Hamstrings','Glutes','Core','Cardio'];
+let _exlFilter = 'All';
+
+function exlOpen(sessIdx) {
+  _exlSessIdx = sessIdx;
+  _exlSelected.clear();
+  _exlFilter = 'All';
+  document.getElementById('exl-search').value = '';
+
+  // render filter chips
+  const filtersEl = document.getElementById('exl-filters');
+  filtersEl.innerHTML = EXL_MUSCLES.map(m =>
+    `<button class="exl-filter${m==='All'?' on':''}" onclick="exlSetFilter('${m}',this)">${m}</button>`
+  ).join('');
+
+  exlRender();
+  document.getElementById('ex-library-modal').classList.add('show');
+}
+
+function exlClose() {
+  document.getElementById('ex-library-modal').classList.remove('show');
+  _exlSessIdx = null;
+}
+
+function exlSetFilter(m, btn) {
+  _exlFilter = m;
+  document.querySelectorAll('.exl-filter').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  exlRender();
+}
+
+function exlRender() {
+  const lib      = loadLibrary();
+  const query    = document.getElementById('exl-search').value.toLowerCase().trim();
+  const list     = document.getElementById('exl-list');
+  const filtered = lib.filter(e => {
+    const matchMuscle = _exlFilter==='All' || e.muscle===_exlFilter;
+    const matchQuery  = !query || e.name.toLowerCase().includes(query) || (e.muscle||'').toLowerCase().includes(query);
+    return matchMuscle && matchQuery;
+  });
+
+  if(!filtered.length) {
+    list.innerHTML = '<div style="padding:24px;text-align:center;font-family:JetBrains Mono,monospace;font-size:10px;color:var(--ink3);letter-spacing:.08em">No exercises found</div>';
+    return;
+  }
+
+  // group by muscle
+  const groups = {};
+  filtered.forEach(e => {
+    if(!groups[e.muscle]) groups[e.muscle]='';
+    const sel = _exlSelected.has(e.id);
+    groups[e.muscle] += `
+      <div class="exl-item${sel?' selected':''}" onclick="exlToggle('${e.id}')">
+        <div class="exl-item-icon">${e.emoji||'💪'}</div>
+        <div class="exl-item-info">
+          <div class="exl-item-name">${e.name}</div>
+          <div class="exl-item-muscle">${e.muscle}${e.note?' · '+e.note:''}</div>
+        </div>
+        <div class="exl-item-check">✓</div>
+      </div>`;
+  });
+
+  list.innerHTML = Object.entries(groups).map(([muscle, html]) =>
+    (_exlFilter==='All' ? `<div class="exl-divider">${muscle}</div>` : '') + html
+  ).join('');
+
+  // update add button
+  const cnt = _exlSelected.size;
+  document.getElementById('exl-add-btn').textContent = cnt
+    ? `Tambahkan ${cnt} Exercise`
+    : 'Tambahkan ke Sesi';
+}
+
+function exlToggle(id) {
+  if(_exlSelected.has(id)) _exlSelected.delete(id);
+  else _exlSelected.add(id);
+  exlRender();
+}
+
+function exlConfirm() {
+  if(!_exlSelected.size || _exlSessIdx===null || !_pbProg) return;
+  const lib  = loadLibrary();
+  const sess = _pbProg.sessions[_exlSessIdx];
+  _exlSelected.forEach(id => {
+    const ex = lib.find(e=>e.id===id);
+    if(!ex) return;
+    const already = sess.exercises.find(e=>e.id===id||e.name===ex.name);
+    if(!already) sess.exercises.push({ id:ex.id, name:ex.name, note:ex.note||'', sets:'2×6–10', load:0, rir:'RIR 1' });
+  });
+  exlClose();
+  pbRenderSessions();
+  showToast(`✓ ${_exlSelected.size} exercise ditambahkan`);
+  _exlSelected.clear();
+}
+
+/* ══ DYNAMIC PROGRAM RENDER ══ */
+function loadActiveProgram() {
+  const prog     = getActiveProg();
+  if(!prog) return;
+
+  // update switcher
+  const switcher = document.getElementById('prog-switcher-name');
+  if(switcher) switcher.textContent = prog.name;
+
+  // if default HILV — keep original DOM, just update tabs
+  if(prog.id === 'hilv-default') {
+    renderTabsFromProg(prog);
+    return;
+  }
+
+  // rebuild tabs + panels dynamically
+  rebuildPanels(prog);
+}
+
+function renderTabsFromProg(prog) {
+  const tabsEl = document.querySelector('.tabs');
+  if(!tabsEl) return;
+  const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  tabsEl.innerHTML = prog.sessions.map((sess,i) => `
+    <button class="tab${i===0?' on':''}" onclick="sw(${i+1})">
+      <div class="td">Day ${String(i+1).padStart(2,'0')} &middot; ${DAYS[sess.day]||'?'}</div>
+      <div class="tn">${sess.name}</div>
+      <div class="ts">${sess.focus||''}</div>
+    </button>`).join('');
+}
+
+function rebuildPanels(prog) {
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const RIR_CLASS = {'RIR 0–1':'rb01','RIR 1':'rb1','RIR 1–2':'rb12','RIR 2':'rb12'};
+
+  // rebuild tabs
+  const tabsEl = document.querySelector('.tabs');
+  if(tabsEl) {
+    tabsEl.innerHTML = prog.sessions.map((sess,i) => `
+      <button class="tab${i===0?' on':''}" onclick="sw(${i+1})">
+        <div class="td">Day ${String(i+1).padStart(2,'0')} &middot; ${DAYS[sess.day]||'?'}</div>
+        <div class="tn">${sess.name}</div>
+        <div class="ts">${sess.focus||''}</div>
+      </button>`).join('');
+  }
+
+  // rebuild panels
+  const inner = document.getElementById('panels-inner');
+  if(!inner) return;
+  inner.innerHTML = prog.sessions.map((sess,i) => {
+    const pid = 'pp' + (i+1);
+    const exRows = (sess.exercises||[]).map((ex,ei) => {
+      const num  = String(ei+1).padStart(2,'0');
+      const rirCls = RIR_CLASS[ex.rir] || 'rb1';
+      return `<div class="xr" data-edit-exid="${pid}-${num}">
+        <div class="xri">
+          <div class="xrt">
+            <span class="xi">${num}</span>
+            <div class="xinfo">
+              <div class="xname">${ex.name}</div>
+              <div class="xnote">${ex.note||''}</div>
+            </div>
+            <div class="xrir"><span class="rb ${rirCls}">${ex.rir||'RIR 1'}</span></div>
+          </div>
+          <div class="xrm">
+            <span class="xsets">${ex.sets||'2×6–10'}</span>
+            <span class="xload">${ex.load||0} kg</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="panel${i===0?' on':''}" id="${pid}">
+      <div class="xt">
+        <div class="xh"><span>#</span><span>Exercise</span><span>Sets × Reps</span><span>Load</span><span style="text-align:right">RIR</span></div>
+        ${exRows}
+      </div>
+    </div>`;
+  }).join('');
+
+  // re-init trackers for new panels
+  injectTrackers();
+  initEditMode();
+  applyMovedExercises();
+  applyExLoads();
+  applyDeload();
+  applyHiddenState();
+  applySavedOrder();
+}
 
 /* ── SWIPE TABS ── */
 (function(){
@@ -4482,6 +5368,7 @@ function rtSet(secs) {
 injectTrackers();
 initAllCustomEx();
 initEditMode();
+loadActiveProgram();
 applyMovedExercises();
 applyExLoads();
 applyDeload();
@@ -4665,6 +5552,98 @@ renderBW();
       </div>
     </div>
     <button class="eex-save" onclick="eexSave()">Simpan Perubahan</button>
+  </div>
+</div>
+
+<!-- ── PROGRAM MANAGER MODAL ── -->
+<div id="prog-modal">
+  <div class="pm-sheet">
+    <div class="pm-handle"></div>
+    <div class="pm-hd">
+      <div class="pm-title">Programs</div>
+      <button class="pm-close" onclick="pmClose()">✕</button>
+    </div>
+    <div class="pm-list" id="pm-list"></div>
+    <button class="pm-new-btn" onclick="pbOpen(null)">Buat Program Baru</button>
+  </div>
+</div>
+
+<!-- ── PROGRAM BUILDER ── -->
+<div id="prog-builder">
+  <div class="pb-header">
+    <button class="pb-back" onclick="pbClose()">←</button>
+    <div class="pb-header-title" id="pb-header-title">Program Baru</div>
+    <button class="pb-save-btn" onclick="pbSave()">Simpan</button>
+  </div>
+  <div class="pb-body">
+    <!-- meta -->
+    <div class="pb-field">
+      <div class="pb-label">Nama Program</div>
+      <input class="pb-input" id="pb-name" placeholder="e.g. PPL, HILV, Full Body…" maxlength="40">
+    </div>
+    <div class="pb-field">
+      <div class="pb-label">Ikon</div>
+      <div class="pb-emoji-row" id="pb-emoji-row"></div>
+    </div>
+    <!-- sessions -->
+    <div>
+      <div class="pb-sessions-title">Sesi</div>
+      <div id="pb-sessions-list"></div>
+      <button class="pb-add-session" onclick="pbAddSession()">Tambah Sesi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SESSION EDITOR ── -->
+<div id="sess-editor">
+  <div class="se-sheet">
+    <div class="se-handle"></div>
+    <div class="se-hd"><div class="se-title" id="se-title">Edit Sesi</div></div>
+    <div class="se-body">
+      <div>
+        <div class="se-label">Nama Sesi</div>
+        <input class="se-input" id="se-name" placeholder="e.g. Upper A, Push, Leg Day…" maxlength="30">
+      </div>
+      <div>
+        <div class="se-label">Focus / Subtitle</div>
+        <input class="se-input" id="se-focus" placeholder="e.g. Chest · Back · Delt…" maxlength="40">
+      </div>
+      <div>
+        <div class="se-label">Hari Latihan</div>
+        <div class="se-days" id="se-days">
+          <button class="se-day" data-day="0" onclick="seToggleDay(this)">Sun</button>
+          <button class="se-day" data-day="1" onclick="seToggleDay(this)">Mon</button>
+          <button class="se-day" data-day="2" onclick="seToggleDay(this)">Tue</button>
+          <button class="se-day" data-day="3" onclick="seToggleDay(this)">Wed</button>
+          <button class="se-day" data-day="4" onclick="seToggleDay(this)">Thu</button>
+          <button class="se-day" data-day="5" onclick="seToggleDay(this)">Fri</button>
+          <button class="se-day" data-day="6" onclick="seToggleDay(this)">Sat</button>
+        </div>
+      </div>
+    </div>
+    <div class="se-footer">
+      <button class="se-cancel" onclick="seClose()">Batal</button>
+      <button class="se-save" onclick="seSave()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── EXERCISE LIBRARY MODAL ── -->
+<div id="ex-library-modal">
+  <div class="exl-sheet">
+    <div class="exl-handle"></div>
+    <div class="exl-hd">
+      <div class="exl-hd-row">
+        <div class="exl-title">Exercise Library</div>
+        <button class="exl-close" onclick="exlClose()">✕</button>
+      </div>
+      <input class="exl-search" id="exl-search" placeholder="Cari exercise…" oninput="exlRender()">
+      <div class="exl-filters" id="exl-filters"></div>
+    </div>
+    <div class="exl-list" id="exl-list"></div>
+    <div class="exl-footer">
+      <button class="exl-add-btn" id="exl-add-btn" onclick="exlConfirm()">Tambahkan ke Sesi</button>
+    </div>
   </div>
 </div>
 
