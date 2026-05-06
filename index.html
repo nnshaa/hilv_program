@@ -866,6 +866,169 @@ body.deload-active .sl-head { background:rgba(245,184,48,.04); }
 
 
 
+
+/* ────────────────── SWIPE TABS */
+.panels-wrap {
+  overflow:hidden;
+  position:relative;
+  touch-action:pan-y;
+}
+.panels-inner {
+  display:flex;
+  transition:transform .32s cubic-bezier(.32,1.1,.42,1);
+  will-change:transform;
+}
+.panels-inner .panel {
+  min-width:100%;
+  flex-shrink:0;
+  display:none;
+}
+.panels-inner .panel.on { display:block; }
+
+/* ────────────────── STREAK TRACKER */
+.streak-bar {
+  display:flex; align-items:center; gap:14px;
+  padding:12px 16px;
+  background:rgba(200,240,58,.04);
+  border:1px solid rgba(200,240,58,.1);
+  border-radius:12px; margin-bottom:16px;
+}
+.streak-fire { font-size:24px; flex-shrink:0; }
+.streak-info { flex:1; min-width:0; }
+.streak-count {
+  font-family:'JetBrains Mono',monospace;
+  font-size:22px; font-weight:700; color:var(--lime); line-height:1;
+}
+.streak-label {
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink3); margin-top:3px;
+}
+.streak-best {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; color:var(--ink3); text-align:right; flex-shrink:0;
+}
+.streak-dots {
+  display:flex; gap:4px; flex-wrap:wrap; margin-top:10px;
+}
+.streak-dot {
+  width:10px; height:10px; border-radius:3px;
+  background:rgba(255,255,255,.07);
+  transition:background .2s;
+}
+.streak-dot.active  { background:var(--lime); }
+.streak-dot.missed  { background:rgba(255,100,100,.25); }
+.streak-dot.rest    { background:rgba(255,255,255,.04); border:1px dashed rgba(255,255,255,.1); }
+
+/* ────────────────── BODY WEIGHT LOG */
+.bw-section {
+  margin:40px 0 0;
+  padding-top:32px;
+  border-top:1px solid rgba(255,255,255,.05);
+}
+.bw-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(26px,5vw,38px); letter-spacing:.04em; color:var(--ink);
+  margin-bottom:4px;
+}
+.bw-sub {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink3); margin-bottom:20px;
+}
+.bw-input-row {
+  display:flex; gap:10px; align-items:center; margin-bottom:16px;
+}
+.bw-input {
+  flex:1; background:rgba(255,255,255,.05);
+  border:1.5px solid rgba(255,255,255,.1); border-radius:10px;
+  color:var(--ink); font-family:'JetBrains Mono',monospace;
+  font-size:18px; font-weight:600; text-align:center;
+  padding:12px 8px; outline:none; transition:border-color .18s;
+  -moz-appearance:textfield;
+}
+.bw-input::-webkit-inner-spin-button,
+.bw-input::-webkit-outer-spin-button { -webkit-appearance:none; }
+.bw-input:focus { border-color:rgba(200,240,58,.4); }
+.bw-log-btn {
+  padding:12px 20px; border-radius:10px; flex-shrink:0;
+  border:none; background:var(--lime); color:var(--bg);
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  cursor:pointer; transition:opacity .15s;
+}
+.bw-log-btn:hover { opacity:.85; }
+.bw-chart-wrap {
+  position:relative; margin-bottom:8px;
+}
+.bw-svg { width:100%; height:140px; overflow:visible; display:block; }
+.bw-stats {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px;
+}
+.bw-stat {
+  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07);
+  border-radius:10px; padding:12px 12px 10px;
+}
+.bw-stat-v {
+  font-family:'JetBrains Mono',monospace;
+  font-size:18px; font-weight:600; color:var(--ink); line-height:1;
+}
+.bw-stat-v.loss { color:#4ade80; }
+.bw-stat-v.gain { color:#f87171; }
+.bw-stat-l {
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink3); margin-top:4px;
+}
+.bw-empty {
+  font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--ink3);
+  text-align:center; padding:28px 0; letter-spacing:.06em;
+}
+
+/* ────────────────── SHARE PROGRESS */
+#share-canvas { display:none; }
+.share-btn {
+  display:flex; align-items:center; gap:8px;
+  padding:10px 18px; border-radius:10px;
+  border:1.5px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04); color:var(--ink3);
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  cursor:pointer; transition:all .18s; margin-top:6px;
+}
+.share-btn:hover { border-color:rgba(200,240,58,.35); color:var(--lime); background:rgba(200,240,58,.05); }
+.share-btn svg { width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; }
+
+#share-preview-modal {
+  position:fixed; inset:0; z-index:9600;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px 16px;
+  background:rgba(0,0,0,.75); backdrop-filter:blur(12px);
+  opacity:0; pointer-events:none; transition:opacity .22s;
+}
+#share-preview-modal.show { opacity:1; pointer-events:auto; }
+.sp-card {
+  width:100%; max-width:380px;
+  background:#12121a; border:1px solid rgba(255,255,255,.1);
+  border-radius:16px; overflow:hidden;
+  transform:scale(.95); transition:transform .25s cubic-bezier(.32,1.1,.42,1);
+}
+#share-preview-modal.show .sp-card { transform:scale(1); }
+.sp-preview { width:100%; display:block; }
+.sp-actions {
+  display:flex; gap:8px; padding:14px 16px;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.sp-btn {
+  flex:1; padding:11px; border-radius:10px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; letter-spacing:.1em; text-transform:uppercase; font-weight:600;
+  cursor:pointer; transition:all .15s;
+}
+.sp-cancel { border:1.5px solid rgba(255,255,255,.1); background:transparent; color:var(--ink3); }
+.sp-download { border:none; background:var(--lime); color:var(--bg); }
+.sp-download:hover { opacity:.85; }
+
 /* ────────────────── EDIT BEBAN & SETS */
 @keyframes load-edit-in { from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
 
@@ -1923,6 +2086,21 @@ body.deload-active .sl-head { background:rgba(245,184,48,.04); }
     <button class="deload-toggle" onclick="toggleDeload()">Nonaktifkan</button>
   </div>
 
+  <!-- STREAK BAR -->
+  <div class="streak-bar r" id="streak-bar">
+    <div class="streak-fire" id="streak-fire">🔥</div>
+    <div class="streak-info">
+      <div class="streak-count" id="streak-count">0</div>
+      <div class="streak-label">Day Streak</div>
+      <div class="streak-dots" id="streak-dots"></div>
+    </div>
+    <div class="streak-best" id="streak-best"></div>
+  </div>
+
+  <!-- PANELS WRAP (swipe container) -->
+  <div class="panels-wrap" id="panels-wrap">
+  <div class="panels-inner" id="panels-inner">
+
   <!-- P1 UPPER A -->
   <div class="panel on" id="p1"><div class="xt">
     <div class="xh"><span>#</span><span>Exercise</span><span>Sets &times; Reps</span><span>Load</span><span style="text-align:right">RIR</span></div>
@@ -2041,6 +2219,9 @@ body.deload-active .sl-head { background:rgba(245,184,48,.04); }
   </div>
 </section>
 
+  </div><!-- /panels-inner -->
+  </div><!-- /panels-wrap -->
+
 <!-- WEEKLY SUMMARY -->
 <section class="wsum-section r">
   <div class="wsum-title">Weekly Summary</div>
@@ -2056,6 +2237,38 @@ body.deload-active .sl-head { background:rgba(245,184,48,.04); }
     <div class="wsum-empty">Log beberapa sesi dulu untuk melihat PR</div>
   </div>
 </section>
+
+
+<!-- BODY WEIGHT LOG -->
+<section class="bw-section r">
+  <div class="bw-title">Body Weight</div>
+  <div class="bw-sub" id="bw-sub">Log berat badan harian</div>
+  <div class="bw-input-row">
+    <input class="bw-input" id="bw-input" type="number" placeholder="70.0" step="0.1" min="30" max="300" inputmode="decimal">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink3);flex-shrink:0">kg</span>
+    <button class="bw-log-btn" onclick="bwLog()">Log</button>
+  </div>
+  <div class="bw-chart-wrap">
+    <svg class="bw-svg" id="bw-svg" viewBox="0 0 440 140" preserveAspectRatio="none"></svg>
+  </div>
+  <div class="bw-stats">
+    <div class="bw-stat"><div class="bw-stat-v" id="bw-current">—</div><div class="bw-stat-l">Current</div></div>
+    <div class="bw-stat"><div class="bw-stat-v loss" id="bw-change">—</div><div class="bw-stat-l">Change</div></div>
+    <div class="bw-stat"><div class="bw-stat-v" id="bw-avg">—</div><div class="bw-stat-l">7-Day Avg</div></div>
+  </div>
+</section>
+
+<canvas id="share-canvas"></canvas>
+<div id="share-preview-modal">
+  <div class="sp-card">
+    <img class="sp-preview" id="sp-preview" alt="Share preview">
+    <div class="sp-actions">
+      <button class="sp-btn sp-cancel" onclick="shareClose()">Tutup</button>
+      <button class="sp-btn sp-download" onclick="shareDownload()">Download</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -2079,6 +2292,10 @@ body.deload-active .sl-head { background:rgba(245,184,48,.04); }
     <button class="export-btn" onclick="bkOpen()" style="margin-top:6px">
       <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
       Backup & Restore
+    </button>
+    <button class="export-btn share-btn" onclick="shareOpen()" style="margin-top:6px">
+      <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Share Progress
     </button>
   </div>
   <div class="f-r"><div class="f-n">10</div><div class="f-s">Program Score</div></div>
@@ -2111,6 +2328,8 @@ const ALL_KEYS = {
   theme:   'hilv-theme',
   deload:  'hilv-deload',
   onboard: 'hilv-onboarded',
+  bw:      'hilv_bw_log',
+  streak:  'hilv_streak',
 };
 function loadAll(){
   try{
@@ -2738,6 +2957,359 @@ function initAllCustomEx() {
 }
 
 
+
+/* ── SWIPE TABS ── */
+(function(){
+  let startX=0, startY=0, isDragging=false;
+  const THRESHOLD = 50;
+  const wrap = document.getElementById('panels-wrap');
+  if(!wrap) return;
+  wrap.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    isDragging = true;
+  }, {passive:true});
+  wrap.addEventListener('touchend', e => {
+    if(!isDragging) return;
+    isDragging = false;
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if(Math.abs(dx) < THRESHOLD || Math.abs(dy) > Math.abs(dx)*1.2) return;
+    const tabs  = document.querySelectorAll('.tab');
+    const cur   = [...tabs].findIndex(t=>t.classList.contains('on'));
+    const next  = dx < 0 ? Math.min(cur+1, tabs.length-1) : Math.max(cur-1, 0);
+    if(next !== cur) {
+      sw(next+1);
+      if(navigator.vibrate) navigator.vibrate(8);
+    }
+  }, {passive:true});
+})();
+
+/* ── STREAK TRACKER ── */
+const STREAK_KEY = 'hilv_streak';
+
+function loadStreak() { try{ return JSON.parse(localStorage.getItem(STREAK_KEY)||'{}'); }catch(e){ return {}; } }
+function saveStreak(d){ localStorage.setItem(STREAK_KEY, JSON.stringify(d)); }
+
+// training days: 0=Sun, 1=Mon ... 6=Sat  → SAT=6,SUN=0,TUE=2,WED=3,THU=4
+const TRAIN_DAYS = new Set([6,0,2,3,4]);
+
+function calcStreak() {
+  const all     = loadAll();
+  // collect all unique training dates from log
+  const trainedDates = new Set();
+  Object.values(all).forEach(sessions => {
+    sessions.forEach(s => { if(s._date) trainedDates.add(s._date); });
+  });
+
+  // also check streak storage for manually tracked days
+  const stored = loadStreak();
+  Object.keys(stored).forEach(d => trainedDates.add(d));
+
+  const sorted = [...trainedDates].sort();
+  if(!sorted.length) return { current:0, best:0, last14:[] };
+
+  // compute current streak (consecutive training days)
+  const todayISO = new Date().toISOString().slice(0,10);
+  let streak = 0, best = 0, tmp = 0;
+  let prev = null;
+
+  // check last 60 days
+  for(let i=59; i>=0; i--) {
+    const d   = new Date(); d.setDate(d.getDate()-i);
+    const iso = d.toISOString().slice(0,10);
+    const dow = d.getDay();
+    const isTrainDay = TRAIN_DAYS.has(dow);
+    const trained    = trainedDates.has(iso);
+
+    if(trained) {
+      tmp++;
+      if(tmp > best) best = tmp;
+    } else if(isTrainDay && iso < todayISO) {
+      tmp = 0; // missed training day resets streak
+    }
+    // rest days don't reset
+  }
+
+  // current streak = consecutive from today backward
+  streak = 0;
+  for(let i=0; i<30; i++) {
+    const d   = new Date(); d.setDate(d.getDate()-i);
+    const iso = d.toISOString().slice(0,10);
+    const dow = d.getDay();
+    if(trainedDates.has(iso)) { streak++; }
+    else if(TRAIN_DAYS.has(dow) && iso <= todayISO) break;
+  }
+
+  // last 14 days
+  const last14 = [];
+  for(let i=13; i>=0; i--) {
+    const d   = new Date(); d.setDate(d.getDate()-i);
+    const iso = d.toISOString().slice(0,10);
+    const dow = d.getDay();
+    last14.push({
+      iso, dow,
+      trained: trainedDates.has(iso),
+      isTrainDay: TRAIN_DAYS.has(dow),
+      isRest: !TRAIN_DAYS.has(dow),
+      isFuture: iso > todayISO,
+    });
+  }
+  return { current: streak, best, last14 };
+}
+
+function renderStreak() {
+  const { current, best, last14 } = calcStreak();
+  const fireEl   = document.getElementById('streak-fire');
+  const countEl  = document.getElementById('streak-count');
+  const bestEl   = document.getElementById('streak-best');
+  const dotsEl   = document.getElementById('streak-dots');
+  if(!fireEl) return;
+
+  fireEl.textContent  = current >= 7 ? '🔥' : current >= 3 ? '⚡' : '💪';
+  countEl.textContent = current;
+  bestEl.innerHTML    = `Best<br><strong style="color:var(--lime)">${best}</strong>`;
+
+  dotsEl.innerHTML = last14.map(d => {
+    let cls = 'streak-dot';
+    if(d.isFuture)       cls += ' rest';
+    else if(d.trained)   cls += ' active';
+    else if(d.isTrainDay) cls += ' missed';
+    else                 cls += ' rest';
+    const label = d.iso.slice(5);
+    return `<div class="${cls}" title="${label}"></div>`;
+  }).join('');
+}
+
+/* ── BODY WEIGHT LOG ── */
+const BW_KEY = 'hilv_bw_log'; // [ { date: ISO, kg: number } ]
+
+function loadBW() { try{ return JSON.parse(localStorage.getItem(BW_KEY)||'[]'); }catch(e){ return []; } }
+function saveBW(d){ localStorage.setItem(BW_KEY, JSON.stringify(d)); }
+
+function bwLog() {
+  const input = document.getElementById('bw-input');
+  const kg    = parseFloat(input.value);
+  if(!kg || kg < 30 || kg > 300) { input.focus(); return; }
+
+  const data    = loadBW();
+  const today   = new Date().toISOString().slice(0,10);
+  const existing = data.findIndex(e => e.date === today);
+  if(existing >= 0) data[existing].kg = kg;
+  else data.push({ date: today, kg });
+  data.sort((a,b) => a.date < b.date ? -1 : 1);
+  if(data.length > 90) data.splice(0, data.length-90);
+  saveBW(data);
+
+  input.value = '';
+  renderBW();
+  showToast(`⚖️ ${kg} kg dicatat`);
+  if(navigator.vibrate) navigator.vibrate(20);
+}
+
+function renderBW() {
+  const data   = loadBW();
+  const svg    = document.getElementById('bw-svg');
+  const subEl  = document.getElementById('bw-sub');
+  if(!svg) return;
+
+  if(!data.length) {
+    svg.innerHTML = '<text x="220" y="70" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="rgba(255,255,255,.18)" letter-spacing="2">NO DATA</text>';
+    document.getElementById('bw-current').textContent = '—';
+    document.getElementById('bw-change').textContent  = '—';
+    document.getElementById('bw-avg').textContent     = '—';
+    return;
+  }
+
+  const last  = data[data.length-1];
+  const first = data[0];
+  const delta = last.kg - first.kg;
+  const last7 = data.slice(-7);
+  const avg7  = last7.reduce((s,e)=>s+e.kg,0)/last7.length;
+
+  document.getElementById('bw-current').textContent = last.kg.toFixed(1) + ' kg';
+  const changeEl = document.getElementById('bw-change');
+  changeEl.textContent  = (delta>0?'+':'')+delta.toFixed(1)+' kg';
+  changeEl.className    = 'bw-stat-v ' + (delta<=0?'loss':'gain');
+  document.getElementById('bw-avg').textContent     = avg7.toFixed(1) + ' kg';
+
+  subEl.textContent = first.date + ' — ' + last.date;
+
+  // SVG chart
+  const W=440,H=140,PAD={t:14,r:14,b:28,l:36};
+  const vals = data.map(e=>e.kg);
+  const minV = Math.min(...vals)-0.5, maxV = Math.max(...vals)+0.5;
+  const range = maxV-minV||1;
+  const cW = W-PAD.l-PAD.r, cH = H-PAD.t-PAD.b;
+  const n  = data.length;
+  const xOf = i => PAD.l + (n===1?cW/2:(i/(n-1))*cW);
+  const yOf = v => PAD.t + cH - ((v-minV)/range)*cH;
+
+  // grid
+  let grid='';
+  [0,0.5,1].forEach(f=>{
+    const y=PAD.t+cH-f*cH;
+    const v=(minV+f*range).toFixed(1);
+    grid+=`<line x1="${PAD.l}" y1="${y.toFixed(1)}" x2="${W-PAD.r}" y2="${y.toFixed(1)}" stroke="rgba(255,255,255,.05)" stroke-width="1"/>`;
+    grid+=`<text x="${PAD.l-4}" y="${(y+4).toFixed(1)}" text-anchor="end" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(255,255,255,.22)">${v}</text>`;
+  });
+
+  const pathD = data.map((e,i)=>`${i===0?'M':'L'}${xOf(i).toFixed(1)},${yOf(e.kg).toFixed(1)}`).join(' ');
+  const areaD = pathD+` L${xOf(n-1).toFixed(1)},${(PAD.t+cH).toFixed(1)} L${xOf(0).toFixed(1)},${(PAD.t+cH).toFixed(1)} Z`;
+
+  // dots (show last + every 7th)
+  let dots='';
+  data.forEach((e,i)=>{
+    const x=xOf(i),y=yOf(e.kg),isLast=i===n-1;
+    if(isLast||i%7===0){
+      dots+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${isLast?5:3}" fill="${isLast?'var(--lime)':'#1a1a2e'}" stroke="${delta<=0?'var(--lime)':'#f87171'}" stroke-width="2"/>`;
+      if(isLast) dots+=`<text x="${x.toFixed(1)}" y="${(y<PAD.t+16?y+16:y-8).toFixed(1)}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" font-weight="600" fill="${delta<=0?'var(--lime)':'#f87171'}">${e.kg}</text>`;
+    }
+    if(n<=10){
+      const lbl=e.date.slice(5);
+      dots+=`<text x="${x.toFixed(1)}" y="${(H-4).toFixed(1)}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="rgba(255,255,255,.2)">${lbl}</text>`;
+    }
+  });
+
+  const lineColor = delta<=0?'var(--lime)':'#f87171';
+  const fillColor = delta<=0?'rgba(200,240,58,.12)':'rgba(248,113,113,.1)';
+  svg.innerHTML=`
+    <defs><linearGradient id="bw-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${fillColor.replace(/\..+\)/,'.18)')}"/>
+      <stop offset="100%" stop-color="${fillColor.replace(/\..+\)/,'0)')}"/>
+    </linearGradient></defs>
+    ${grid}
+    <path d="${areaD}" fill="url(#bw-grad)"/>
+    <path d="${pathD}" fill="none" stroke="${lineColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${dots}`;
+}
+
+/* ── SHARE PROGRESS ── */
+function shareOpen() {
+  const canvas  = document.getElementById('share-canvas');
+  const ctx     = canvas.getContext('2d');
+  const W=800, H=420;
+  canvas.width=W; canvas.height=H;
+
+  // background
+  ctx.fillStyle='#05050A';
+  ctx.fillRect(0,0,W,H);
+
+  // gradient overlay
+  const grad = ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0,'rgba(200,240,58,.06)');
+  grad.addColorStop(1,'rgba(86,170,255,.04)');
+  ctx.fillStyle=grad;
+  ctx.fillRect(0,0,W,H);
+
+  // border
+  ctx.strokeStyle='rgba(200,240,58,.2)';
+  ctx.lineWidth=1;
+  ctx.strokeRect(1,1,W-2,H-2);
+
+  // title
+  ctx.fillStyle='rgba(200,240,58,1)';
+  ctx.font='bold 13px JetBrains Mono, monospace';
+  ctx.letterSpacing='2px';
+  ctx.fillText('HILV · HIGH FREQUENCY PROGRAM', 36, 44);
+
+  // date
+  ctx.fillStyle='rgba(255,255,255,.3)';
+  ctx.font='11px JetBrains Mono, monospace';
+  ctx.fillText(new Date().toDateString().toUpperCase(), 36, 64);
+
+  // weekly stats
+  const { current:streak } = calcStreak();
+  const wsThis = calcWeekStats(getWeekRange(0));
+  const bwData = loadBW();
+  const bwLast = bwData.length ? bwData[bwData.length-1].kg : null;
+
+  const stats = [
+    { label:'STREAK',    value: streak + ' days' },
+    { label:'SETS/WEEK', value: wsThis.sets || '—' },
+    { label:'VOLUME',    value: wsThis.volume ? (wsThis.volume/1000).toFixed(1)+'k kg' : '—' },
+    { label:'BODY WT',   value: bwLast ? bwLast+' kg' : '—' },
+  ];
+
+  stats.forEach((s,i) => {
+    const x = 36 + i*(W-72)/4;
+    const y = 120;
+    // card bg
+    ctx.fillStyle='rgba(255,255,255,.04)';
+    roundRect(ctx, x, y-32, (W-72)/4-12, 72, 10);
+    ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.08)';
+    ctx.lineWidth=1;
+    roundRect(ctx, x, y-32, (W-72)/4-12, 72, 10);
+    ctx.stroke();
+    // value
+    ctx.fillStyle='rgba(200,240,58,1)';
+    ctx.font='bold 22px JetBrains Mono, monospace';
+    ctx.fillText(String(s.value), x+12, y+6);
+    // label
+    ctx.fillStyle='rgba(255,255,255,.3)';
+    ctx.font='9px JetBrains Mono, monospace';
+    ctx.fillText(s.label, x+12, y+24);
+  });
+
+  // PR list this week
+  const prs = wsThis.prs || [];
+  ctx.fillStyle='rgba(255,255,255,.5)';
+  ctx.font='10px JetBrains Mono, monospace';
+  ctx.fillText('PRs THIS WEEK', 36, 228);
+  if(prs.length) {
+    prs.slice(0,4).forEach((pr,i) => {
+      ctx.fillStyle='rgba(200,240,58,.8)';
+      ctx.font='bold 11px JetBrains Mono, monospace';
+      ctx.fillText(`★ ${pr.name}`, 36, 252+i*22);
+      ctx.fillStyle='rgba(255,255,255,.5)';
+      ctx.font='11px JetBrains Mono, monospace';
+      ctx.fillText(`${pr.kg} kg`, W-80, 252+i*22);
+    });
+  } else {
+    ctx.fillStyle='rgba(255,255,255,.2)';
+    ctx.font='11px JetBrains Mono, monospace';
+    ctx.fillText('Log your sessions to see PRs', 36, 252);
+  }
+
+  // watermark
+  ctx.fillStyle='rgba(200,240,58,.2)';
+  ctx.font='bold 11px JetBrains Mono, monospace';
+  ctx.fillText('HILV', W-60, H-18);
+
+  // show preview
+  const img = document.getElementById('sp-preview');
+  img.src = canvas.toDataURL('image/png');
+  document.getElementById('share-preview-modal').classList.add('show');
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+
+function shareClose() { document.getElementById('share-preview-modal').classList.remove('show'); }
+
+function shareDownload() {
+  const canvas = document.getElementById('share-canvas');
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = 'hilv-progress-' + new Date().toISOString().slice(0,10) + '.png';
+  a.click();
+  shareClose();
+  showToast('📸 Progress card didownload');
+  if(navigator.vibrate) navigator.vibrate(30);
+}
+
 /* ── BACKUP & RESTORE ── */
 function bkOpen() {
   // show storage stats
@@ -2768,6 +3340,8 @@ function bkExport() {
     theme:   localStorage.getItem(ALL_KEYS.theme)   || 'dark',
     deload:  localStorage.getItem(ALL_KEYS.deload)  || '0',
     onboard: localStorage.getItem(ALL_KEYS.onboard) || '',
+    bw:      loadBW(),
+    streak:  loadStreak(),
   };
   const json = JSON.stringify(payload, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
@@ -2843,6 +3417,8 @@ function bkParseFile(file) {
       if(data.hidden)  localStorage.setItem(ALL_KEYS.hidden,  JSON.stringify(data.hidden));
       if(data.order)   localStorage.setItem(ALL_KEYS.order,   JSON.stringify(data.order));
       if(data.moved)   localStorage.setItem(ALL_KEYS.moved,   JSON.stringify(data.moved));
+      if(data.bw)      localStorage.setItem(ALL_KEYS.bw,      JSON.stringify(data.bw));
+      if(data.streak)  localStorage.setItem(ALL_KEYS.streak,  JSON.stringify(data.streak));
 
       const sessCount = Object.values(data.log).reduce((s,a)=>s+a.length,0);
       bkClose();
@@ -3911,6 +4487,8 @@ applyExLoads();
 applyDeload();
 initToday();
 renderWeeklySummary();
+renderStreak();
+renderBW();
 </script>
 
 <!-- ── PROGRESS CHART ── -->

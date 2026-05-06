@@ -92,6 +92,20 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [2.1.0] — 2026-05-03
+
+**Added**
+- Swipe antar tab — geser kiri/kanan di area panel untuk pindah sesi, haptic ringan saat switch
+- Streak Tracker — bar di atas panel, hitung streak hari berturut-turut latihan, dot 14 hari terakhir (hijau=latihan, merah=skip, abu=rest day)
+- Best streak tersimpan, emoji berubah sesuai momentum (💪→⚡→🔥)
+- Body Weight Log — input + chart line harian, stat: current/change/7-day avg, warna chart hijau kalau turun, merah kalau naik
+- Simpan 90 hari terakhir, same-day overwrite
+- Share Progress — generate kartu PNG via Canvas API: streak, sets/week, volume, body weight, PR list minggu ini, watermark HILV
+- Preview sebelum download, save ke `hilv-progress-YYYY-MM-DD.png`
+- BW log dan streak ikut ter-backup dan di-restore via Backup & Restore
+
+---
+
 ### [2.0.1] — 2026-05-03
 
 **Fixed**
