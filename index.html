@@ -868,6 +868,200 @@ body.deload-active .sl-head { background:rgba(245,184,48,.04); }
 
 
 
+
+/* ────────────────── TEMPLATE PICKER */
+#template-modal {
+  position:fixed; inset:0; z-index:9150;
+  display:flex; align-items:flex-end; justify-content:center;
+  background:rgba(0,0,0,.7); backdrop-filter:blur(12px);
+  opacity:0; pointer-events:none; transition:opacity .25s;
+}
+#template-modal.show { opacity:1; pointer-events:auto; }
+.tpl-sheet {
+  width:100%; max-width:520px;
+  background:linear-gradient(175deg,#13131c,#0b0b13);
+  border:1px solid rgba(255,255,255,.1); border-bottom:none;
+  border-radius:20px 20px 0 0;
+  max-height:85vh; overflow-y:auto;
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.32,1.2,.42,1);
+  padding-bottom:env(safe-area-inset-bottom,16px);
+}
+#template-modal.show .tpl-sheet { transform:translateY(0); }
+.tpl-handle { width:36px; height:4px; background:rgba(255,255,255,.12); border-radius:99px; margin:12px auto 0; }
+.tpl-hd { padding:16px 20px 12px; border-bottom:1px solid rgba(255,255,255,.06); }
+.tpl-title { font-size:14px; font-weight:500; color:var(--ink); margin-bottom:4px; }
+.tpl-sub { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); letter-spacing:.06em; }
+.tpl-list { padding:12px 16px; display:flex; flex-direction:column; gap:8px; }
+.tpl-card {
+  display:flex; align-items:center; gap:14px;
+  padding:16px; border-radius:12px;
+  border:1.5px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.03);
+  cursor:pointer; transition:all .18s;
+}
+.tpl-card:hover { border-color:rgba(200,240,58,.3); background:rgba(200,240,58,.04); transform:translateY(-1px); }
+.tpl-card.blank { border-style:dashed; }
+.tpl-icon { font-size:28px; flex-shrink:0; }
+.tpl-info { flex:1; min-width:0; }
+.tpl-name { font-size:13px; font-weight:500; color:var(--ink); margin-bottom:3px; }
+.tpl-desc { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); letter-spacing:.03em; line-height:1.5; }
+.tpl-tags { display:flex; gap:5px; flex-wrap:wrap; margin-top:6px; }
+.tpl-tag {
+  padding:2px 8px; border-radius:5px; font-family:'JetBrains Mono',monospace;
+  font-size:7px; letter-spacing:.1em; text-transform:uppercase;
+  background:rgba(200,240,58,.08); border:1px solid rgba(200,240,58,.15); color:var(--lime);
+}
+.tpl-tag.blue { background:rgba(86,170,255,.08); border-color:rgba(86,170,255,.2); color:var(--blue); }
+.tpl-tag.amber { background:rgba(245,184,48,.08); border-color:rgba(245,184,48,.2); color:var(--amber); }
+.tpl-arrow { color:var(--ink3); font-size:16px; flex-shrink:0; }
+
+/* ────────────────── WEEKLY PLANNER */
+#weekly-planner {
+  position:fixed; inset:0; z-index:9200;
+  background:rgba(5,5,10,.98);
+  opacity:0; pointer-events:none; transition:opacity .25s;
+  overflow-y:auto;
+}
+#weekly-planner.show { opacity:1; pointer-events:auto; }
+.wp-header {
+  position:sticky; top:0; z-index:10;
+  display:flex; align-items:center; gap:12px;
+  padding:16px 20px;
+  background:rgba(5,5,10,.96); backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.wp-back {
+  width:36px; height:36px; border-radius:10px; flex-shrink:0;
+  border:1.5px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink3); font-size:16px; transition:all .15s;
+}
+.wp-back:hover { color:var(--ink); }
+.wp-header-info { flex:1; }
+.wp-header-title { font-size:14px; font-weight:500; color:var(--ink); }
+.wp-header-sub { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); margin-top:2px; letter-spacing:.04em; }
+.wp-done {
+  padding:9px 18px; border-radius:9px;
+  border:none; background:var(--lime); color:var(--bg);
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  cursor:pointer; transition:opacity .15s;
+}
+.wp-done:hover { opacity:.85; }
+
+.wp-body { padding:20px; }
+.wp-sub { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink3); margin-bottom:16px; }
+
+/* 7-day grid */
+.wp-grid {
+  display:grid;
+  grid-template-columns: repeat(7,1fr);
+  gap:6px;
+  margin-bottom:24px;
+}
+@media(max-width:500px) {
+  .wp-grid { grid-template-columns: repeat(7,1fr); gap:4px; }
+}
+.wp-day-col { display:flex; flex-direction:column; gap:6px; }
+.wp-day-label {
+  text-align:center; padding:6px 2px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink3); border-radius:6px;
+}
+.wp-day-label.today { color:var(--lime); background:rgba(200,240,58,.08); }
+.wp-day-slot {
+  min-height:80px; border-radius:10px;
+  border:1.5px dashed rgba(255,255,255,.08);
+  background:rgba(255,255,255,.02);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:6px 4px; gap:4px;
+  transition:all .18s; cursor:pointer;
+  position:relative;
+}
+.wp-day-slot:hover { border-color:rgba(200,240,58,.25); background:rgba(200,240,58,.03); }
+.wp-day-slot.has-session {
+  border-style:solid; border-color:rgba(200,240,58,.25);
+  background:rgba(200,240,58,.05); cursor:default;
+}
+.wp-day-slot.rest {
+  border-color:rgba(255,255,255,.04);
+  background:rgba(255,255,255,.01);
+}
+.wp-sess-chip {
+  width:100%; border-radius:7px;
+  background:rgba(200,240,58,.1); border:1px solid rgba(200,240,58,.2);
+  padding:6px 5px; text-align:center;
+  cursor:grab; user-select:none;
+  transition:all .15s; position:relative;
+}
+.wp-sess-chip:active { cursor:grabbing; transform:scale(.95); }
+.wp-sess-chip-name {
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--lime); line-height:1.2;
+}
+.wp-sess-chip-focus { font-family:'JetBrains Mono',monospace; font-size:7px; color:rgba(200,240,58,.5); margin-top:2px; }
+.wp-sess-chip-del {
+  position:absolute; top:-6px; right:-6px;
+  width:16px; height:16px; border-radius:50%;
+  background:#f87171; border:none; color:#fff;
+  font-size:9px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  line-height:1; opacity:0; transition:opacity .15s;
+}
+.wp-sess-chip:hover .wp-sess-chip-del { opacity:1; }
+.wp-add-icon { font-size:18px; color:rgba(255,255,255,.12); }
+.wp-add-label { font-family:'JetBrains Mono',monospace; font-size:7px; letter-spacing:.06em; text-transform:uppercase; color:rgba(255,255,255,.15); }
+
+/* unassigned sessions */
+.wp-unassigned { margin-bottom:20px; }
+.wp-unassigned-title { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink3); margin-bottom:10px; }
+.wp-unassigned-list { display:flex; flex-wrap:wrap; gap:8px; }
+.wp-unassigned-chip {
+  display:flex; align-items:center; gap:8px;
+  padding:9px 14px; border-radius:10px;
+  border:1.5px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04);
+  cursor:pointer; transition:all .15s;
+}
+.wp-unassigned-chip:hover { border-color:rgba(200,240,58,.3); background:rgba(200,240,58,.05); }
+.wp-unassigned-chip-name { font-size:12px; font-weight:500; color:var(--ink); }
+.wp-unassigned-chip-focus { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); }
+
+/* day picker inside unassigned chip tap */
+.wp-day-picker {
+  position:fixed; inset:0; z-index:9400;
+  display:flex; align-items:flex-end; justify-content:center;
+  background:rgba(0,0,0,.6); backdrop-filter:blur(8px);
+  opacity:0; pointer-events:none; transition:opacity .2s;
+}
+.wp-day-picker.show { opacity:1; pointer-events:auto; }
+.wp-dp-sheet {
+  width:100%; max-width:480px;
+  background:#13131c; border:1px solid rgba(255,255,255,.1); border-bottom:none;
+  border-radius:20px 20px 0 0;
+  padding:0 0 env(safe-area-inset-bottom,16px);
+  transform:translateY(100%); transition:transform .3s cubic-bezier(.32,1.2,.42,1);
+}
+.wp-day-picker.show .wp-dp-sheet { transform:translateY(0); }
+.wp-dp-handle { width:36px; height:4px; background:rgba(255,255,255,.12); border-radius:99px; margin:12px auto 0; }
+.wp-dp-hd { padding:14px 20px 12px; border-bottom:1px solid rgba(255,255,255,.06); }
+.wp-dp-title { font-size:13px; font-weight:500; color:var(--ink); }
+.wp-dp-sub { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); margin-top:2px; letter-spacing:.04em; }
+.wp-dp-days { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; padding:14px 16px; }
+.wp-dp-day {
+  aspect-ratio:1; border-radius:10px; cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  transition:all .15s;
+}
+.wp-dp-day:hover { border-color:rgba(200,240,58,.35); background:rgba(200,240,58,.07); }
+.wp-dp-day.taken { opacity:.3; pointer-events:none; }
+.wp-dp-day-name { font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; color:var(--ink); }
+.wp-dp-day-rest { font-family:'JetBrains Mono',monospace; font-size:7px; color:var(--ink3); }
+.wp-dp-cancel { margin:0 16px 8px; width:calc(100% - 32px); padding:12px; border-radius:10px; border:1.5px solid rgba(255,255,255,.08); background:transparent; color:var(--ink3); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
+
 /* ────────────────── PROGRAM MANAGER */
 @keyframes prog-card-in { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
 
@@ -3332,6 +3526,329 @@ function initAllCustomEx() {
 
 
 
+
+/* ══════════════════════════════════════════
+   TEMPLATE SYSTEM + WEEKLY PLANNER
+   ══════════════════════════════════════════ */
+
+/* ── Built-in templates ── */
+const BUILTIN_TEMPLATES = [
+  {
+    id:'tpl-blank', name:'Kosong', emoji:'📋',
+    desc:'Mulai dari nol — buat sesi dan pilih exercise sendiri.',
+    tags:[],
+    blank: true
+  },
+  {
+    id:'tpl-hilv', name:'HILV — High Frequency Cutting', emoji:'🏋️',
+    desc:'5 hari/minggu · Upper-Lower split · Natural lifter · Minimum effective dose untuk strength retention di fase cutting.',
+    tags:['Cutting','5 Days','Upper-Lower','Natural'],
+    sessions:[
+      { name:'Upper A', focus:'Chest · Upper Back · Lat Delt · Tricep · Bicep', day:6, exercises:[
+        {id:'lib-01',name:'Incline Dumbbell Press',note:'Upper pec · mechanical tension',sets:'2×6–8',load:86,rir:'RIR 1–2'},
+        {id:'lib-03',name:'High-to-Low Cable Fly',note:'Chest isolation · stretch lengthened',sets:'1×6–10',load:40,rir:'RIR 0–1'},
+        {id:'lib-06',name:'Chest-Supported Row (Wide Grip)',note:'Upper back · rhomboid + mid trap',sets:'2×6–8',load:130,rir:'RIR 1–2'},
+        {id:'lib-12',name:'Single-Arm Cable Lateral Raise',note:'Lateral delt · eksentrik terkontrol',sets:'2×8–12',load:12,rir:'RIR 0–1'},
+        {id:'lib-17',name:'Rope Tricep Pushdown',note:'Lateral head · kontraksi penuh',sets:'1×8–12',load:30,rir:'RIR 0–1'},
+        {id:'lib-20',name:'Seated Incline Dumbbell Curl',note:'Long head · stretch position',sets:'1×8–12',load:14,rir:'RIR 0–1'},
+      ]},
+      { name:'Lower A', focus:'Quad Focus · Hamstring · Adductor · Calf · Core', day:0, exercises:[
+        {id:'lib-24',name:'Smith Machine Squat',note:'Quad dominant · depth penuh',sets:'2×6–8',load:120,rir:'RIR 1–2'},
+        {id:'lib-27',name:'Bulgarian Split Squat',note:'Unilateral quad + glute',sets:'1×8–10',load:40,rir:'RIR 1'},
+        {id:'lib-29',name:'Single-Leg Seated Leg Curl',note:'Hamstring isolation',sets:'2×8–12',load:35,rir:'RIR 0–1'},
+        {id:'lib-32',name:'Adductor Machine',note:'Inner thigh',sets:'1×10–15',load:60,rir:'RIR 0–1'},
+        {id:'lib-33',name:'Standing Calf Raise',note:'Soleus + gastrocnemius',sets:'2×10–15',load:80,rir:'RIR 0–1'},
+        {id:'lib-35',name:'Cable Crunch',note:'Core kontraksi penuh',sets:'2×10–15',load:40,rir:'RIR 0–1'},
+      ]},
+      { name:'Upper B', focus:'Back · Chest Balance · Rear Delt · Bicep', day:2, exercises:[
+        {id:'lib-08',name:'Lat Pulldown',note:'Lat width · full stretch',sets:'2×6–10',load:80,rir:'RIR 1–2'},
+        {id:'lib-09',name:'Seated Cable Row',note:'Mid back thickness',sets:'2×6–10',load:90,rir:'RIR 1–2'},
+        {id:'lib-05',name:'Machine Chest Press',note:'Chest pump + contraction',sets:'1×8–12',load:70,rir:'RIR 0–1'},
+        {id:'lib-15',name:'Face Pull',note:'Rear delt · external rotation',sets:'2×10–15',load:20,rir:'RIR 0–1'},
+        {id:'lib-22',name:'Hammer Curl',note:'Brachialis + bicep',sets:'2×8–12',load:18,rir:'RIR 0–1'},
+      ]},
+      { name:'Lower B', focus:'Hamstring · Glute · Quad · Calf · Core', day:3, exercises:[
+        {id:'lib-28',name:'Romanian Deadlift',note:'Hamstring stretch + load',sets:'2×6–8',load:110,rir:'RIR 1–2'},
+        {id:'lib-31',name:'Hip Thrust',note:'Glute contraction peak',sets:'2×8–12',load:100,rir:'RIR 0–1'},
+        {id:'lib-26',name:'Single-Leg Extension',note:'Quad isolation',sets:'2×10–15',load:40,rir:'RIR 0–1'},
+        {id:'lib-34',name:'Seated Calf Raise',note:'Soleus fokus',sets:'2×12–15',load:50,rir:'RIR 0–1'},
+        {id:'lib-36',name:'Hanging Leg Raise',note:'Hip flexor + core',sets:'2×10–15',load:0,rir:'RIR 1'},
+      ]},
+      { name:'Upper C', focus:'Delts · Arms · Traps', day:4, exercises:[
+        {id:'lib-13',name:'Overhead Press',note:'Anterior + medial delt',sets:'2×6–8',load:60,rir:'RIR 1–2'},
+        {id:'lib-14',name:'Dumbbell Lateral Raise',note:'Medial delt width',sets:'2×10–15',load:12,rir:'RIR 0–1'},
+        {id:'lib-16',name:'Rear Delt Fly',note:'Posterior chain finish',sets:'2×12–15',load:8,rir:'RIR 0–1'},
+        {id:'lib-18',name:'Overhead Tricep Extension',note:'Long head stretch',sets:'2×8–12',load:25,rir:'RIR 0–1'},
+        {id:'lib-21',name:'EZ Bar Curl',note:'Bicep peak kontraksi',sets:'2×8–12',load:30,rir:'RIR 0–1'},
+      ]},
+    ]
+  },
+  {
+    id:'tpl-ppl', name:'PPL — Push Pull Legs', emoji:'⚡',
+    desc:'6 hari/minggu · Push/Pull/Legs split · Volume tinggi untuk intermediate lifter.',
+    tags:['Bulking','6 Days','PPL','Intermediate'],
+    sessions:[
+      { name:'Push A', focus:'Chest · Shoulders · Triceps', day:1, exercises:[
+        {id:'lib-02',name:'Flat Barbell Bench Press',note:'Chest compound',sets:'3×5–8',load:100,rir:'RIR 1–2'},
+        {id:'lib-13',name:'Overhead Press',note:'Shoulder press',sets:'3×6–10',load:60,rir:'RIR 1–2'},
+        {id:'lib-04',name:'Dumbbell Fly',note:'Chest isolation',sets:'2×10–15',load:20,rir:'RIR 0–1'},
+        {id:'lib-14',name:'Dumbbell Lateral Raise',note:'Medial delt',sets:'3×12–15',load:12,rir:'RIR 0–1'},
+        {id:'lib-18',name:'Overhead Tricep Extension',note:'Long head',sets:'3×10–15',load:25,rir:'RIR 0–1'},
+      ]},
+      { name:'Pull A', focus:'Back · Biceps · Rear Delt', day:2, exercises:[
+        {id:'lib-07',name:'Pull Up',note:'Lat compound',sets:'3×5–8',load:0,rir:'RIR 1–2'},
+        {id:'lib-09',name:'Seated Cable Row',note:'Mid back',sets:'3×8–12',load:90,rir:'RIR 1–2'},
+        {id:'lib-15',name:'Face Pull',note:'Rear delt',sets:'3×12–15',load:20,rir:'RIR 0–1'},
+        {id:'lib-23',name:'Cable Curl',note:'Bicep',sets:'3×10–15',load:20,rir:'RIR 0–1'},
+      ]},
+      { name:'Legs A', focus:'Quads · Hamstrings · Calves', day:3, exercises:[
+        {id:'lib-25',name:'Leg Press',note:'Quad compound',sets:'3×8–12',load:200,rir:'RIR 1–2'},
+        {id:'lib-28',name:'Romanian Deadlift',note:'Hamstring',sets:'3×8–12',load:100,rir:'RIR 1–2'},
+        {id:'lib-26',name:'Single-Leg Extension',note:'Quad isolation',sets:'3×12–15',load:40,rir:'RIR 0–1'},
+        {id:'lib-33',name:'Standing Calf Raise',note:'Calves',sets:'4×12–15',load:80,rir:'RIR 0–1'},
+      ]},
+      { name:'Push B', focus:'Chest · Shoulders · Triceps', day:4, exercises:[
+        {id:'lib-01',name:'Incline Dumbbell Press',note:'Upper chest',sets:'3×8–12',load:70,rir:'RIR 1–2'},
+        {id:'lib-13',name:'Overhead Press',note:'Shoulders',sets:'3×8–12',load:55,rir:'RIR 1–2'},
+        {id:'lib-03',name:'High-to-Low Cable Fly',note:'Chest fly',sets:'2×12–15',load:30,rir:'RIR 0–1'},
+        {id:'lib-17',name:'Rope Tricep Pushdown',note:'Tricep',sets:'3×12–15',load:30,rir:'RIR 0–1'},
+      ]},
+      { name:'Pull B', focus:'Back · Biceps', day:5, exercises:[
+        {id:'lib-08',name:'Lat Pulldown',note:'Lat width',sets:'3×8–12',load:80,rir:'RIR 1–2'},
+        {id:'lib-10',name:'T-Bar Row',note:'Back thickness',sets:'3×8–12',load:80,rir:'RIR 1–2'},
+        {id:'lib-20',name:'Seated Incline Dumbbell Curl',note:'Long head',sets:'3×10–15',load:14,rir:'RIR 0–1'},
+        {id:'lib-22',name:'Hammer Curl',note:'Brachialis',sets:'2×10–15',load:18,rir:'RIR 0–1'},
+      ]},
+      { name:'Legs B', focus:'Glutes · Hamstrings · Core', day:6, exercises:[
+        {id:'lib-27',name:'Bulgarian Split Squat',note:'Unilateral',sets:'3×8–10',load:40,rir:'RIR 1–2'},
+        {id:'lib-31',name:'Hip Thrust',note:'Glute',sets:'3×10–12',load:100,rir:'RIR 0–1'},
+        {id:'lib-30',name:'Lying Leg Curl',note:'Hamstring',sets:'3×10–15',load:40,rir:'RIR 0–1'},
+        {id:'lib-35',name:'Cable Crunch',note:'Core',sets:'3×12–15',load:40,rir:'RIR 0–1'},
+      ]},
+    ]
+  },
+  {
+    id:'tpl-fullbody', name:'Full Body 3x', emoji:'🔥',
+    desc:'3 hari/minggu · Full body setiap sesi · Ideal untuk pemula atau jadwal padat.',
+    tags:['Beginner','3 Days','Full Body'],
+    sessions:[
+      { name:'Full Body A', focus:'Compound Focus', day:1, exercises:[
+        {id:'lib-02',name:'Flat Barbell Bench Press',note:'Chest & tricep',sets:'3×5–8',load:80,rir:'RIR 2'},
+        {id:'lib-07',name:'Pull Up',note:'Back & bicep',sets:'3×5–8',load:0,rir:'RIR 2'},
+        {id:'lib-24',name:'Smith Machine Squat',note:'Quad & glute',sets:'3×5–8',load:100,rir:'RIR 2'},
+        {id:'lib-13',name:'Overhead Press',note:'Shoulders',sets:'2×8–12',load:50,rir:'RIR 2'},
+      ]},
+      { name:'Full Body B', focus:'Volume Focus', day:3, exercises:[
+        {id:'lib-01',name:'Incline Dumbbell Press',note:'Upper chest',sets:'3×8–12',load:60,rir:'RIR 1'},
+        {id:'lib-08',name:'Lat Pulldown',note:'Lat',sets:'3×8–12',load:70,rir:'RIR 1'},
+        {id:'lib-28',name:'Romanian Deadlift',note:'Hamstring',sets:'3×8–12',load:90,rir:'RIR 1'},
+        {id:'lib-14',name:'Dumbbell Lateral Raise',note:'Delts',sets:'3×12–15',load:10,rir:'RIR 0–1'},
+      ]},
+      { name:'Full Body C', focus:'Isolation & Core', day:5, exercises:[
+        {id:'lib-05',name:'Machine Chest Press',note:'Chest pump',sets:'3×10–15',load:60,rir:'RIR 0–1'},
+        {id:'lib-11',name:'Single-Arm Dumbbell Row',note:'Back',sets:'3×10–12',load:30,rir:'RIR 1'},
+        {id:'lib-25',name:'Leg Press',note:'Quad',sets:'3×10–15',load:160,rir:'RIR 1'},
+        {id:'lib-20',name:'Seated Incline Dumbbell Curl',note:'Bicep',sets:'2×10–15',load:12,rir:'RIR 0–1'},
+        {id:'lib-17',name:'Rope Tricep Pushdown',note:'Tricep',sets:'2×12–15',load:25,rir:'RIR 0–1'},
+      ]},
+    ]
+  },
+];
+
+/* ── Template picker ── */
+function tplOpen() {
+  pmClose();
+  const list = document.getElementById('tpl-list');
+  list.innerHTML = BUILTIN_TEMPLATES.map(t => `
+    <div class="tpl-card${t.blank?' blank':''}" onclick="tplSelect('${t.id}')">
+      <div class="tpl-icon">${t.emoji}</div>
+      <div class="tpl-info">
+        <div class="tpl-name">${t.name}</div>
+        <div class="tpl-desc">${t.desc}</div>
+        ${t.tags.length ? `<div class="tpl-tags">${t.tags.map((tag,i)=>`<span class="tpl-tag${i>1?' amber':i>0?' blue':''}">${tag}</span>`).join('')}</div>` : ''}
+      </div>
+      <div class="tpl-arrow">→</div>
+    </div>`).join('');
+  document.getElementById('template-modal').classList.add('show');
+}
+
+function tplClose() { document.getElementById('template-modal').classList.remove('show'); }
+
+function tplSelect(tplId) {
+  tplClose();
+  const tpl = BUILTIN_TEMPLATES.find(t=>t.id===tplId);
+  if(!tpl) return;
+  if(tpl.blank) { pbOpen(null); return; }
+
+  // clone template into new program
+  const newProg = {
+    id: 'prog-' + Date.now().toString(36),
+    name: tpl.name,
+    emoji: tpl.emoji,
+    isDefault: false,
+    sessions: JSON.parse(JSON.stringify(tpl.sessions||[])).map((s,i) => ({
+      ...s, id: 'sess-'+(Date.now()+i).toString(36)
+    }))
+  };
+  const progs = loadPrograms();
+  progs.push(newProg);
+  savePrograms(progs);
+  setActiveProgId(newProg.id);
+  pbOpen(newProg.id);
+  showToast(`✓ Template "${tpl.name}" diload`);
+}
+
+/* ══ WEEKLY PLANNER ══ */
+let _wpProg = null;
+const DAY_LABELS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAY_FULL   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+let _wpDpSessIdx = null; // session being assigned day
+
+function wpOpen() {
+  if(!_pbProg) return;
+  _wpProg = JSON.parse(JSON.stringify(_pbProg));
+  document.getElementById('wp-prog-name').textContent = _wpProg.name || 'Weekly Planner';
+  wpRender();
+  document.getElementById('weekly-planner').classList.add('show');
+}
+
+function wpClose() {
+  document.getElementById('weekly-planner').classList.remove('show');
+}
+
+function wpSave() {
+  if(!_wpProg || !_pbProg) return;
+  // copy day assignments back to _pbProg
+  _wpProg.sessions.forEach((ws,i) => {
+    if(_pbProg.sessions[i]) _pbProg.sessions[i].day = ws.day;
+  });
+  pbRenderSessions();
+  wpClose();
+  showToast('✓ Jadwal disimpan');
+  if(navigator.vibrate) navigator.vibrate(30);
+}
+
+function wpRender() {
+  const today = new Date().getDay();
+  // build day → sessions map
+  const dayMap = {}; // day -> [sessIdx]
+  const unassigned = [];
+  (_wpProg.sessions||[]).forEach((sess,i) => {
+    if(sess.day >= 0 && sess.day <= 6) {
+      if(!dayMap[sess.day]) dayMap[sess.day] = [];
+      dayMap[sess.day].push(i);
+    } else {
+      unassigned.push(i);
+    }
+  });
+
+  // render 7-day grid
+  const grid = document.getElementById('wp-grid');
+  grid.innerHTML = DAY_LABELS.map((day,d) => {
+    const sessions = (dayMap[d]||[]);
+    const isToday  = d === today;
+    const chips    = sessions.map(si => {
+      const s = _wpProg.sessions[si];
+      return `<div class="wp-sess-chip" draggable="true"
+        ondragstart="wpDragStart(event,${si})"
+        ondragend="wpDragEnd(event)">
+        <div class="wp-sess-chip-name">${s.name}</div>
+        <div class="wp-sess-chip-focus">${(s.focus||'').split('·')[0].trim()}</div>
+        <button class="wp-sess-chip-del" onclick="event.stopPropagation();wpUnassign(${si})">✕</button>
+      </div>`;
+    }).join('');
+
+    return `<div class="wp-day-col">
+      <div class="wp-day-label${isToday?' today':''}">${day}</div>
+      <div class="wp-day-slot${sessions.length?' has-session':''}"
+        ondragover="event.preventDefault()"
+        ondrop="wpDrop(event,${d})"
+        onclick="wpSlotClick(${d},${sessions.length})">
+        ${chips || `<div class="wp-add-icon">+</div><div class="wp-add-label">Assign</div>`}
+      </div>
+    </div>`;
+  }).join('');
+
+  // unassigned sessions
+  const uList = document.getElementById('wp-unassigned-list');
+  const uWrap = document.getElementById('wp-unassigned');
+  if(unassigned.length) {
+    uWrap.style.display = '';
+    uList.innerHTML = unassigned.map(si => {
+      const s = _wpProg.sessions[si];
+      return `<div class="wp-unassigned-chip" onclick="wpDpOpen(${si})">
+        <div>
+          <div class="wp-unassigned-chip-name">${s.name}</div>
+          <div class="wp-unassigned-chip-focus">${s.focus||''}</div>
+        </div>
+        <span style="color:var(--lime);font-size:14px">→</span>
+      </div>`;
+    }).join('');
+  } else {
+    uWrap.style.display = 'none';
+  }
+}
+
+function wpSlotClick(day, hasSessions) {
+  if(hasSessions) return; // already has session
+  // find first unassigned
+  const si = (_wpProg.sessions||[]).findIndex(s => s.day < 0 || s.day > 6);
+  if(si >= 0) wpAssign(si, day);
+}
+
+function wpAssign(si, day) {
+  // unassign any other session on this day
+  _wpProg.sessions.forEach((s,i) => { if(i!==si && s.day===day) s.day = -1; });
+  _wpProg.sessions[si].day = day;
+  wpRender();
+}
+
+function wpUnassign(si) {
+  _wpProg.sessions[si].day = -1;
+  wpRender();
+}
+
+// drag & drop
+let _wpDragSi = null;
+function wpDragStart(e, si) { _wpDragSi = si; e.dataTransfer.effectAllowed='move'; }
+function wpDragEnd(e) { _wpDragSi = null; }
+function wpDrop(e, day) {
+  e.preventDefault();
+  if(_wpDragSi === null) return;
+  wpAssign(_wpDragSi, day);
+  _wpDragSi = null;
+}
+
+// day picker (for mobile tap on unassigned chip)
+function wpDpOpen(si) {
+  _wpDpSessIdx = si;
+  const sess = _wpProg.sessions[si];
+  document.getElementById('wp-dp-title').textContent = sess.name;
+  document.getElementById('wp-dp-sub').textContent   = sess.focus || 'Pilih hari latihan';
+
+  // which days are taken
+  const taken = new Set(_wpProg.sessions.filter((_,i)=>i!==si).map(s=>s.day));
+
+  const daysEl = document.getElementById('wp-dp-days');
+  daysEl.innerHTML = DAY_LABELS.map((lbl,d) => `
+    <div class="wp-dp-day${taken.has(d)?' taken':''}" onclick="wpDpSelect(${d})">
+      <div class="wp-dp-day-name">${lbl}</div>
+      ${taken.has(d)?'<div class="wp-dp-day-rest">taken</div>':''}
+    </div>`).join('');
+  document.getElementById('wp-day-picker').classList.add('show');
+}
+
+function wpDpClose() {
+  document.getElementById('wp-day-picker').classList.remove('show');
+  _wpDpSessIdx = null;
+}
+
+function wpDpSelect(day) {
+  if(_wpDpSessIdx === null) return;
+  wpAssign(_wpDpSessIdx, day);
+  wpDpClose();
+}
+
 /* ══════════════════════════════════════════
    PROGRAM MANAGER — v3.0.0
    ══════════════════════════════════════════ */
@@ -5555,6 +6072,51 @@ renderBW();
   </div>
 </div>
 
+<!-- ── TEMPLATE PICKER ── -->
+<div id="template-modal">
+  <div class="tpl-sheet">
+    <div class="tpl-handle"></div>
+    <div class="tpl-hd">
+      <div class="tpl-title">Pilih Template</div>
+      <div class="tpl-sub">Mulai dari preset atau buat dari nol</div>
+    </div>
+    <div class="tpl-list" id="tpl-list"></div>
+  </div>
+</div>
+
+<!-- ── WEEKLY PLANNER ── -->
+<div id="weekly-planner">
+  <div class="wp-header">
+    <button class="wp-back" onclick="wpClose()">←</button>
+    <div class="wp-header-info">
+      <div class="wp-header-title" id="wp-prog-name">Weekly Planner</div>
+      <div class="wp-header-sub">Atur hari latihan per sesi</div>
+    </div>
+    <button class="wp-done" onclick="wpSave()">Simpan</button>
+  </div>
+  <div class="wp-body">
+    <div class="wp-sub">Tap slot hari untuk assign sesi</div>
+    <div class="wp-grid" id="wp-grid"></div>
+    <div class="wp-unassigned" id="wp-unassigned">
+      <div class="wp-unassigned-title">Sesi belum diassign</div>
+      <div class="wp-unassigned-list" id="wp-unassigned-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DAY PICKER (inside weekly planner) ── -->
+<div class="wp-day-picker" id="wp-day-picker">
+  <div class="wp-dp-sheet">
+    <div class="wp-dp-handle"></div>
+    <div class="wp-dp-hd">
+      <div class="wp-dp-title" id="wp-dp-title">Pilih Hari</div>
+      <div class="wp-dp-sub" id="wp-dp-sub">Sesi ini akan latihan di hari apa?</div>
+    </div>
+    <div class="wp-dp-days" id="wp-dp-days"></div>
+    <button class="wp-dp-cancel" onclick="wpDpClose()">Batal</button>
+  </div>
+</div>
+
 <!-- ── PROGRAM MANAGER MODAL ── -->
 <div id="prog-modal">
   <div class="pm-sheet">
@@ -5564,7 +6126,7 @@ renderBW();
       <button class="pm-close" onclick="pmClose()">✕</button>
     </div>
     <div class="pm-list" id="pm-list"></div>
-    <button class="pm-new-btn" onclick="pbOpen(null)">Buat Program Baru</button>
+    <button class="pm-new-btn" onclick="tplOpen()">Buat Program Baru</button>
   </div>
 </div>
 
@@ -5573,6 +6135,7 @@ renderBW();
   <div class="pb-header">
     <button class="pb-back" onclick="pbClose()">←</button>
     <div class="pb-header-title" id="pb-header-title">Program Baru</div>
+    <button class="pb-save-btn" id="pb-planner-btn" onclick="wpOpen()" style="margin-right:8px;background:rgba(255,255,255,.06);color:var(--ink3);border:1.5px solid rgba(255,255,255,.1)">📅 Hari</button>
     <button class="pb-save-btn" onclick="pbSave()">Simpan</button>
   </div>
   <div class="pb-body">

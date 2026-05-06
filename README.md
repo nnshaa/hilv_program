@@ -92,6 +92,25 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [3.1.0] — 2026-05-03
+
+**Added**
+- Template System — saat buat program baru, muncul picker dengan 3 preset:
+  - 🏋️ **HILV High Frequency Cutting** — 5 hari, Upper-Lower split, semua exercise lengkap dengan load, sets, RIR
+  - ⚡ **PPL Push Pull Legs** — 6 hari, volume tinggi, intermediate
+  - 🔥 **Full Body 3x** — 3 hari, cocok pemula / jadwal padat
+  - 📋 **Kosong** — mulai dari nol
+- Template di-clone jadi program baru yang bisa diedit bebas, template asli tidak berubah
+- Tag kategori per template (Cutting / Bulking / Beginner, jumlah hari, split type)
+- Weekly Planner — tombol 📅 Hari di program builder, fullscreen 7-day grid
+- Visual assign sesi ke hari: drag & drop (desktop) atau tap chip → day picker (mobile)
+- Slot hari kosong menampilkan + Assign, slot terisi menampilkan chip nama sesi
+- Unassign sesi: tap ✕ di chip, sesi masuk daftar "belum diassign" di bawah grid
+- Day picker bottom sheet untuk mobile: tap chip unassigned → pilih hari, slot yang sudah dipakai di-grey out
+- Drag & drop antar hari di weekly planner
+
+---
+
 ### [3.0.0] — 2026-05-03
 
 **Added**
