@@ -863,6 +863,258 @@ body.deload-active .sl-head { background:rgba(245,184,48,.04); }
 }
 #offline-toast.show { opacity:1; }
 
+
+
+/* ────────────────── EDIT MODE */
+@keyframes edit-wobble { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-.5deg)} 75%{transform:rotate(.5deg)} }
+
+/* edit toggle button per panel */
+.panel-edit-btn {
+  display:flex; align-items:center; gap:6px;
+  padding:6px 12px; border-radius:8px; margin-bottom:10px;
+  border:1.5px solid rgba(255,255,255,.08);
+  background:transparent; color:var(--ink3);
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.12em; text-transform:uppercase; font-weight:600;
+  cursor:pointer; transition:all .18s; align-self:flex-end;
+}
+.panel-edit-btn:hover { border-color:rgba(200,240,58,.3); color:var(--lime); }
+.panel-edit-btn.active {
+  border-color:rgba(200,240,58,.4); color:var(--lime);
+  background:rgba(200,240,58,.07);
+}
+
+/* edit mode row changes */
+.xt.edit-mode .xr {
+  animation: edit-wobble 1.8s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 0.08s);
+}
+.xt.edit-mode .xr:hover { background:rgba(255,255,255,.03); }
+
+/* drag handle */
+.xr-drag {
+  width:28px; display:none; flex-shrink:0;
+  align-items:center; justify-content:center;
+  cursor:grab; color:rgba(255,255,255,.2);
+  font-size:14px; padding:0 4px;
+  user-select:none;
+}
+.xt.edit-mode .xr-drag { display:flex; }
+.xr-drag:active { cursor:grabbing; }
+
+/* delete + move buttons per row */
+.xr-actions {
+  display:none; align-items:center; gap:6px;
+  flex-shrink:0; padding-right:4px;
+}
+.xt.edit-mode .xr-actions { display:flex; }
+
+.xr-del-btn {
+  width:26px; height:26px; border-radius:50%;
+  border:1.5px solid rgba(255,80,80,.25);
+  background:rgba(255,50,50,.07);
+  color:#f87171; font-size:13px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all .15s; flex-shrink:0;
+}
+.xr-del-btn:hover { border-color:rgba(255,80,80,.6); background:rgba(255,50,50,.15); }
+
+.xr-move-btn {
+  width:26px; height:26px; border-radius:50%;
+  border:1.5px solid rgba(86,170,255,.2);
+  background:rgba(86,170,255,.06);
+  color:var(--blue); font-size:11px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all .15s; flex-shrink:0;
+}
+.xr-move-btn:hover { border-color:rgba(86,170,255,.5); background:rgba(86,170,255,.14); }
+
+/* dragging state */
+.xr.dragging {
+  opacity:.4; border:1.5px dashed rgba(200,240,58,.3) !important;
+  background:rgba(200,240,58,.04) !important;
+}
+.xr.drag-over-above { border-top:2px solid var(--lime) !important; }
+.xr.drag-over-below { border-bottom:2px solid var(--lime) !important; }
+
+/* hidden exercise (soft-deleted) */
+.xr.ex-hidden {
+  display:none;
+}
+
+/* ── MOVE EXERCISE MODAL */
+#move-ex-modal {
+  position:fixed; inset:0; z-index:8700;
+  display:flex; align-items:flex-end; justify-content:center;
+  background:rgba(0,0,0,.6); backdrop-filter:blur(8px);
+  opacity:0; pointer-events:none; transition:opacity .22s;
+}
+#move-ex-modal.show { opacity:1; pointer-events:auto; }
+.mex-sheet {
+  width:100%; max-width:480px;
+  background:linear-gradient(175deg,#12121a,#0a0a10);
+  border:1px solid rgba(255,255,255,.09); border-bottom:none;
+  border-radius:20px 20px 0 0;
+  padding:0 0 env(safe-area-inset-bottom,16px);
+  transform:translateY(100%);
+  transition:transform .32s cubic-bezier(.32,1.2,.42,1);
+}
+#move-ex-modal.show .mex-sheet { transform:translateY(0); }
+.mex-handle { width:36px; height:4px; background:rgba(255,255,255,.12); border-radius:99px; margin:12px auto 0; }
+.mex-hd { padding:14px 20px 10px; border-bottom:1px solid rgba(255,255,255,.06); }
+.mex-title { font-size:13px; font-weight:500; color:var(--ink); }
+.mex-sub { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); margin-top:2px; letter-spacing:.03em; }
+.mex-options { padding:12px 16px 16px; display:flex; flex-direction:column; gap:6px; }
+.mex-opt {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 14px; border-radius:10px;
+  border:1.5px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.03);
+  cursor:pointer; transition:all .15s;
+}
+.mex-opt:hover { border-color:rgba(200,240,58,.3); background:rgba(200,240,58,.05); }
+.mex-opt.current { opacity:.35; pointer-events:none; }
+.mex-opt-day { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink3); }
+.mex-opt-name { font-size:12px; font-weight:500; color:var(--ink); }
+.mex-cancel {
+  margin:0 16px 8px; width:calc(100% - 32px); padding:12px;
+  border-radius:10px; border:1.5px solid rgba(255,255,255,.08);
+  background:transparent; color:var(--ink3);
+  font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  cursor:pointer; transition:all .15s;
+}
+.mex-cancel:hover { color:var(--ink); }
+
+/* ── RESTORE MODAL */
+#restore-ex-modal {
+  position:fixed; inset:0; z-index:8700;
+  display:flex; align-items:flex-end; justify-content:center;
+  background:rgba(0,0,0,.6); backdrop-filter:blur(8px);
+  opacity:0; pointer-events:none; transition:opacity .22s;
+}
+#restore-ex-modal.show { opacity:1; pointer-events:auto; }
+.rex-sheet {
+  width:100%; max-width:480px;
+  background:linear-gradient(175deg,#12121a,#0a0a10);
+  border:1px solid rgba(255,255,255,.09); border-bottom:none;
+  border-radius:20px 20px 0 0;
+  padding:0 0 env(safe-area-inset-bottom,16px);
+  transform:translateY(100%);
+  transition:transform .32s cubic-bezier(.32,1.2,.42,1);
+  max-height:70vh; overflow-y:auto;
+}
+#restore-ex-modal.show .rex-sheet { transform:translateY(0); }
+.rex-handle { width:36px; height:4px; background:rgba(255,255,255,.12); border-radius:99px; margin:12px auto 0; }
+.rex-hd { padding:14px 20px 10px; border-bottom:1px solid rgba(255,255,255,.06); position:sticky; top:0; background:#12121a; }
+.rex-title { font-size:13px; font-weight:500; color:var(--ink); }
+.rex-sub { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); margin-top:2px; }
+.rex-list { padding:10px 16px 8px; display:flex; flex-direction:column; gap:6px; }
+.rex-item {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:11px 14px; border-radius:10px;
+  border:1.5px solid rgba(255,255,255,.07); background:rgba(255,255,255,.03);
+}
+.rex-item-name { font-size:12px; font-weight:500; color:var(--ink); flex:1; }
+.rex-item-session { font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--ink3); letter-spacing:.08em; }
+.rex-restore-btn {
+  padding:6px 12px; border-radius:7px; flex-shrink:0;
+  border:1.5px solid rgba(200,240,58,.25); background:rgba(200,240,58,.07);
+  color:var(--lime); font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.08em; text-transform:uppercase;
+  cursor:pointer; transition:all .15s;
+}
+.rex-restore-btn:hover { background:rgba(200,240,58,.15); }
+.rex-empty { padding:24px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--ink3); letter-spacing:.08em; }
+.rex-cancel {
+  margin:4px 16px 8px; width:calc(100% - 32px); padding:12px;
+  border-radius:10px; border:1.5px solid rgba(255,255,255,.08);
+  background:transparent; color:var(--ink3);
+  font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  cursor:pointer;
+}
+
+/* show restore btn in edit panel header */
+.panel-restore-btn {
+  display:none; align-items:center; gap:6px;
+  padding:6px 12px; border-radius:8px; margin-bottom:10px;
+  border:1.5px solid rgba(200,240,58,.15);
+  background:rgba(200,240,58,.04); color:rgba(200,240,58,.6);
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:.12em; text-transform:uppercase;
+  cursor:pointer; transition:all .18s;
+}
+.panel-restore-btn.show { display:flex; }
+.panel-restore-btn:hover { border-color:rgba(200,240,58,.3); color:var(--lime); }
+
+/* ────────────────── BACKUP & RESTORE */
+#backup-modal {
+  position:fixed; inset:0; z-index:8800;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px 16px;
+  background:rgba(0,0,0,.65); backdrop-filter:blur(10px);
+  opacity:0; pointer-events:none;
+  transition:opacity .22s ease;
+}
+#backup-modal.show { opacity:1; pointer-events:auto; }
+.bk-card {
+  width:100%; max-width:400px;
+  background:linear-gradient(160deg,#14141e,#0d0d14);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:16px; overflow:hidden;
+  transform:translateY(10px) scale(.97);
+  transition:transform .25s cubic-bezier(.32,1.1,.42,1);
+}
+#backup-modal.show .bk-card { transform:none; }
+.bk-hd {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 20px 14px; border-bottom:1px solid rgba(255,255,255,.06);
+}
+.bk-title { font-size:14px; font-weight:500; color:var(--ink); }
+.bk-close {
+  width:28px; height:28px; border-radius:50%;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink3); font-size:13px;
+}
+.bk-close:hover { background:rgba(255,255,255,.12); color:var(--ink); }
+.bk-body { padding:18px 20px; display:flex; flex-direction:column; gap:10px; }
+.bk-row {
+  display:flex; align-items:center; gap:12px;
+  padding:14px; border-radius:11px;
+  border:1.5px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.03);
+  cursor:pointer; transition:all .18s;
+}
+.bk-row:hover { border-color:rgba(200,240,58,.3); background:rgba(200,240,58,.04); }
+.bk-row-icon { font-size:22px; flex-shrink:0; }
+.bk-row-text { flex:1; }
+.bk-row-t { font-size:13px; font-weight:500; color:var(--ink); }
+.bk-row-s { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--ink3); margin-top:2px; letter-spacing:.03em; }
+.bk-row-arrow { color:var(--ink3); font-size:16px; }
+.bk-danger {
+  border-color:rgba(255,80,80,.15) !important;
+}
+.bk-danger:hover { border-color:rgba(255,80,80,.4) !important; background:rgba(255,50,50,.05) !important; }
+.bk-danger .bk-row-t { color:#f87171; }
+
+/* restore drop zone */
+.bk-drop {
+  border:2px dashed rgba(255,255,255,.1);
+  border-radius:10px; padding:20px;
+  text-align:center; cursor:pointer;
+  transition:all .18s; display:none;
+}
+.bk-drop.show { display:block; }
+.bk-drop.drag-over { border-color:rgba(200,240,58,.5); background:rgba(200,240,58,.05); }
+.bk-drop-t { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink3); }
+.bk-drop-s { font-size:11px; color:var(--ink3); margin-top:4px; }
+.bk-file-input { display:none; }
+.bk-info {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; color:var(--ink3); text-align:center;
+  letter-spacing:.04em; padding:0 4px 4px;
+}
+
 /* ────────────────── NOTES PER SET */
 .sl-notes-row {
   display:flex; align-items:center; gap:8px;
@@ -1690,6 +1942,10 @@ body.deload-active .sl-head { background:rgba(245,184,48,.04); }
       <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
       Deload Week
     </button>
+    <button class="export-btn" onclick="bkOpen()" style="margin-top:6px">
+      <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      Backup & Restore
+    </button>
   </div>
   <div class="f-r"><div class="f-n">10</div><div class="f-s">Program Score</div></div>
 </footer>
@@ -2204,6 +2460,25 @@ function cexClose() {
   document.getElementById('custom-ex-modal').classList.remove('show');
 }
 
+function deleteCustomEx(exid) {
+  // remove from storage
+  const customs = loadCustomEx().filter(e => e.exid !== exid);
+  saveCustomEx(customs);
+  // remove from DOM — the xr row
+  const row = document.querySelector(`.xr[data-custom-exid="${exid}"]`);
+  if(row) {
+    row.style.transition = 'opacity .25s, transform .25s';
+    row.style.opacity = '0'; row.style.transform = 'translateX(20px)';
+    setTimeout(() => row.remove(), 260);
+  }
+  // remove localStorage log for this exercise
+  const all = loadAll();
+  delete all[exid];
+  saveAll(all);
+  showToast('✓ Custom exercise dihapus');
+  if(navigator.vibrate) navigator.vibrate(30);
+}
+
 function cexSave() {
   const name   = document.getElementById('cex-name').value.trim();
   const muscle = document.getElementById('cex-muscle').value.trim();
@@ -2245,7 +2520,13 @@ function injectCustomEx(ex) {
           <div class="xname" style="cursor:pointer">${ex.name}<span class="custom-badge">custom</span></div>
           <div class="xnote">${ex.muscle || 'Custom exercise'}</div>
         </div>
-        <div class="xrir"><span class="rb rb1">RIR 1</span></div>
+        <div class="xrir" style="display:flex;align-items:center;gap:6px">
+          <span class="rb rb1">RIR 1</span>
+          <button onclick="deleteCustomEx('${ex.exid}')" title="Hapus exercise"
+            style="width:22px;height:22px;border-radius:50%;border:1px solid rgba(255,80,80,.2);background:rgba(255,50,50,.06);color:rgba(255,100,100,.5);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;cursor:pointer"
+            onmouseover="this.style.borderColor='rgba(255,80,80,.5)';this.style.color='#f87171'"
+            onmouseout="this.style.borderColor='rgba(255,80,80,.2)';this.style.color='rgba(255,100,100,.5)'">✕</button>
+        </div>
       </div>
       <div class="xrm">
         <span class="xsets">${ex.sets}×6–10</span>
@@ -2301,6 +2582,453 @@ function initAllCustomEx() {
   });
 }
 
+
+/* ── BACKUP & RESTORE ── */
+function bkOpen() {
+  // show storage stats
+  const all      = loadAll();
+  const customs  = loadCustomEx();
+  const sessions = Object.values(all).reduce((s,a)=>s+a.length,0);
+  const exCount  = Object.keys(all).length;
+  document.getElementById('bk-info').textContent =
+    `${exCount} exercise · ${sessions} sesi tersimpan · ${customs.length} custom exercise`;
+  document.getElementById('bk-drop').classList.remove('show');
+  document.getElementById('backup-modal').classList.add('show');
+}
+
+function bkClose() {
+  document.getElementById('backup-modal').classList.remove('show');
+}
+
+function bkExport() {
+  const payload = {
+    version: '1.8.0',
+    exported: new Date().toISOString(),
+    log:     loadAll(),
+    custom:  loadCustomEx(),
+    theme:   localStorage.getItem('hilv-theme') || 'dark',
+    deload:  localStorage.getItem('hilv-deload') || '0',
+  };
+  const json = JSON.stringify(payload, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'hilv-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  showToast('💾 Backup berhasil didownload');
+  if(navigator.vibrate) navigator.vibrate(30);
+}
+
+function bkShowDrop() {
+  const drop = document.getElementById('bk-drop');
+  drop.classList.toggle('show');
+  if(drop.classList.contains('show')) {
+    drop.onclick = () => document.getElementById('bk-file').click();
+    // drag & drop
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag-over'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('drag-over'));
+    drop.addEventListener('drop', e => {
+      e.preventDefault(); drop.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if(file) bkParseFile(file);
+    });
+  }
+}
+
+function bkImportFile(input) {
+  const file = input.files[0];
+  if(file) bkParseFile(file);
+}
+
+function bkParseFile(file) {
+  if(!file.name.endsWith('.json')) {
+    showToast('File harus berformat .json', false); return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      // validate structure
+      if(!data.log) throw new Error('Format tidak valid');
+
+      // merge or overwrite
+      const existing = loadAll();
+      const merged   = { ...existing };
+      Object.entries(data.log).forEach(([k,v]) => {
+        if(!merged[k]) merged[k] = v;
+        else {
+          // merge sessions by date — prefer imported if newer
+          const dates = new Set(merged[k].map(s=>s._date));
+          v.forEach(s => { if(!dates.has(s._date)) merged[k].push(s); });
+          merged[k].sort((a,b) => (a._date||'') < (b._date||'') ? -1 : 1);
+          if(merged[k].length > 12) merged[k] = merged[k].slice(-12);
+        }
+      });
+      saveAll(merged);
+
+      // restore custom exercises
+      if(data.custom?.length) {
+        const existingCustom = loadCustomEx();
+        const existingIds    = new Set(existingCustom.map(e=>e.exid));
+        data.custom.forEach(ex => { if(!existingIds.has(ex.exid)) existingCustom.push(ex); });
+        saveCustomEx(existingCustom);
+      }
+
+      // restore theme & deload
+      if(data.theme) { localStorage.setItem('hilv-theme', data.theme); }
+      if(data.deload) { localStorage.setItem('hilv-deload', data.deload); }
+
+      const sessCount = Object.values(data.log).reduce((s,a)=>s+a.length,0);
+      bkClose();
+      showToast(`✓ Restore berhasil — ${sessCount} sesi diimport`);
+      if(navigator.vibrate) navigator.vibrate([40,30,80]);
+      // reload after short delay so everything re-renders
+      setTimeout(() => location.reload(), 1200);
+
+    } catch(err) {
+      showToast('Gagal import: ' + err.message, false);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function bkClearAll() {
+  if(!confirm('Hapus SEMUA data log? Ini tidak bisa dibatalkan.')) return;
+  localStorage.removeItem('hilv_sets_v2');
+  localStorage.removeItem(CEX_KEY);
+  bkClose();
+  showToast('✓ Semua data dihapus');
+  if(navigator.vibrate) navigator.vibrate([50,30,50,30,100]);
+  setTimeout(() => location.reload(), 1000);
+}
+
+
+/* ── EXERCISE EDIT MODE ── */
+const EX_HIDDEN_KEY  = 'hilv_ex_hidden';   // { exid: { name, pid, idx } }
+const EX_ORDER_KEY   = 'hilv_ex_order';    // { pid: [exid, exid, ...] }
+const EX_MOVED_KEY   = 'hilv_ex_moved';    // { exid: newPid }
+
+function loadHidden() { try{ return JSON.parse(localStorage.getItem(EX_HIDDEN_KEY)||'{}'); }catch(e){ return {}; } }
+function saveHidden(d){ localStorage.setItem(EX_HIDDEN_KEY, JSON.stringify(d)); }
+function loadOrder()  { try{ return JSON.parse(localStorage.getItem(EX_ORDER_KEY)||'{}'); }catch(e){ return {}; } }
+function saveOrder(d) { localStorage.setItem(EX_ORDER_KEY,  JSON.stringify(d)); }
+function loadMoved()  { try{ return JSON.parse(localStorage.getItem(EX_MOVED_KEY)||'{}'); }catch(e){ return {}; } }
+function saveMoved(d) { localStorage.setItem(EX_MOVED_KEY,  JSON.stringify(d)); }
+
+const SESSION_NAMES = {
+  p1:'Upper A · SAT', p2:'Lower A · SUN',
+  p3:'Upper B · TUE', p4:'Lower B · WED', p5:'Upper C · THU'
+};
+
+/* ── init: wire up all exercise rows ── */
+function initEditMode() {
+  document.querySelectorAll('.panel').forEach(panel => {
+    const pid = panel.id;
+    const xt  = panel.querySelector('.xt');
+    if(!xt) return;
+
+    // inject edit mode buttons row before xt
+    const btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;margin-bottom:6px';
+    btnRow.innerHTML = `
+      <button class="panel-restore-btn" id="restore-btn-${pid}" onclick="rexOpen('${pid}')">↩ Restore</button>
+      <button class="panel-edit-btn"    id="edit-btn-${pid}"    onclick="toggleEditMode('${pid}')">✎ Edit</button>`;
+    xt.parentNode.insertBefore(btnRow, xt);
+
+    // wire each exercise row
+    wireEditRows(pid);
+  });
+
+  // apply hidden state
+  applyHiddenState();
+  // apply saved order
+  applySavedOrder();
+}
+
+function wireEditRows(pid) {
+  const xt = document.querySelector(`#${pid} .xt`);
+  if(!xt) return;
+  xt.querySelectorAll('.xr:not([data-wired-edit])').forEach((row, i) => {
+    row.dataset.wiredEdit = '1';
+    row.style.setProperty('--i', i);
+
+    // get exid and name
+    const exid   = row.dataset.customExid || getBuiltinExid(pid, row);
+    const name   = row.querySelector('.xname')?.textContent?.replace(/custom/,'').trim() || '';
+    row.dataset.editExid = exid;
+    row.dataset.editName = name;
+    row.dataset.editPid  = pid;
+
+    // inject drag handle at start of xri
+    const xri = row.querySelector('.xri');
+    if(xri && !row.querySelector('.xr-drag')) {
+      const drag = document.createElement('div');
+      drag.className = 'xr-drag'; drag.textContent = '⠿';
+      drag.title = 'Drag to reorder';
+      xri.prepend(drag);
+    }
+
+    // inject action buttons at end of xrir
+    const xrir = row.querySelector('.xrir');
+    if(xrir && !row.querySelector('.xr-actions')) {
+      const actions = document.createElement('div');
+      actions.className = 'xr-actions';
+      actions.innerHTML = `
+        <button class="xr-move-btn" title="Pindah sesi" onclick="mexOpen('${exid}','${name}','${pid}',this.closest('.xr'))">↗</button>
+        <button class="xr-del-btn"  title="Sembunyikan" onclick="hideExercise('${exid}','${name}','${pid}',this.closest('.xr'))">−</button>`;
+      xrir.appendChild(actions);
+    }
+
+    // drag & drop
+    setupDrag(row, pid);
+  });
+}
+
+function getBuiltinExid(pid, row) {
+  const xi  = row.querySelector('.xi');
+  const num = xi ? xi.textContent.trim().padStart(2,'0') : '??';
+  return `${pid}-${num}`;
+}
+
+/* ── toggle edit mode per panel ── */
+function toggleEditMode(pid) {
+  const xt  = document.querySelector(`#${pid} .xt`);
+  const btn = document.getElementById(`edit-btn-${pid}`);
+  const isActive = xt.classList.toggle('edit-mode');
+  btn.classList.toggle('active', isActive);
+  btn.textContent = isActive ? '✓ Selesai' : '✎ Edit';
+
+  // show restore btn if there are hidden exercises for this panel
+  const hidden = loadHidden();
+  const hasHidden = Object.values(hidden).some(h => h.pid === pid);
+  const rBtn = document.getElementById(`restore-btn-${pid}`);
+  if(rBtn) rBtn.classList.toggle('show', isActive && hasHidden);
+}
+
+/* ── hide (soft-delete) exercise ── */
+function hideExercise(exid, name, pid, row) {
+  const hidden = loadHidden();
+  hidden[exid] = { name, pid, hiddenAt: new Date().toISOString() };
+  saveHidden(hidden);
+  // animate out
+  row.style.transition = 'opacity .25s, transform .25s, max-height .3s';
+  row.style.opacity = '0'; row.style.transform = 'translateX(16px)';
+  row.style.maxHeight = row.offsetHeight + 'px';
+  setTimeout(() => { row.style.maxHeight = '0'; row.style.overflow = 'hidden'; }, 50);
+  setTimeout(() => { row.classList.add('ex-hidden'); row.style = ''; }, 320);
+  // show restore btn
+  const rBtn = document.getElementById(`restore-btn-${pid}`);
+  if(rBtn) rBtn.classList.add('show');
+  showToast(`${name} disembunyikan`);
+  if(navigator.vibrate) navigator.vibrate(20);
+}
+
+function applyHiddenState() {
+  const hidden = loadHidden();
+  Object.keys(hidden).forEach(exid => {
+    const row = document.querySelector(`[data-edit-exid="${exid}"]`);
+    if(row) row.classList.add('ex-hidden');
+    // show restore button
+    const pid  = hidden[exid].pid;
+    const rBtn = document.getElementById(`restore-btn-${pid}`);
+    if(rBtn) rBtn.classList.add('show');
+  });
+}
+
+/* ── restore exercise ── */
+function rexOpen(pid) {
+  const hidden = loadHidden();
+  const list   = document.getElementById('rex-list');
+  const items  = Object.entries(hidden).filter(([,h]) => h.pid === pid);
+  if(!items.length) {
+    list.innerHTML = '<div class="rex-empty">Tidak ada exercise yang disembunyikan</div>';
+  } else {
+    list.innerHTML = items.map(([exid, h]) => `
+      <div class="rex-item">
+        <div>
+          <div class="rex-item-name">${h.name}</div>
+          <div class="rex-item-session">${SESSION_NAMES[h.pid]||h.pid}</div>
+        </div>
+        <button class="rex-restore-btn" onclick="restoreExercise('${exid}','${pid}')">Restore</button>
+      </div>`).join('');
+  }
+  document.getElementById('restore-ex-modal').classList.add('show');
+}
+
+function rexClose() { document.getElementById('restore-ex-modal').classList.remove('show'); }
+
+function restoreExercise(exid, pid) {
+  const hidden = loadHidden();
+  const name   = hidden[exid]?.name || exid;
+  delete hidden[exid];
+  saveHidden(hidden);
+  // un-hide row
+  const row = document.querySelector(`[data-edit-exid="${exid}"]`);
+  if(row) {
+    row.classList.remove('ex-hidden');
+    row.style.animation = 'flash-in .3s ease';
+  }
+  // hide restore btn if no more hidden
+  const remaining = Object.values(hidden).filter(h=>h.pid===pid);
+  if(!remaining.length) {
+    const rBtn = document.getElementById(`restore-btn-${pid}`);
+    if(rBtn) rBtn.classList.remove('show');
+  }
+  rexClose();
+  showToast(`↩ ${name} dikembalikan`);
+  if(navigator.vibrate) navigator.vibrate(30);
+}
+
+/* ── move exercise between sessions ── */
+let _mexData = null;
+
+function mexOpen(exid, name, currentPid, row) {
+  _mexData = { exid, name, currentPid, row };
+  document.getElementById('mex-ex-name').textContent = name;
+  const opts = document.getElementById('mex-options');
+  opts.innerHTML = Object.entries(SESSION_NAMES).map(([pid, label]) => {
+    const [session, day] = label.split(' · ');
+    return `
+      <div class="mex-opt${pid===currentPid?' current':''}" onclick="mexMove('${pid}')">
+        <div>
+          <div class="mex-opt-day">${day||''}</div>
+          <div class="mex-opt-name">${session}</div>
+        </div>
+        ${pid===currentPid ? '<span style="font-family:JetBrains Mono,monospace;font-size:9px;color:var(--ink3)">Current</span>' : '<span style="color:var(--lime);font-size:14px">→</span>'}
+      </div>`;
+  }).join('');
+  document.getElementById('move-ex-modal').classList.add('show');
+}
+
+function mexClose() {
+  document.getElementById('move-ex-modal').classList.remove('show');
+  _mexData = null;
+}
+
+function mexMove(targetPid) {
+  if(!_mexData) return;
+  const { exid, name, currentPid, row } = _mexData;
+
+  // move DOM row to target panel's xt
+  const targetXt = document.querySelector(`#${targetPid} .xt`);
+  if(!targetXt) { mexClose(); return; }
+
+  // animate out
+  row.style.transition = 'opacity .2s, transform .2s';
+  row.style.opacity = '0'; row.style.transform = 'translateX(20px)';
+  setTimeout(() => {
+    // move to target panel before add-custom-btn
+    const addBtn = targetXt.querySelector('.add-custom-btn');
+    if(addBtn) targetXt.insertBefore(row, addBtn);
+    else targetXt.appendChild(row);
+    // update row's pid reference
+    row.dataset.editPid = targetPid;
+    // re-wire actions with new pid
+    const moveBtn = row.querySelector('.xr-move-btn');
+    if(moveBtn) moveBtn.setAttribute('onclick', `mexOpen('${exid}','${name}','${targetPid}',this.closest('.xr'))`);
+    const delBtn  = row.querySelector('.xr-del-btn');
+    if(delBtn)  delBtn.setAttribute('onclick',  `hideExercise('${exid}','${name}','${targetPid}',this.closest('.xr'))`);
+    // animate in
+    row.style.opacity = '0'; row.style.transform = 'translateX(-20px)';
+    row.style.transition = 'opacity .25s, transform .25s';
+    setTimeout(() => { row.style.opacity='1'; row.style.transform='none'; }, 30);
+    setTimeout(() => { row.style.transition=''; }, 300);
+
+    // save to moved storage
+    const moved = loadMoved();
+    moved[exid] = targetPid;
+    saveMoved(moved);
+  }, 220);
+
+  mexClose();
+  showToast(`↗ ${name} dipindah ke ${SESSION_NAMES[targetPid]?.split(' · ')[0]||targetPid}`);
+  if(navigator.vibrate) navigator.vibrate(30);
+}
+
+/* ── drag to reorder ── */
+let _dragRow = null;
+
+function setupDrag(row, pid) {
+  row.setAttribute('draggable', 'true');
+  row.addEventListener('dragstart', e => {
+    _dragRow = row;
+    row.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  row.addEventListener('dragend', () => {
+    row.classList.remove('dragging');
+    document.querySelectorAll('.drag-over-above,.drag-over-below').forEach(r=>{
+      r.classList.remove('drag-over-above','drag-over-below');
+    });
+    saveRowOrder(pid);
+    _dragRow = null;
+  });
+  row.addEventListener('dragover', e => {
+    e.preventDefault();
+    if(!_dragRow || _dragRow===row) return;
+    const rect = row.getBoundingClientRect();
+    const mid  = rect.top + rect.height/2;
+    row.classList.remove('drag-over-above','drag-over-below');
+    if(e.clientY < mid) row.classList.add('drag-over-above');
+    else                row.classList.add('drag-over-below');
+  });
+  row.addEventListener('dragleave', () => {
+    row.classList.remove('drag-over-above','drag-over-below');
+  });
+  row.addEventListener('drop', e => {
+    e.preventDefault();
+    if(!_dragRow || _dragRow===row) return;
+    const xt   = row.closest('.xt');
+    const rect = row.getBoundingClientRect();
+    const mid  = rect.top + rect.height/2;
+    if(e.clientY < mid) xt.insertBefore(_dragRow, row);
+    else {
+      const next = row.nextElementSibling;
+      if(next) xt.insertBefore(_dragRow, next);
+      else xt.appendChild(_dragRow);
+    }
+    row.classList.remove('drag-over-above','drag-over-below');
+  });
+}
+
+function saveRowOrder(pid) {
+  const xt    = document.querySelector(`#${pid} .xt`);
+  if(!xt) return;
+  const order = [...xt.querySelectorAll('.xr:not(.ex-hidden)')].map(r=>r.dataset.editExid).filter(Boolean);
+  const saved = loadOrder();
+  saved[pid]  = order;
+  saveOrder(saved);
+}
+
+function applySavedOrder() {
+  const saved = loadOrder();
+  Object.entries(saved).forEach(([pid, order]) => {
+    const xt = document.querySelector(`#${pid} .xt`);
+    if(!xt) return;
+    order.forEach(exid => {
+      const row = xt.querySelector(`[data-edit-exid="${exid}"]`);
+      if(row) xt.appendChild(row); // move to end in order
+    });
+  });
+}
+
+/* ── apply moved exercises on load ── */
+function applyMovedExercises() {
+  const moved = loadMoved();
+  Object.entries(moved).forEach(([exid, targetPid]) => {
+    const row = document.querySelector(`[data-edit-exid="${exid}"]`);
+    if(!row) return;
+    const targetXt = document.querySelector(`#${targetPid} .xt`);
+    if(!targetXt || row.closest('.xt') === targetXt) return;
+    const addBtn = targetXt.querySelector('.add-custom-btn');
+    if(addBtn) targetXt.insertBefore(row, addBtn);
+    else targetXt.appendChild(row);
+    row.dataset.editPid = targetPid;
+  });
+}
+
 /* ── DELOAD MODE ── */
 let _deloadActive = localStorage.getItem('hilv-deload') === '1';
 
@@ -2319,7 +3047,7 @@ function applyDeload() {
     const raw = parseFloat(el.textContent);
     if(isNaN(raw)) return;
     if(!el.dataset.original) el.dataset.original = raw;
-    el.dataset.deload = (Math.round(raw * 0.6 / 2.5) * 2.5) + ' kg';
+    el.dataset.deload = (Math.max(5, Math.round(raw * 0.6 / 2.5) * 2.5)) + ' kg';
   });
   // update deload banner toggle text
   const toggleBtn = document.querySelector('.deload-toggle');
@@ -2861,6 +3589,8 @@ function rtSet(secs) {
 /* ── INIT ── */
 injectTrackers();
 initAllCustomEx();
+initEditMode();
+applyMovedExercises();
 applyDeload();
 initToday();
 renderWeeklySummary();
@@ -3000,6 +3730,75 @@ renderWeeklySummary();
   <button class="pwa-dismiss" onclick="pwaDismiss()" aria-label="Tutup">✕</button>
 </div>
 <div id="offline-toast">⚡ Offline mode</div>
+
+<!-- ── MOVE EXERCISE MODAL ── -->
+<div id="move-ex-modal">
+  <div class="mex-sheet">
+    <div class="mex-handle"></div>
+    <div class="mex-hd">
+      <div class="mex-title">Pindah ke Sesi</div>
+      <div class="mex-sub" id="mex-ex-name">Exercise</div>
+    </div>
+    <div class="mex-options" id="mex-options"></div>
+    <button class="mex-cancel" onclick="mexClose()">Batal</button>
+  </div>
+</div>
+
+<!-- ── RESTORE EXERCISE MODAL ── -->
+<div id="restore-ex-modal">
+  <div class="rex-sheet">
+    <div class="rex-handle"></div>
+    <div class="rex-hd">
+      <div class="rex-title">Restore Exercise</div>
+      <div class="rex-sub">Exercise yang disembunyikan dari program</div>
+    </div>
+    <div class="rex-list" id="rex-list"></div>
+    <button class="rex-cancel" onclick="rexClose()">Tutup</button>
+  </div>
+</div>
+
+<!-- ── BACKUP & RESTORE MODAL ── -->
+<div id="backup-modal">
+  <div class="bk-card">
+    <div class="bk-hd">
+      <div class="bk-title">Backup & Restore</div>
+      <button class="bk-close" onclick="bkClose()">✕</button>
+    </div>
+    <div class="bk-body">
+      <div class="bk-row" onclick="bkExport()">
+        <div class="bk-row-icon">💾</div>
+        <div class="bk-row-text">
+          <div class="bk-row-t">Export Backup</div>
+          <div class="bk-row-s">Download seluruh log sebagai file .json</div>
+        </div>
+        <div class="bk-row-arrow">→</div>
+      </div>
+      <div class="bk-row" onclick="bkShowDrop()">
+        <div class="bk-row-icon">📂</div>
+        <div class="bk-row-text">
+          <div class="bk-row-t">Import Backup</div>
+          <div class="bk-row-s">Restore log dari file .json sebelumnya</div>
+        </div>
+        <div class="bk-row-arrow">→</div>
+      </div>
+      <div class="bk-drop" id="bk-drop">
+        <div class="bk-drop-t">📁 Tap untuk pilih file</div>
+        <div class="bk-drop-s">atau drag & drop file .json di sini</div>
+        <input type="file" class="bk-file-input" id="bk-file" accept=".json" onchange="bkImportFile(this)">
+      </div>
+      <div class="bk-row bk-danger" onclick="bkClearAll()">
+        <div class="bk-row-icon">🗑️</div>
+        <div class="bk-row-text">
+          <div class="bk-row-t">Hapus Semua Data</div>
+          <div class="bk-row-s">Reset seluruh log — tidak bisa dibatalkan</div>
+        </div>
+        <div class="bk-row-arrow">→</div>
+      </div>
+      <div class="bk-info" id="bk-info"></div>
+    </div>
+  </div>
+</div>
+<input type="file" id="bk-file-global" accept=".json" style="display:none" onchange="bkImportFile(this)">
 
 <!-- ── RESET CONFIRM ── -->
 <div id="reset-confirm">

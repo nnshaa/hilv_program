@@ -92,6 +92,37 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [1.9.0] — 2026-05-03
+
+**Added**
+- Edit Mode per panel — tombol ✎ Edit di setiap sesi, aktifkan untuk masuk mode edit
+- Sembunyikan exercise — tombol − per row, exercise hilang dari tampilan tapi data tetap ada
+- Restore exercise — tombol ↩ Restore muncul di edit mode, tampilkan semua exercise yang disembunyikan beserta asal sesinya
+- Pindah exercise antar sesi — tombol ↗ per row, pilih sesi tujuan dari bottom sheet
+- Drag & drop reorder — handle ⠿ muncul di edit mode, seret untuk ubah urutan exercise
+- Urutan custom tersimpan di localStorage (`hilv_ex_order`), persist setelah reload
+- Status moved tersimpan di `hilv_ex_moved`, exercise tetap di posisi baru setelah reload
+- Status hidden tersimpan di `hilv_ex_hidden`, persist setelah reload
+- Exercise bawaan bisa di-restore kapanpun, data log tidak ikut terhapus
+
+---
+
+### [1.8.0] — 2026-05-03
+
+**Fixed**
+- Onboarding slide 2, 3, 4 tidak tampil karena missing closing `</div>` tag — semua slide sekarang punya konten penuh dan markup yang benar
+- Deload rounding: hasil 60% kini dibulatkan ke kelipatan 2.5 terdekat dengan minimum 5kg (contoh: 85kg → 52.5kg bukan 51kg)
+- Custom exercise tidak bisa dihapus — sekarang ada tombol ✕ kecil di setiap custom exercise row
+
+**Added**
+- Backup & Restore modal — tombol di footer
+- Export backup: download seluruh log + custom exercise + settings sebagai `.json`
+- Import backup: pilih file atau drag & drop, merge dengan data yang sudah ada (tidak overwrite)
+- Clear all data: hapus seluruh localStorage dengan konfirmasi
+- Backup menyimpan: log sesi, custom exercise, theme preference, deload state
+
+---
+
 ### [1.7.0] — 2026-05-03
 
 **Added**
