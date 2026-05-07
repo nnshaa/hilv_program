@@ -2735,52 +2735,22 @@ body.deload-active .sl-head { background:rgba(245,184,48,.04); }
 <section class="sec">
   <div class="sec-hd"><span class="sec-tag">02 &middot; Volume</span><div class="sec-line"></div></div>
   <div class="sec-title">Per Muscle / Week</div>
-  <div class="vol">
-    <div class="vc r" style="--fill:52%"><div class="vm">Chest</div><div class="vn">4</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
-    <div class="vc r" style="--fill:52%"><div class="vm">Lat / Back</div><div class="vn">4</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
-    <div class="vc r" style="--fill:42%"><div class="vm">Lateral Delt</div><div class="vn">3</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
-    <div class="vc r" style="--fill:52%"><div class="vm">Rear Delt</div><div class="vn">4</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
-    <div class="vc r" style="--fill:50%"><div class="vm">Tricep</div><div class="vn">4</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
-    <div class="vc r" style="--fill:68%"><div class="vm">Bicep</div><div class="vn">6</div><div class="vu">sets &middot; 3 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
-    <div class="vc r" style="--fill:65%"><div class="vm">Quad</div><div class="vn">6</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
-    <div class="vc r" style="--fill:50%"><div class="vm">Hamstring</div><div class="vn">4</div><div class="vu">sets &middot; 2 sesi</div><div class="vbar"><div class="vf"></div></div><div class="vs">Optimal range</div></div>
-  </div>
+  <div class="vol" id="dynamic-vol"></div>
 </section>
 
 <!-- ── SCHEDULE ── -->
-<section class="sec">
-  <div class="sec-hd"><span class="sec-tag">03 &middot; Schedule</span><div class="sec-line"></div></div>
+<section class="sec" id="dynamic-schedule-section">
+  <div class="sec-hd"><span class="sec-tag">03 · Schedule</span><div class="sec-line"></div></div>
   <div class="sec-title">Weekly Overview</div>
-  <div class="sched">
-    <div class="sc act r"><div class="sc-d">SAT <span class="sc-tag tag-u">Upper</span></div><div class="sc-n">Upper A</div><div class="sc-f">Chest &middot; Upper Back</div><div class="chips"><span class="chip">Chest</span><span class="chip">Back</span><span class="chip">Lat. Delt</span><span class="chip">Tricep</span><span class="chip">Bicep</span></div><div class="sc-b">&#128694; Incline Walk 20 min</div></div>
-    <div class="sc act r"><div class="sc-d">SUN <span class="sc-tag tag-l">Lower</span></div><div class="sc-n">Lower A</div><div class="sc-f">Quad Focus</div><div class="chips"><span class="chip">Quad</span><span class="chip">Hamstring</span><span class="chip">Adductor</span><span class="chip">Calf</span><span class="chip">Core</span></div><div class="sc-b d">No upper &middot; lower recovery</div></div>
-    <div class="sc off r"><div class="sc-d">MON <span class="sc-tag tag-r">Rest</span></div><div class="sc-n">Full Rest</div><div class="sc-f">Recovery Day</div><div class="sc-rb">Protein tetap &ge;2g/kg. Adaptasi dari Sat + Sun terjadi di sini.</div></div>
-    <div class="sc act r"><div class="sc-d">TUE <span class="sc-tag tag-u">Upper</span></div><div class="sc-n">Upper B</div><div class="sc-f">Back &middot; Chest Balance</div><div class="chips"><span class="chip">Lat</span><span class="chip">Chest</span><span class="chip">Rear Delt</span><span class="chip">Bicep</span></div><div class="sc-b">&#128694; Incline Walk 20 min</div></div>
-    <div class="sc act r"><div class="sc-d">WED <span class="sc-tag tag-l">Lower</span></div><div class="sc-n">Lower B</div><div class="sc-f">Hamstring &middot; Glute</div><div class="chips"><span class="chip">Hamstring</span><span class="chip">Glute</span><span class="chip">Quad</span><span class="chip">Calf</span><span class="chip">Core</span></div><div class="sc-b d">No upper &middot; posterior chain</div></div>
-    <div class="sc act r"><div class="sc-d">THU <span class="sc-tag tag-u">Upper</span></div><div class="sc-n">Upper C</div><div class="sc-f">Delts &middot; Arms &middot; Traps</div><div class="chips"><span class="chip">Fr. Delt</span><span class="chip">Lat. Delt</span><span class="chip">Rear Delt</span><span class="chip">Trap</span><span class="chip">Bicep</span><span class="chip">Tricep</span></div><div class="sc-b">&#128694; Incline Walk 20 min</div></div>
-    <div class="sc off r"><div class="sc-d">FRI <span class="sc-tag tag-r">Rest</span></div><div class="sc-n">Full Rest</div><div class="sc-f">Recovery Day</div><div class="sc-rb">Buffer sebelum siklus ulang Sabtu. Tidur 7&ndash;9 jam, defisit dijaga.</div></div>
-  </div>
-  <div class="rec">
-    <div class="rec-l">// Recovery Windows</div>
-    <div class="rec-g">
-      <div><div class="rec-ll">Upper A &rarr; Upper B</div><div class="rec-v">72h</div><div class="rec-n">Sat &rarr; Tue &middot; Mon buffer</div></div>
-      <div><div class="rec-ll">Lower A &rarr; Lower B</div><div class="rec-v">48h</div><div class="rec-n">Sun &rarr; Wed</div></div>
-      <div><div class="rec-ll">Upper B &rarr; Upper C</div><div class="rec-v">48h</div><div class="rec-n">Tue &rarr; Thu</div></div>
-      <div><div class="rec-ll">Upper C &rarr; Restart</div><div class="rec-v">48h</div><div class="rec-n">Thu &rarr; Sat &middot; Fri buffer</div></div>
-    </div>
-  </div>
+  <div class="sched" id="dynamic-sched"></div>
+  <div class="rec" id="dynamic-rec"></div>
 </section>
 
 <!-- ── EXECUTION ── -->
-<section class="sec">
-  <div class="sec-hd"><span class="sec-tag">04 &middot; Execution</span><div class="sec-line"></div></div>
-  <div class="sec-title">Panduan Eksekusi</div>
-  <div class="rg">
-    <div class="rc r"><div class="rc-t">Rep Range &amp; Proximity to Failure</div><ul class="rc-l"><li>6&ndash;8 rep di compound adalah zona mechanical tension tertinggi &mdash; motor unit recruitment maksimal, metabolic fatigue belum dominasi recovery cost.</li><li>RIR 1&ndash;2 di compound menjaga bar speed terkontrol. Bar melambat signifikan = form breakdown dimulai tanpa tambahan stimulus berarti.</li><li>Isolation lebih dekat ke failure (RIR 0&ndash;1) karena failure mode-nya terisolir &mdash; recovery cost per set jauh lebih rendah dibanding compound.</li><li>Warm-up 1&times;5 bukan pemanasan &mdash; ini prime neuromuscular pathway dan kalibrasi RPE sebelum working set dimulai.</li></ul></div>
-    <div class="rc r"><div class="rc-t">Strength sebagai Metrik Utama</div><ul class="rc-l"><li>Strength adalah satu-satunya indikator yang bisa diukur objektif per sesi &mdash; proxy paling reliable untuk muscle retention di cutting.</li><li>Beban turun &gt;5&ndash;8% dari baseline tanpa sebab eksternal adalah sinyal: defisit terlalu dalam, protein kurang, atau volume melebihi recovery capacity.</li><li>Pump adalah hasil hyperemia &mdash; bukan indikator mechanical tension yang sufficient. DOMS juga bukan. Keduanya tidak berkorelasi dengan hypertrophy stimulus.</li><li>Catat beban, rep aktual, dan RPE per sesi. Tiga data point ini cukup untuk evaluasi mingguan yang akurat.</li></ul></div>
-    <div class="rc r"><div class="rc-t">Volume &amp; Recovery Budget</div><ul class="rc-l"><li>Program ini ada di minimum effective dose &mdash; titik terendah volume yang masih menghasilkan stimulus cukup, bukan maksimum yang bisa ditoleransi.</li><li>Tambah set mid-cycle = naikkan fatigue tanpa naikkan recovery capacity. Kalori defisit sudah memotong recovery &mdash; tambah volume hanya perbesar gap-nya.</li><li>DOMS &gt;48 jam post-lower adalah sinyal volume melewati recoverable threshold sebelum sesi berikutnya.</li><li>Lower days sengaja kosong dari upper work. RDL merekrut spinal erector yang sama dibutuhkan saat pressing dan rowing movement.</li></ul></div>
-    <div class="rc r"><div class="rc-t">Fisiologi Cutting: Ekspektasi Akurat</div><ul class="rc-l"><li>Muscle protein synthesis turun saat defisit kalori. Hypertrophy masih bisa terjadi di otot yang belum mature, tapi itu bonus &mdash; bukan yang dioptimasi.</li><li>Defisit agresif (&gt;500 kcal/hari) meningkatkan muscle protein breakdown dan menekan testosterone. Target 300&ndash;500 kcal, protein minimal 2g/kg BW.</li><li>Performa gym akan berfluktuasi &mdash; glycogen, tidur, stres harian semua mempengaruhi output. Tren beban yang penting, bukan angka per sesi.</li><li>&ldquo;Optimal&rdquo; bukan program terbanyak yang bisa dijalankan &mdash; optimal yang bisa dieksekusi konsisten, dengan teknik baik, selama durasi penuh cutting.</li></ul></div>
-  </div>
+<section class="sec" id="dynamic-execution-section">
+  <div class="sec-hd"><span class="sec-tag" id="exec-tag">04 · Execution</span><div class="sec-line"></div></div>
+  <div class="sec-title" id="exec-title">Panduan Eksekusi</div>
+  <div class="rg" id="dynamic-exec"></div>
 </section>
 
   </div><!-- /panels-inner -->
@@ -2837,10 +2807,9 @@ body.deload-active .sl-head { background:rgba(245,184,48,.04); }
 <!-- FOOTER -->
 <footer class="footer">
   <div class="f-l">
-    HILV High Frequency &middot; Locked Final<br>
-    Natural Lifter &middot; Cutting Phase &middot; 5 Days / Week<br>
-    SAT &middot; SUN &middot; &mdash; &middot; TUE &middot; WED &middot; THU &middot; &mdash;
-    <div class="f-q">&ldquo;Optimal bukan yang terbanyak. Optimal yang bisa disustain.&rdquo;</div>
+    <span id="footer-prog-name">HILV High Frequency</span><br>
+    <span id="footer-prog-meta">Natural Lifter · Cutting Phase · 5 Days / Week</span>
+    <div class="f-q" id="footer-quote">&ldquo;Optimal bukan yang terbanyak. Optimal yang bisa disustain.&rdquo;</div>
     <button class="export-btn" onclick="exportCSV()">
       <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Export Log CSV
@@ -3527,6 +3496,309 @@ function initAllCustomEx() {
 
 
 
+
+/* ══════════════════════════════════════════
+   DYNAMIC PROGRAM SECTIONS
+   ══════════════════════════════════════════ */
+
+/* ── Muscle group map from exercise names ── */
+const MUSCLE_MAP = {
+  chest:      ['chest','pec','fly','bench press','cable fly','push'],
+  back:       ['row','pull','lat','pulldown','deadlift','t-bar','rhomboid'],
+  shoulders:  ['press','lateral raise','face pull','rear delt','overhead','delt','trap'],
+  triceps:    ['tricep','pushdown','extension','close grip'],
+  biceps:     ['curl','bicep','hammer'],
+  quads:      ['squat','leg press','extension','lunge','split squat'],
+  hamstrings: ['romanian','rdl','leg curl','hamstring','hip hinge'],
+  glutes:     ['hip thrust','glute','kickback'],
+  calves:     ['calf raise','calf'],
+  core:       ['crunch','plank','leg raise','core','ab'],
+  cardio:     ['treadmill','bike','row','cardio','walk','run'],
+};
+
+function detectMuscle(name, note) {
+  const text = (name + ' ' + (note||'')).toLowerCase();
+  for(const [muscle, keywords] of Object.entries(MUSCLE_MAP)) {
+    if(keywords.some(k => text.includes(k))) return muscle;
+  }
+  return 'other';
+}
+
+function muscleLabel(key) {
+  const labels = {
+    chest:'Chest', back:'Back', shoulders:'Shoulders',
+    triceps:'Triceps', biceps:'Biceps', quads:'Quads',
+    hamstrings:'Hamstrings', glutes:'Glutes', calves:'Calves',
+    core:'Core', cardio:'Cardio', other:'Other'
+  };
+  return labels[key] || key;
+}
+
+/* ── Volume tracker dynamic render ── */
+function renderDynamicVolume(prog) {
+  const el = document.getElementById('dynamic-vol');
+  if(!el || !prog) return;
+
+  // count sets per muscle across all sessions
+  const muscleSets   = {};
+  const muscleSessions = {};
+
+  (prog.sessions||[]).forEach(sess => {
+    const sessMuscs = new Set();
+    (sess.exercises||[]).forEach(ex => {
+      const m    = detectMuscle(ex.name, ex.note);
+      const sets = parseInt((ex.sets||'2×').split('×')[0]) || 2;
+      muscleSets[m]   = (muscleSets[m]||0) + sets;
+      sessMuscs.add(m);
+    });
+    sessMuscs.forEach(m => { muscleSessions[m] = (muscleSessions[m]||0) + 1; });
+  });
+
+  const entries = Object.entries(muscleSets).filter(([k])=>k!=='other' && k!=='cardio').sort((a,b)=>b[1]-a[1]);
+  if(!entries.length) { el.innerHTML='<div style="color:var(--ink3);font-family:JetBrains Mono,monospace;font-size:10px;padding:12px">Tambah exercise ke program untuk melihat volume</div>'; return; }
+
+  const maxSets = Math.max(...entries.map(([,v])=>v), 1);
+  el.innerHTML = entries.map(([m, sets]) => {
+    const fill  = Math.round((sets/20)*100); // 20 sets = 100%
+    const sess  = muscleSessions[m]||1;
+    const status = sets < 6 ? 'Low volume' : sets <= 12 ? 'Optimal range' : 'High volume';
+    return `<div class="vc r" style="--fill:${fill}%">
+      <div class="vm">${muscleLabel(m)}</div>
+      <div class="vn">${sets}</div>
+      <div class="vu">sets · ${sess} sesi</div>
+      <div class="vbar"><div class="vf"></div></div>
+      <div class="vs">${status}</div>
+    </div>`;
+  }).join('');
+  // re-observe for scroll reveal
+  el.querySelectorAll('.vc').forEach(e => io.observe(e));
+}
+
+/* ── Schedule dynamic render ── */
+const DAY_ABBR  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAY_FULL2 = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function renderDynamicSchedule(prog) {
+  const schedEl = document.getElementById('dynamic-sched');
+  const recEl   = document.getElementById('dynamic-rec');
+  if(!schedEl || !prog) return;
+
+  const today = new Date().getDay();
+  // build day map
+  const dayMap = {}; // day → session
+  (prog.sessions||[]).forEach(sess => {
+    if(sess.day >= 0 && sess.day <= 6) dayMap[sess.day] = sess;
+  });
+
+  // render 7-day schedule
+  schedEl.innerHTML = DAY_ABBR.map((abbr,d) => {
+    const sess    = dayMap[d];
+    const isToday = d === today;
+    if(sess) {
+      // detect upper/lower/full
+      const muscles = new Set((sess.exercises||[]).map(e=>detectMuscle(e.name,e.note)));
+      const hasUpper = ['chest','back','shoulders','triceps','biceps'].some(m=>muscles.has(m));
+      const hasLower = ['quads','hamstrings','glutes','calves'].some(m=>muscles.has(m));
+      const type     = hasUpper && hasLower ? 'full' : hasUpper ? 'upper' : 'lower';
+      const tagClass = type==='upper'?'tag-u':type==='lower'?'tag-l':'tag-r';
+      const tagLabel = type==='upper'?'Upper':type==='lower'?'Lower':'Full';
+      const chips    = [...muscles].filter(m=>m!=='other'&&m!=='cardio').slice(0,5)
+        .map(m=>`<span class="chip">${muscleLabel(m)}</span>`).join('');
+      return `<div class="sc act r${isToday?' today-sched':''}">
+        <div class="sc-d">${abbr} <span class="sc-tag ${tagClass}">${tagLabel}</span></div>
+        <div class="sc-n">${sess.name}</div>
+        <div class="sc-f">${sess.focus||''}</div>
+        <div class="chips">${chips}</div>
+      </div>`;
+    } else {
+      return `<div class="sc off r${isToday?' today-sched':''}">
+        <div class="sc-d">${abbr} <span class="sc-tag tag-r">Rest</span></div>
+        <div class="sc-n">Rest Day</div>
+        <div class="sc-f">Recovery</div>
+        <div class="sc-rb">Protein target · aktif recovery opsional</div>
+      </div>`;
+    }
+  }).join('');
+
+  // recovery windows — find gaps between sessions
+  const trainDays = Object.entries(dayMap).sort((a,b)=>parseInt(a[0])-parseInt(b[0]));
+  if(trainDays.length >= 2) {
+    recEl.style.display = '';
+    let recRows = '';
+    for(let i=0; i<trainDays.length; i++) {
+      const [d1, s1] = trainDays[i];
+      const [d2, s2] = trainDays[(i+1)%trainDays.length];
+      let gap = (parseInt(d2) - parseInt(d1) + 7) % 7;
+      if(gap === 0) gap = 7;
+      recRows += `<div>
+        <div class="rec-ll">${s1.name} → ${s2.name}</div>
+        <div class="rec-v">${gap*24}h</div>
+        <div class="rec-n">${DAY_ABBR[d1]} → ${DAY_ABBR[d2]}</div>
+      </div>`;
+    }
+    recEl.innerHTML = `<div class="rec-l">// Recovery Windows</div><div class="rec-g">${recRows}</div>`;
+  } else {
+    recEl.style.display = 'none';
+  }
+
+  // re-observe
+  schedEl.querySelectorAll('.sc').forEach(e=>io.observe(e));
+}
+
+/* ── Execution guide dynamic render ── */
+const EXECUTION_GUIDES = {
+  cutting: {
+    title: 'Panduan Eksekusi — Cutting Phase',
+    cards: [
+      { t:'Rep Range & Proximity to Failure', l:[
+        '6–8 rep di compound adalah zona mechanical tension tertinggi — motor unit recruitment maksimal sebelum metabolic fatigue mendominasi.',
+        'RIR 1–2 di compound menjaga bar speed terkontrol. Bar melambat signifikan = form breakdown tanpa tambahan stimulus berarti.',
+        'Isolation lebih dekat ke failure (RIR 0–1) — failure mode terisolir, recovery cost per set jauh lebih rendah.',
+        'Warm-up bukan pemanasan biasa — ini prime neuromuscular pathway dan kalibrasi RPE sebelum working set.',
+      ]},
+      { t:'Strength sebagai Metrik Utama', l:[
+        'Strength adalah satu-satunya indikator yang bisa diukur objektif per sesi — proxy paling reliable untuk muscle retention di cutting.',
+        'Beban turun >5–8% dari baseline tanpa sebab eksternal: sinyal defisit terlalu dalam, protein kurang, atau volume melebihi recovery capacity.',
+        'Pump adalah hasil hyperemia — bukan indikator mechanical tension sufficient. DOMS juga bukan. Keduanya tidak berkorelasi langsung dengan hypertrophy stimulus.',
+        'Catat beban, rep aktual, dan RPE per sesi. Tiga data point ini cukup untuk evaluasi mingguan yang akurat.',
+      ]},
+      { t:'Volume & Recovery Budget', l:[
+        'Program di minimum effective dose — titik terendah volume yang masih menghasilkan stimulus, bukan maksimum yang bisa ditoleransi.',
+        'Kalori defisit sudah memotong recovery capacity. Tambah volume hanya perbesar gap antara fatigue dan recovery.',
+        'DOMS >48 jam post-session adalah sinyal volume melewati recoverable threshold sebelum sesi berikutnya.',
+        'Rest days sengaja kosong — compound movement merekrut stabilizer yang sama lintas sesi. Recovery gap itu kerja, bukan kemalasan.',
+      ]},
+      { t:'Ekspektasi Cutting yang Akurat', l:[
+        'Muscle protein synthesis turun saat defisit kalori. Target utama: retain, bukan build.',
+        'Defisit agresif (>500 kcal/hari) meningkatkan muscle protein breakdown dan menekan testosterone. Target 300–500 kcal defisit, protein minimal 2g/kg BW.',
+        'Performa gym akan berfluktuasi — glycogen, tidur, stres harian semua mempengaruhi output. Tren yang penting, bukan angka per sesi.',
+        '"Optimal" bukan program terbanyak yang bisa dijalankan — optimal yang bisa dieksekusi konsisten, dengan teknik baik, selama durasi penuh cutting.',
+      ]},
+    ]
+  },
+  bulking: {
+    title: 'Panduan Eksekusi — Bulking Phase',
+    cards: [
+      { t:'Progressive Overload sebagai Prioritas', l:[
+        'Bulking phase adalah jendela terbaik untuk drive progressive overload — kalori surplus mendukung protein synthesis dan recovery.',
+        'Target tambah beban atau rep setiap 1–2 minggu di compound movement. Kalau tidak ada progress dalam 3 sesi berturut-turut, evaluasi sleep dan nutrition.',
+        'Double progression: habiskan rep range dulu (misal 3×8), baru naikkan beban. Jangan naikkan beban sebelum rep batas atas tercapai.',
+        'Catat semua sesi — tanpa data, tidak ada baseline. Gut feeling tidak cukup untuk evaluate progress objektif.',
+      ]},
+      { t:'Volume & Frequency', l:[
+        'Bulking toleransi volume lebih tinggi — surplus kalori dan sleep yang cukup mendukung recovery lebih cepat.',
+        'Frekuensi per muscle group 2x per minggu adalah sweet spot untuk intermediate. Lebih dari itu butuh periodisasi yang lebih kompleks.',
+        'Kalau recovery masih bagus (tidak ada DOMS berlebih, performance tidak turun), volume bisa di-add secara bertahap.',
+        'Isolation work di akhir sesi boleh dikejar lebih agresif ke failure — compound sudah cover mechanical tension, isolation cover metabolic stress.',
+      ]},
+      { t:'Nutrition & Recovery', l:[
+        'Surplus 200–400 kcal di atas TDEE adalah clean bulk — minimize fat gain sambil support muscle growth.',
+        'Protein 1.6–2.2g/kg BW — ambil batas atas kalau intensitas latihan tinggi atau sleep sering kurang dari 7 jam.',
+        'Sleep adalah anabolic window terpanjang yang ada — growth hormone direlease saat deep sleep. Prioritaskan 7–9 jam.',
+        'Creatine monohydrate adalah satu-satunya suplemen dengan evidence level A untuk kekuatan dan komposisi tubuh. 5g/hari, kapan saja.',
+      ]},
+      { t:'Muscle & Mind Connection', l:[
+        'Intentional contraction meningkatkan EMG aktivasi di isolation exercise. Coba, rasakan, jangan cuma angkat beban.',
+        'Tempo terkontrol (2-1-2) lebih penting dari beban berat dengan form berantakan. Form breakdown = partial stimulus + injury risk.',
+        'Warm-up yang proper naik 15–20% performance per sesi. Bukan opsional.',
+        '"Optimal" di bulking adalah progressive overload yang konsisten dengan recovery adequate — bukan volume setinggi-tingginya.',
+      ]},
+    ]
+  },
+  general: {
+    title: 'Panduan Eksekusi',
+    cards: [
+      { t:'Progressive Overload', l:[
+        'Progressive overload adalah satu-satunya mekanisme yang terbukti drive muscle adaptation — tambah beban, rep, atau set secara bertahap.',
+        'Konsistensi mengalahkan intensitas. 80% effort di setiap sesi selama setahun lebih efektif dari 100% effort yang tidak sustain.',
+        'Catat beban dan rep setiap sesi. Tanpa data, tidak ada baseline untuk evaluate progress.',
+        'Deload setiap 4–8 minggu untuk reset fatigue — volume dan intensitas diturunkan 40–50%, frekuensi dipertahankan.',
+      ]},
+      { t:'Recovery & Sleep', l:[
+        'Otot tidak tumbuh di gym — tumbuh saat recovery. Training adalah stimulus, recovery adalah adaptasi.',
+        'Sleep 7–9 jam per malam adalah fondasi. Kurang tidur memotong testosterone, naikkan kortisol, dan menekan protein synthesis.',
+        'Protein minimal 1.6g/kg BW/hari — distribusikan ke 3–5 meal untuk optimasi muscle protein synthesis.',
+        'DOMS berlebih (>48–72 jam) adalah sinyal volume atau intensitas melewati recovery capacity saat ini.',
+      ]},
+      { t:'Teknik & Eksekusi', l:[
+        'Teknik yang konsisten lebih penting dari beban berat. Form breakdown = partial stimulus + injury risk.',
+        'Tempo terkontrol meningkatkan time under tension dan meminimalkan momentum. Target 2 detik eccentric minimum.',
+        'RIR (Reps In Reserve) lebih reliable dari RPE untuk kontrol intensitas per set secara konsisten.',
+        'Warm-up yang proper meningkatkan performa 15–20% per sesi. Bukan opsional.',
+      ]},
+      { t:'Mindset & Ekspektasi', l:[
+        'Progress non-linear adalah normal. Ada minggu bagus, ada yang buruk. Tren jangka panjang yang penting.',
+        'Pump bukan indikator efektivitas latihan. Mechanical tension dan metabolic stress yang drive hypertrophy.',
+        'Suplemen tidak menggantikan sleep, nutrition, dan training yang konsisten. Tidak ada shortcut.',
+        '"Optimal" adalah program terbaik yang bisa dieksekusi konsisten — bukan program terbaik di atas kertas.',
+      ]},
+    ]
+  }
+};
+
+function detectProgramGoal(prog) {
+  if(!prog) return 'general';
+  const name = (prog.name||'').toLowerCase();
+  const tags = prog.tags || [];
+  if(name.includes('cut') || tags.includes('Cutting')) return 'cutting';
+  if(name.includes('bulk') || name.includes('mass') || tags.includes('Bulking')) return 'bulking';
+  // detect from template tags
+  const tpl = BUILTIN_TEMPLATES.find(t=>t.id===prog.templateId);
+  if(tpl?.tags?.includes('Cutting')) return 'cutting';
+  if(tpl?.tags?.includes('Bulking')) return 'bulking';
+  return 'general';
+}
+
+function renderDynamicExecution(prog) {
+  const el      = document.getElementById('dynamic-exec');
+  const titleEl = document.getElementById('exec-title');
+  if(!el) return;
+
+  const goal  = detectProgramGoal(prog);
+  const guide = EXECUTION_GUIDES[goal] || EXECUTION_GUIDES.general;
+
+  if(titleEl) titleEl.textContent = guide.title;
+
+  el.innerHTML = guide.cards.map(card => `
+    <div class="rc r">
+      <div class="rc-t">${card.t}</div>
+      <ul class="rc-l">${card.l.map(li=>`<li>${li}</li>`).join('')}</ul>
+    </div>`).join('');
+  el.querySelectorAll('.rc').forEach(e=>io.observe(e));
+}
+
+/* ── Footer dynamic update ── */
+function renderDynamicFooter(prog) {
+  if(!prog) return;
+  const nameEl  = document.getElementById('footer-prog-name');
+  const metaEl  = document.getElementById('footer-prog-meta');
+  const quoteEl = document.getElementById('footer-quote');
+  const days    = (prog.sessions||[]).filter(s=>s.day>=0&&s.day<=6).length;
+
+  if(nameEl) nameEl.textContent = prog.name || 'HILV';
+  if(metaEl) {
+    const goal = detectProgramGoal(prog);
+    const goalLabel = goal==='cutting'?'Cutting Phase':goal==='bulking'?'Bulking Phase':'Training';
+    metaEl.textContent = `${goalLabel} · ${days} Days / Week`;
+  }
+  const quotes = {
+    cutting: '"Optimal bukan yang terbanyak. Optimal yang bisa disustain."',
+    bulking: '"Progressive overload yang konsisten mengalahkan intensitas yang sporadis."',
+    general: '"Konsistensi adalah suplemen terbaik yang tidak bisa dibeli."',
+  };
+  if(quoteEl) quoteEl.textContent = quotes[detectProgramGoal(prog)] || quotes.general;
+}
+
+/* ── Master render function — call when program changes ── */
+function renderAllDynamicSections(prog) {
+  const p = prog || getActiveProg();
+  if(!p) return;
+  renderDynamicVolume(p);
+  renderDynamicSchedule(p);
+  renderDynamicExecution(p);
+  renderDynamicFooter(p);
+}
+
 /* ══════════════════════════════════════════
    TEMPLATE SYSTEM + WEEKLY PLANNER
    ══════════════════════════════════════════ */
@@ -3686,6 +3958,7 @@ function tplSelect(tplId) {
     name: tpl.name,
     emoji: tpl.emoji,
     isDefault: false,
+    templateId: tpl.id,
     sessions: JSON.parse(JSON.stringify(tpl.sessions||[])).map((s,i) => ({
       ...s, id: 'sess-'+(Date.now()+i).toString(36)
     }))
@@ -4014,6 +4287,7 @@ function pmActivate(id) {
   renderPMList();
   pmClose();
   loadActiveProgram();
+  renderAllDynamicSections();
   showToast('✓ Program aktif diganti');
   if(navigator.vibrate) navigator.vibrate(30);
 }
@@ -4134,6 +4408,7 @@ function pbSave() {
 
   pbClose();
   loadActiveProgram();
+  renderAllDynamicSections();
   showToast(`✓ "${_pbProg.name}" disimpan`);
   if(navigator.vibrate) navigator.vibrate(30);
 }
@@ -5886,6 +6161,7 @@ injectTrackers();
 initAllCustomEx();
 initEditMode();
 loadActiveProgram();
+renderAllDynamicSections();
 applyMovedExercises();
 applyExLoads();
 applyDeload();

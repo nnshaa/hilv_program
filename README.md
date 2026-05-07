@@ -92,6 +92,24 @@ Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite
 
 ## Changelog
 
+### [3.2.0] — 2026-05-03
+
+**Changed**
+- Volume Tracker (02) — sekarang dihitung otomatis dari exercise di program aktif, muscle group terdeteksi dari nama exercise
+- Weekly Overview (03) — schedule 7 hari dirender dari data program, hari latihan vs rest otomatis, chips muscle group per sesi
+- Recovery Windows — dihitung otomatis dari gap antar hari latihan (misal SAT→TUE = 72h)
+- Execution Guide (04) — konten berubah sesuai tujuan program yang terdeteksi:
+  - **Cutting** → Panduan strength retention, defisit kalori, ekspektasi realistis
+  - **Bulking** → Panduan progressive overload, volume, nutrition surplus
+  - **General** → Panduan universal konsistensi, recovery, teknik
+- Footer — nama program, phase, dan quote berubah sesuai program aktif
+- Semua section re-render otomatis saat switch program atau save perubahan
+
+**Fixed**
+- Seluruh section informasi sekarang dinamis — tidak ada lagi hardcoded HILV-specific content yang muncul di program lain
+
+---
+
 ### [3.1.0] — 2026-05-03
 
 **Added**
