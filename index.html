@@ -174,6 +174,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .sl-add:hover{border-color:rgba(200,240,58,.3);color:var(--lime)}
 .sl-add::before{content:'+';font-size:14px}
 .sl-note-row{padding:4px 14px 10px}
+
+/* ── WARMUP ROW ── */
+.sl-row.warmup{background:rgba(251,191,36,.03)}
+.sl-row.warmup .sl-num{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.25);color:var(--amber)}
+.sl-row.warmup .sl-cell{border-color:rgba(251,191,36,.18);color:var(--amber)}
+.sl-row.warmup .sl-cell::placeholder{color:rgba(251,191,36,.35)}
+.sl-row.warmup .sl-prev{color:rgba(251,191,36,.35)}
+.sl-row.warmup .sl-check{border-color:rgba(251,191,36,.2)}
+.sl-row.warmup .sl-check::after{border-color:rgba(251,191,36,.3)}
+.sl-row.warmup .sl-check:hover{border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.08)}
+.sl-row.warmup .sl-check:hover::after{border-color:var(--amber)}
+.sl-row.warmup.done .sl-num{background:rgba(251,191,36,.2);border-color:rgba(251,191,36,.4)}
+.sl-row.warmup.done .sl-check{background:var(--amber);border-color:var(--amber);box-shadow:0 0 10px rgba(251,191,36,.25)}
+.sl-row.warmup.done .sl-check::after{border-color:#0C0C0F}
+.sl-row.warmup.done .sl-cell{border-color:rgba(251,191,36,.25);color:var(--amber)}
 .ex-edit-btn{width:28px;height:28px;border-radius:7px;border:1px solid var(--edge);background:var(--bg2);color:var(--ink3);font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;cursor:pointer;flex-shrink:0}
 .ex-edit-btn:hover{color:var(--lime);border-color:rgba(200,240,58,.3)}
 
@@ -710,16 +725,16 @@ const TPLS=[
   {id:'hilv',name:'Nishaa Precision Cut (HILV High Freq)',emoji:'🏋️',goal:'cutting',desc:'5 hari/minggu · Upper-Lower split · Cutting phase · Natural lifter.',tags:['Cutting','5 Days','Upper-Lower'],
    sessions:[
     {id:'s1',name:'Upper A',focus:'Chest · Upper Back · Delts · Arms',day:6,exercises:[
-      {id:'e1',lid:'l01',name:'Incline Dumbbell Press',sets:3,reps:'5–8',load:90,rir:'RIR 1–2'},
+      {id:'e1',lid:'l01',name:'Incline Dumbbell Press',sets:2,reps:'6–8',load:90,rir:'RIR 1–2',warmup:{load:50,reps:5}},
       {id:'e2',lid:'l03',name:'High-to-Low Cable Fly',sets:1,reps:'6–10',load:45,rir:'RIR 0–1'},
-      {id:'e3',lid:'l06',name:'Chest-Supported Machine Row (Wide Grip)',sets:2,reps:'6–8',load:135,rir:'RIR 1–2'},
+      {id:'e3',lid:'l06',name:'Chest-Supported Machine Row (Wide Grip)',sets:2,reps:'6–8',load:135,rir:'RIR 1–2',warmup:{load:0,reps:5}},
       {id:'e4',lid:'l12',name:'Single-Arm Cable Lateral Raise',sets:2,reps:'6–10',load:12.5,rir:'RIR 0–1'},
       {id:'e5',lid:'l17',name:'Rope Tricep Pushdown',sets:2,reps:'6–10',load:32.5,rir:'RIR 0–1'},
       {id:'e6',lid:'l20',name:'Incline Dumbbell Curl',sets:2,reps:'6–10',load:20,rir:'RIR 0–1'},
       {id:'e7',lid:'l38',name:'Incline Treadmill Walk',sets:1,reps:'20 min',load:0,rir:''},
     ]},
     {id:'s2',name:'Lower A',focus:'Quad · Ham · Adductor · Calf · Core',day:0,exercises:[
-      {id:'e8',lid:'l24',name:'Smith Machine Back Squat',sets:3,reps:'5–8',load:110,rir:'RIR 1–2'},
+      {id:'e8',lid:'l24',name:'Smith Machine Back Squat',sets:2,reps:'6–8',load:110,rir:'RIR 1–2',warmup:{load:65,reps:5}},
       {id:'e9',lid:'l26',name:'Single-Leg Leg Extension',sets:2,reps:'6–10',load:75,rir:'RIR 0–1'},
       {id:'e10',lid:'l29',name:'Single-Leg Seated Leg Curl',sets:2,reps:'6–10',load:75,rir:'RIR 0–1'},
       {id:'e11',lid:'l32',name:'Hip Adductor Machine',sets:1,reps:'6–10',load:60,rir:'RIR 0–1'},
@@ -727,8 +742,8 @@ const TPLS=[
       {id:'e13',lid:'l36',name:'Hanging Leg Raise',sets:2,reps:'10–15',load:0,rir:''},
     ]},
     {id:'s3',name:'Upper B',focus:'Back · Chest · Rear Delt · Bicep',day:2,exercises:[
-      {id:'e14',lid:'l46',name:'Close-Grip Lat Pulldown',sets:3,reps:'5–8',load:80,rir:'RIR 1–2'},
-      {id:'e15',lid:'l41',name:'Smith Machine Incline Bench Press',sets:3,reps:'5–8',load:85,rir:'RIR 1–2'},
+      {id:'e14',lid:'l46',name:'Close-Grip Lat Pulldown',sets:2,reps:'6–8',load:80,rir:'RIR 1–2',warmup:{load:50,reps:5}},
+      {id:'e15',lid:'l41',name:'Smith Machine Incline Bench Press',sets:2,reps:'6–8',load:85,rir:'RIR 1–2',warmup:{load:50,reps:5}},
       {id:'e16',lid:'l47',name:'Chest-Supported Machine Row (Neutral Grip)',sets:1,reps:'6–8',load:135,rir:'RIR 1–2'},
       {id:'e17',lid:'l42',name:'Pec Deck Fly',sets:1,reps:'6–10',load:80,rir:'RIR 0–1'},
       {id:'e18',lid:'l48',name:'Straight-Arm Cable Pulldown',sets:1,reps:'6–10',load:30,rir:'RIR 0–1'},
@@ -737,7 +752,7 @@ const TPLS=[
       {id:'e21',lid:'l38',name:'Incline Treadmill Walk',sets:1,reps:'20 min',load:0,rir:''},
     ]},
     {id:'s4',name:'Lower B',focus:'Ham · Glute · Abductor · Calf · Core',day:3,exercises:[
-      {id:'e22',lid:'l28',name:'Barbell Romanian Deadlift',sets:3,reps:'5–8',load:90,rir:'RIR 1–2'},
+      {id:'e22',lid:'l28',name:'Barbell Romanian Deadlift',sets:2,reps:'6–8',load:90,rir:'RIR 1–2',warmup:{load:55,reps:5}},
       {id:'e23',lid:'l29',name:'Single-Leg Seated Leg Curl',sets:1,reps:'6–10',load:75,rir:'RIR 0–1'},
       {id:'e24',lid:'l82',name:'Hip Abductor Machine',sets:1,reps:'6–10',load:60,rir:'RIR 0–1'},
       {id:'e25',lid:'l25',name:'High-Foot Leg Press',sets:2,reps:'6–8',load:135,rir:'RIR 1–2'},
@@ -745,7 +760,7 @@ const TPLS=[
       {id:'e27',lid:'l36',name:'Hanging Leg Raise',sets:2,reps:'10–15',load:0,rir:''},
     ]},
     {id:'s5',name:'Upper C',focus:'Delts · Arms',day:4,exercises:[
-      {id:'e28',lid:'l53',name:'Smith Machine Seated Shoulder Press',sets:3,reps:'5–8',load:75,rir:'RIR 1–2'},
+      {id:'e28',lid:'l53',name:'Smith Machine Seated Shoulder Press',sets:2,reps:'6–8',load:75,rir:'RIR 1–2',warmup:{load:45,reps:5}},
       {id:'e29',lid:'l12',name:'Single-Arm Cable Lateral Raise',sets:1,reps:'6–10',load:12.5,rir:'RIR 0–1'},
       {id:'e30',lid:'l54',name:'Seated Cable Face Pull',sets:2,reps:'6–10',load:50,rir:'RIR 0–1'},
       {id:'e31',lid:'l56',name:'Barbell Shrug',sets:2,reps:'6–10',load:90,rir:'RIR 0–1'},
@@ -992,12 +1007,29 @@ function renderWorkout(){
 function makeExBlock(ex,idx){
   const div=document.createElement('div');div.className='ex-block';
   const prev=getPrev(ex.id);const sc=ex.sets||2;
+  const wu=ex.warmup;// {load, reps} or undefined
+
+  // Build warmup row if exists
+  let warmupRow='';
+  if(wu){
+    const wid=`${ex.id}-w`;
+    warmupRow=`<div class="sl-row warmup" id="${wid}">` +
+      `<div class="sl-num" title="Warm-up">W</div>` +
+      `<span class="sl-prev" style="font-size:9px;color:var(--amber);opacity:.7">warm-up</span>` +
+      `<input class="sl-cell" id="${wid}-k" type="number" placeholder="${wu.load||'—'}" step="2.5" inputmode="decimal" onchange="wkSaveWu('${ex.id}')">` +
+      `<input class="sl-cell" id="${wid}-p" type="number" placeholder="${wu.reps||5}" step="1" inputmode="numeric" onchange="wkSaveWu('${ex.id}')">` +
+      `<button class="sl-check" id="${wid}-c" onclick="wkCheckWu('${ex.id}','${ex.name.replace(/'/g,"\\'")}')"></button>` +
+      `</div>`;
+  }
+
+  // Working sets
   let rows='';
   for(let si=1;si<=sc;si++){
     const p=prev&&prev[si];const pt=p?`${p.kg}×${p.reps}`:'—';
     rows+=`<div class="sl-row" id="${ex.id}-r${si}"><div class="sl-num">${si}</div><span class="sl-prev">${pt}</span><input class="sl-cell" id="${ex.id}-k${si}" type="number" placeholder="${p?p.kg:'—'}" step="2.5" inputmode="decimal" onchange="wkSave('${ex.id}',${si})"><input class="sl-cell" id="${ex.id}-p${si}" type="number" placeholder="${p?p.reps:'—'}" step="1" inputmode="numeric" onchange="wkSave('${ex.id}',${si})"><button class="sl-check" id="${ex.id}-c${si}" onclick="wkCheck('${ex.id}',${si},'${ex.name.replace(/'/g,"\\'")}')"></button></div>`;
   }
-  div.innerHTML=`<div class="ex-hd"><div class="ex-num">${String(idx+1).padStart(2,'0')}</div><div class="ex-name" onclick="pcOpen('${ex.id}','${ex.name.replace(/'/g,"\\'")}')"><span class="ex-name-text">${ex.name}</span></div><div style="display:flex;align-items:center;gap:6px">${ex.rir?`<span class="pill pill-muted" style="font-size:10px">${ex.rir}</span>`:''}<button class="ex-edit-btn" onclick="event.stopPropagation();exEditOpen('${ex.id}','${ex.name.replace(/'/g,"\\'")}',${ex.sets||2},${ex.load||0})" title="Edit beban">⊕</button></div></div><div class="sl-head"><span>Set</span><span>Previous</span><span>KG</span><span>Reps</span><span>✓</span></div><div id="${ex.id}-rows">${rows}</div><button class="sl-add" onclick="wkAddSet('${ex.id}')">Add Set</button><div class="sl-note-row"><textarea class="sl-note" id="${ex.id}-note" placeholder="Notes, RPE…" rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea></div>`;
+
+  div.innerHTML=`<div class="ex-hd"><div class="ex-num">${String(idx+1).padStart(2,'0')}</div><div class="ex-name" onclick="pcOpen('${ex.id}','${ex.name.replace(/'/g,"\\'")}')"><span class="ex-name-text">${ex.name}</span></div><div style="display:flex;align-items:center;gap:6px">${ex.rir?`<span class="pill pill-muted" style="font-size:10px">${ex.rir}</span>`:''}<button class="ex-edit-btn" onclick="event.stopPropagation();exEditOpen('${ex.id}','${ex.name.replace(/'/g,"\\'")}',${ex.sets||2},${ex.load||0})" title="Edit beban">⊕</button></div></div><div class="sl-head"><span>Set</span><span>Previous</span><span>KG</span><span>Reps</span><span>✓</span></div><div id="${ex.id}-rows">${warmupRow}${rows}</div><button class="sl-add" onclick="wkAddSet('${ex.id}')">Add Set</button><div class="sl-note-row"><textarea class="sl-note" id="${ex.id}-note" placeholder="Notes, RPE…" rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea></div>`;
   return div;
 }
 function wkCheck(exId,si,name){
@@ -1009,6 +1041,24 @@ function wkCheck(exId,si,name){
   if(done){WK.states[exId][si]={kg,reps,done:true};wkPersist(exId);checkPR(exId,name,kg);rtOpen();if(navigator.vibrate)navigator.vibrate(20);}
   else{delete WK.states[exId][si];wkPersist(exId);}
   wkUpdateProg();
+}
+function wkCheckWu(exId,name){
+  const wid=`${exId}-w`;
+  const row=document.getElementById(wid);const ck=document.getElementById(`${wid}-c`);
+  const kg=parseFloat(document.getElementById(`${wid}-k`)?.value)||0;
+  const reps=parseInt(document.getElementById(`${wid}-p`)?.value)||0;
+  const done=row.classList.toggle('done');ck.classList.toggle('checked',done);
+  if(!WK.states[exId])WK.states[exId]={};
+  if(done){WK.states[exId]['_wu']={kg,reps,done:true};if(navigator.vibrate)navigator.vibrate(15);}
+  else{delete WK.states[exId]['_wu'];}
+  // no rest timer, no PR check for warmup
+}
+function wkSaveWu(exId){
+  const wid=`${exId}-w`;
+  const kg=parseFloat(document.getElementById(`${wid}-k`)?.value)||0;
+  const reps=parseInt(document.getElementById(`${wid}-p`)?.value)||0;
+  if(!WK.states[exId])WK.states[exId]={};
+  WK.states[exId]['_wu']={...(WK.states[exId]['_wu']||{}),kg,reps};
 }
 function wkSave(exId,si){
   const kg=parseFloat(document.getElementById(`${exId}-k${si}`)?.value)||0;
