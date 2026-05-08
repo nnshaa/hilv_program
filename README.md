@@ -13,7 +13,7 @@ Single file HTML, vanilla JS, localStorage. No build step.
 - **Home** — greeting, streak tracker, today's session card, quick stats, body weight log, recent PRs
 - **Workout** — set logger, previous session reference, rest timer, PR detection, progress chart per exercise
 - **Program** — multiple programs, switch aktif, detail sesi, start workout langsung
-- **History** — log sesi yang sudah selesai
+- **History** — log sesi yang sudah selesai (nama program, durasi, total sets)
 
 **Program Builder**
 - Buat dari template (HILV Cutting · PPL Bulking · Full Body 3x) atau kosong
@@ -27,6 +27,8 @@ Single file HTML, vanilla JS, localStorage. No build step.
 - PR Detection — otomatis deteksi personal record saat set di-check
 - Streak Tracker — dot grid 14 hari, emoji berubah sesuai momentum
 - Body Weight Log — histori 5 entry terakhir, delta per hari
+- **Edit Beban & Sets** — bottom sheet stepper ±2.5kg, preset ±5%/±10%, adjust sets langsung dari workout
+- **Share Progress** — generate gambar PNG dari progress chart via Canvas API, native share / download
 - Backup & Restore — export/import JSON, hapus semua data
 - Dark/Light mode toggle
 - PWA — installable, offline-ready, iOS install hint
@@ -38,7 +40,7 @@ Single file HTML, vanilla JS, localStorage. No build step.
 Vanilla HTML · CSS · JavaScript — zero dependencies, zero build step.
 
 ```
-index.html   ← single file (~92KB)
+index.html   ← single file (~104KB)
 ```
 
 Font: `DM Sans` · `DM Mono` via Google Fonts
@@ -91,6 +93,19 @@ python3 -m http.server 8000
 }
 ```
 
+**History structure**
+```js
+[{
+  date: '2026-05-08',
+  dateLbl: 'Jum, 08 Mei 2026',
+  name: 'Upper A',
+  prog: 'HILV High Frequency',
+  el: 3420,       // elapsed seconds
+  exs: 6,         // exercises logged
+  sets: 14        // total sets done
+}]
+```
+
 ---
 
 ## Templates
@@ -104,6 +119,25 @@ python3 -m http.server 8000
 ---
 
 ## Changelog
+
+### [4.1.0] — 2026-05-08
+
+**Bug Fixes**
+- `delProg` — extra quote di onclick string menyebabkan JS error saat hapus program dengan apostrof di nama
+- `pcOpen` / `makeExBlock` — double `''` di nama exercise menyebabkan progress chart tidak bisa dibuka
+- `pbSlot` (weekly planner) — logika deteksi slot kosong salah pakai array index, seharusnya cek nilai `day`
+
+**Added**
+- Edit Beban & Sets — tombol `⊕` di setiap exercise header saat workout aktif; bottom sheet stepper ±2.5kg, preset ±5%/±10%, stepper sets; auto-add rows dan sync placeholder kg saat sets ditambah
+- Share Progress — tombol `↑ Share` di progress chart; Canvas API 800×420px dengan stats row, line chart, footer branding; native Web Share API dengan fallback download PNG
+- History view sekarang simpan dan tampilkan nama program + total sets; date label terformat
+
+**Improved**
+- Responsive breakpoint 380px: set logger grid lebih compact untuk layar kecil
+- Responsive breakpoint 640px+: stepper edit beban lebih besar di tablet
+- `finishWK` simpan data history lebih lengkap (program name, sets count, formatted date)
+
+---
 
 ### [4.0.0] — 2026-05-08
 

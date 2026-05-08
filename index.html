@@ -174,6 +174,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .sl-add:hover{border-color:rgba(200,240,58,.3);color:var(--lime)}
 .sl-add::before{content:'+';font-size:14px}
 .sl-note-row{padding:4px 14px 10px}
+.ex-edit-btn{width:28px;height:28px;border-radius:7px;border:1px solid var(--edge);background:var(--bg2);color:var(--ink3);font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;cursor:pointer;flex-shrink:0}
+.ex-edit-btn:hover{color:var(--lime);border-color:rgba(200,240,58,.3)}
+
+/* ── EDIT LOAD SHEET ── */
+.el-name{font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:16px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.el-stepper{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px}
+.el-val{font-family:'DM Mono',monospace;font-size:36px;font-weight:700;min-width:100px;text-align:center;color:var(--lime)}
+.el-unit{font-size:13px;color:var(--ink3)}
+.el-btn{width:48px;height:48px;border-radius:12px;border:1.5px solid var(--edge);background:var(--bg2);font-size:22px;font-weight:600;color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0}
+.el-btn:hover{border-color:rgba(200,240,58,.4);color:var(--lime)}
+.el-presets{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:4px}
+.el-pre{padding:7px 12px;border-radius:8px;border:1px solid var(--edge);background:var(--bg2);font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;font-family:'DM Mono',monospace;transition:all .15s}
+.el-pre:hover{border-color:rgba(200,240,58,.3);color:var(--lime)}
+.el-section{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;margin-top:12px}
+
+/* ── SHARE SHEET ── */
+.share-canvas-wrap{background:var(--bg2);border-radius:var(--r2);overflow:hidden;margin-bottom:14px;display:flex;align-items:center;justify-content:center;min-height:140px}
+#share-canvas{display:block;max-width:100%;border-radius:var(--r)}
 .sl-note{width:100%;background:var(--bg2);border:1px solid var(--edge);border-radius:8px;color:var(--ink2);font-size:12px;padding:8px 10px;outline:none;resize:none;min-height:32px;transition:border-color .15s;font-family:inherit}
 .sl-note:focus{border-color:rgba(200,240,58,.3)}
 .sl-note.has-note{border-color:rgba(200,240,58,.15)}
@@ -368,6 +386,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:99px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:380px){
+  .sl-head,.sl-row{grid-template-columns:26px 1fr 1fr 1fr 36px;gap:4px;padding:5px 10px}
+  .sl-cell{font-size:14px;padding:8px 1px}
+  .sl-check{width:30px;height:30px}
+  .wk-sess-name{font-size:15px}
+  .ex-hd{padding:11px 12px}
+  .streak-count{font-size:30px}
+  .greeting-name{font-size:22px}
+}
+@media(min-width:640px){
+  .el-stepper{gap:24px}
+  .el-btn{width:56px;height:56px}
+  .el-val{font-size:44px}
+  .share-canvas-wrap canvas{border-radius:var(--r2)}
+}
 </style>
 </head>
 <body>
@@ -449,7 +484,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
   <div class="sheet-handle"></div>
   <div class="sheet-hd"><div><div class="sheet-title" id="pc-title">Exercise</div><div style="font-size:11px;color:var(--ink3);margin-top:2px;font-family:'DM Mono',monospace" id="pc-sub"></div></div><button class="sheet-close" onclick="pcClose()">✕</button></div>
   <div class="pc-stats"><div class="pc-stat"><div class="pc-sv" id="pc-best">—</div><div class="pc-sl">Best KG</div></div><div class="pc-stat"><div class="pc-sv n" id="pc-sess">—</div><div class="pc-sl">Sessions</div></div><div class="pc-stat"><div class="pc-sv" id="pc-trend">—</div><div class="pc-sl">Trend</div></div></div>
-  <div class="pc-tabs"><button class="pc-tab on" onclick="pcMode('kg',this)">KG</button><button class="pc-tab" onclick="pcMode('reps',this)">Reps</button><button class="pc-tab" onclick="pcMode('volume',this)">Volume</button></div>
+  <div class="pc-tabs"><button class="pc-tab on" onclick="pcMode('kg',this)">KG</button><button class="pc-tab" onclick="pcMode('reps',this)">Reps</button><button class="pc-tab" onclick="pcMode('volume',this)">Volume</button><button class="pc-tab" style="margin-left:auto" onclick="shareOpen()">↑ Share</button></div>
   <div style="padding:8px 14px 16px"><svg id="pc-svg" style="width:100%;height:150px;display:block;overflow:visible" viewBox="0 0 440 150" preserveAspectRatio="none"></svg></div>
 </div>
 
@@ -502,6 +537,51 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 <!-- SETTINGS -->
 <div class="backdrop" id="set-bd" onclick="settingsClose()"></div>
 <div class="sheet" id="set-sheet"><div class="sheet-handle"></div><div class="sheet-hd"><div class="sheet-title">Settings</div><button class="sheet-close" onclick="settingsClose()">✕</button></div><div class="sheet-body" style="display:flex;flex-direction:column;gap:10px"><button class="btn btn-secondary" onclick="toggleTheme()">🌓 Toggle Dark/Light</button><button class="btn btn-secondary" onclick="bkExport()">💾 Export Backup</button><label class="btn btn-secondary" style="justify-content:center;cursor:pointer">📂 Import Backup<input type="file" accept=".json" style="display:none" onchange="bkImport(this)"></label><button class="btn btn-danger" onclick="bkClearAll()">🗑️ Hapus Semua Data</button><div style="font-size:11px;color:var(--ink3);text-align:center;padding:4px 0;font-family:'DM Mono',monospace" id="set-info"></div></div></div>
+
+<!-- EDIT LOAD SHEET -->
+<div class="backdrop" id="el-bd" onclick="exEditClose()"></div>
+<div class="sheet" id="el-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-hd"><div><div class="sheet-title">Edit Beban</div><div class="el-name" id="el-exname"></div></div><button class="sheet-close" onclick="exEditClose()">✕</button></div>
+  <div class="sheet-body">
+    <div class="el-section">Beban (kg)</div>
+    <div class="el-stepper">
+      <button class="el-btn" onclick="elAdj(-2.5)">−</button>
+      <div><div class="el-val" id="el-kg">0</div><div class="el-unit" style="text-align:center">kg</div></div>
+      <button class="el-btn" onclick="elAdj(+2.5)">+</button>
+    </div>
+    <div class="el-presets">
+      <button class="el-pre" onclick="elPct(-10)">−10%</button>
+      <button class="el-pre" onclick="elPct(-5)">−5%</button>
+      <button class="el-pre" onclick="elPct(+5)">+5%</button>
+      <button class="el-pre" onclick="elPct(+10)">+10%</button>
+    </div>
+    <div class="el-section" style="margin-top:16px">Sets</div>
+    <div class="el-stepper">
+      <button class="el-btn" onclick="elSetsAdj(-1)">−</button>
+      <div><div class="el-val" id="el-sets">2</div><div class="el-unit" style="text-align:center">sets</div></div>
+      <button class="el-btn" onclick="elSetsAdj(+1)">+</button>
+    </div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn btn-secondary" onclick="exEditClose()">Batal</button>
+    <button class="btn btn-primary" onclick="exEditApply()">Terapkan</button>
+  </div>
+</div>
+
+<!-- SHARE PROGRESS SHEET -->
+<div class="backdrop" id="sp-bd" onclick="shareClose()"></div>
+<div class="sheet" id="sp-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-hd"><div class="sheet-title">Share Progress</div><button class="sheet-close" onclick="shareClose()">✕</button></div>
+  <div class="sheet-body">
+    <div class="share-canvas-wrap"><canvas id="share-canvas" width="800" height="420"></canvas></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary" onclick="shareDownload()">💾 Simpan</button>
+      <button class="btn btn-primary" onclick="shareNative()">↑ Share</button>
+    </div>
+  </div>
+</div>
 
 <div id="toast"></div>
 <div id="pr-wrap"></div>
@@ -843,7 +923,7 @@ function makeExBlock(ex,idx){
     const p=prev&&prev[si];const pt=p?`${p.kg}×${p.reps}`:'—';
     rows+=`<div class="sl-row" id="${ex.id}-r${si}"><div class="sl-num">${si}</div><span class="sl-prev">${pt}</span><input class="sl-cell" id="${ex.id}-k${si}" type="number" placeholder="${p?p.kg:'—'}" step="2.5" inputmode="decimal" onchange="wkSave('${ex.id}',${si})"><input class="sl-cell" id="${ex.id}-p${si}" type="number" placeholder="${p?p.reps:'—'}" step="1" inputmode="numeric" onchange="wkSave('${ex.id}',${si})"><button class="sl-check" id="${ex.id}-c${si}" onclick="wkCheck('${ex.id}',${si},'${ex.name.replace(/'/g,"\\'")}')"></button></div>`;
   }
-  div.innerHTML=`<div class="ex-hd"><div class="ex-num">${String(idx+1).padStart(2,'0')}</div><div class="ex-name" onclick="pcOpen('${ex.id}','${ex.name.replace(/'/g,"\\'")}'')">${ex.name}</div><div>${ex.rir?`<span class="pill pill-muted" style="font-size:10px">${ex.rir}</span>`:''}</div></div><div class="sl-head"><span>Set</span><span>Previous</span><span>KG</span><span>Reps</span><span>✓</span></div><div id="${ex.id}-rows">${rows}</div><button class="sl-add" onclick="wkAddSet('${ex.id}')">Add Set</button><div class="sl-note-row"><textarea class="sl-note" id="${ex.id}-note" placeholder="Notes, RPE…" rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea></div>`;
+  div.innerHTML=`<div class="ex-hd"><div class="ex-num">${String(idx+1).padStart(2,'0')}</div><div class="ex-name" onclick="pcOpen('${ex.id}','${ex.name.replace(/'/g,"\\'")}')"><span class="ex-name-text">${ex.name}</span></div><div style="display:flex;align-items:center;gap:6px">${ex.rir?`<span class="pill pill-muted" style="font-size:10px">${ex.rir}</span>`:''}<button class="ex-edit-btn" onclick="event.stopPropagation();exEditOpen('${ex.id}','${ex.name.replace(/'/g,"\\'")}',${ex.sets||2},${ex.load||0})" title="Edit beban">⊕</button></div></div><div class="sl-head"><span>Set</span><span>Previous</span><span>KG</span><span>Reps</span><span>✓</span></div><div id="${ex.id}-rows">${rows}</div><button class="sl-add" onclick="wkAddSet('${ex.id}')">Add Set</button><div class="sl-note-row"><textarea class="sl-note" id="${ex.id}-note" placeholder="Notes, RPE…" rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea></div>`;
   return div;
 }
 function wkCheck(exId,si,name){
@@ -884,7 +964,9 @@ function wkUpdateProg(){
 function finishWK(){
   if(!WK){navTo('home');return;}
   const hist=sg(K.hist,[]);const el=Math.floor((Date.now()-WK.t0)/1000);
-  hist.unshift({date:today(),name:WK.sess.name,el,exs:Object.keys(WK.states).length});
+  let totalSets=0;Object.values(WK.states).forEach(es=>Object.entries(es).forEach(([k,v])=>{if(!k.startsWith('_')&&(v.done||v.kg))totalSets++;}));
+  const d=new Date();const dateLbl=d.toLocaleDateString('id-ID',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  hist.unshift({date:today(),dateLbl,name:WK.sess.name,prog:WK.prog?.name||'',el,exs:Object.keys(WK.states).length,sets:totalSets});
   if(hist.length>50)hist.pop();ss(K.hist,hist);
   clearInterval(WK_TMR);WK=null;
   toast('🎉 Workout selesai!');if(navigator.vibrate)navigator.vibrate([40,30,80]);
@@ -966,7 +1048,7 @@ let _openDet=null;
 function renderProgView(){
   const ps=loadProgs();const aid=getActiveId();const w=document.getElementById('prog-wrap');
   if(!ps.length){w.innerHTML=`<div class="empty-state"><div class="empty-state-icon">📋</div>Belum ada program.<br>Tap + untuk buat baru dari template.</div>`;return;}
-  w.innerHTML=ps.map(p=>`<div class="prog-card${p.id===aid?' active':''}" onclick="togDet('${p.id}')"><div class="prog-emoji">${p.emoji||'🏋️'}</div><div class="prog-info"><div class="prog-name">${p.name}</div><div class="prog-meta">${(p.sessions||[]).length} sesi · ${p.goal||'General'}${p.id===aid?' · <b style="color:var(--lime)">Active</b>':''}</div></div><div class="prog-acts">${p.id!==aid?`<button class="prog-act" onclick="event.stopPropagation();setAP('${p.id}')" title="Set Active">✓</button>`:''}<button class="prog-act" onclick="event.stopPropagation();pbOpen('${p.id}')" title="Edit">✎</button><button class="prog-act del" onclick="event.stopPropagation();delProg('${p.id}','${p.name.replace(/'/g,"\\'")}'')" title="Hapus">✕</button></div></div><div id="det-${p.id}" style="display:none"></div>`).join('');
+  w.innerHTML=ps.map(p=>`<div class="prog-card${p.id===aid?' active':''}" onclick="togDet('${p.id}')"><div class="prog-emoji">${p.emoji||'🏋️'}</div><div class="prog-info"><div class="prog-name">${p.name}</div><div class="prog-meta">${(p.sessions||[]).length} sesi · ${p.goal||'General'}${p.id===aid?' · <b style="color:var(--lime)">Active</b>':''}</div></div><div class="prog-acts">${p.id!==aid?`<button class="prog-act" onclick="event.stopPropagation();setAP('${p.id}')" title="Set Active">✓</button>`:''}<button class="prog-act" onclick="event.stopPropagation();pbOpen('${p.id}')" title="Edit">✎</button><button class="prog-act del" onclick="event.stopPropagation();delProg('${p.id}','${p.name.replace(/'/g,"\\'")}')" title="Hapus">✕</button></div></div><div id="det-${p.id}" style="display:none"></div>`).join('');
 }
 function setAP(id){setActiveId(id);renderProgView();renderHome();toast('✓ Program aktif diubah');}
 function togDet(id){
@@ -983,7 +1065,11 @@ function delProg(id,name){showConf(`Hapus "${name}"?`,'Log latihan tetap aman.',
 function renderHist(){
   const hist=sg(K.hist,[]);const w=document.getElementById('hist-wrap');
   if(!hist.length){w.innerHTML=`<div class="empty-state"><div class="empty-state-icon">📈</div>Selesaikan workout pertamamu.<br><br><span style="font-size:11px;color:var(--ink3)">Tap nama exercise di workout untuk progress chart</span></div>`;return;}
-  w.innerHTML=hist.slice(0,20).map(h=>`<div class="hist-date-lbl">${h.date}</div><div class="hist-card"><div class="hist-hd"><div class="hist-name">${h.name}</div><div class="hist-time">${Math.floor((h.el||0)/60)}m ${(h.el||0)%60}s</div></div><div style="font-size:12px;color:var(--ink3)">${h.exs} exercise logged</div></div>`).join('');
+  w.innerHTML=hist.slice(0,30).map((h,i)=>{
+    const dur=h.el?`${Math.floor(h.el/60)}m ${h.el%60}s`:'—';
+    const date=h.date||'';
+    return`<div class="hist-date-lbl">${h.dateLbl||date}</div><div class="hist-card"><div class="hist-hd"><div class="hist-name">${h.prog?`${h.prog} — `:''}${h.name}</div><div class="hist-time">${dur}</div></div><div style="font-size:12px;color:var(--ink3);display:flex;align-items:center;gap:8px">${h.exs} exercise logged${h.sets?` · ${h.sets} sets total`:''}</div></div>`;
+  }).join('');
 }
 
 /* ── TEMPLATE PICKER ── */
@@ -1046,7 +1132,7 @@ function pbRenderWP(){
   if(uns.length){ua.style.display='block';ua.innerHTML=`<div class="wp-ua-lbl">Belum diassign</div><div class="wp-ua-chips">${uns.map(si=>`<div class="wp-ua-chip" onclick="pbDayPick(${si})">${PB.sessions[si].name} <span style="color:var(--lime)">→</span></div>`).join('')}</div>`;}
   else ua.style.display='none';
 }
-function pbSlot(d){const taken=new Set((PB.sessions||[]).filter(s=>s.day===d).map((_,i)=>i));if(taken.size)return;const si=(PB.sessions||[]).findIndex(s=>s.day<0||s.day>6);if(si>=0){pbAssign(si,d);}}
+function pbSlot(d){const taken=(PB.sessions||[]).some(s=>s.day===d);if(taken)return;const si=(PB.sessions||[]).findIndex(s=>s.day<0||s.day>6);if(si>=0){pbAssign(si,d);}}
 function pbDayPick(si){
   const taken=new Set((PB.sessions||[]).filter((_,i)=>i!==si).map(s=>s.day));
   const tmp=document.createElement('div');tmp.id='pb-dp-tmp';tmp.style.cssText='background:var(--bg2);border-radius:var(--r2);padding:14px;margin-bottom:10px;border:1px solid var(--edge)';
@@ -1108,6 +1194,175 @@ function toggleTheme(){const c=document.documentElement.getAttribute('data-theme
 function bkExport(){const p={v:'1.0',exp:new Date().toISOString(),progs:loadProgs(),log:loadLog(),bw:loadBW(),lib:sg(K.lib,[]),hist:sg(K.hist,[])};const b=new Blob([JSON.stringify(p,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='gymlog-'+today()+'.json';a.click();URL.revokeObjectURL(u);toast('💾 Backup downloaded');}
 function bkImport(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!d.progs&&!d.log)throw new Error('Format invalid');if(d.progs)ss(K.progs,d.progs);if(d.log)ss(K.log,d.log);if(d.bw)ss(K.bw,d.bw);if(d.lib)ss(K.lib,d.lib);if(d.hist)ss(K.hist,d.hist);settingsClose();toast('✓ Restored');setTimeout(()=>location.reload(),800);}catch(err){toast('Gagal: '+err.message);}};r.readAsText(f);}
 function bkClearAll(){showConf('Hapus semua data?','Tidak bisa dibatalkan.',()=>{Object.values(K).forEach(k=>localStorage.removeItem(k));toast('✓ Data dihapus');setTimeout(()=>location.reload(),800);});}
+
+/* ── EDIT LOAD (in-workout beban editor) ── */
+let EL={exId:null,kg:0,sets:2};
+function exEditOpen(exId,name,sets,load){
+  EL={exId,kg:load||0,sets:sets||2};
+  document.getElementById('el-exname').textContent=name;
+  elRefresh();shOpen('el');
+}
+function exEditClose(){shClose('el');EL={exId:null,kg:0,sets:2};}
+function elRefresh(){
+  document.getElementById('el-kg').textContent=EL.kg%1===0?EL.kg:EL.kg.toFixed(1);
+  document.getElementById('el-sets').textContent=EL.sets;
+}
+function elAdj(d){EL.kg=Math.max(0,Math.round((EL.kg+d)*10)/10);elRefresh();}
+function elPct(p){EL.kg=Math.max(0,Math.round((EL.kg*(1+p/100))/2.5)*2.5);elRefresh();}
+function elSetsAdj(d){EL.sets=Math.max(1,Math.min(20,EL.sets+d));elRefresh();}
+function exEditApply(){
+  if(!EL.exId||!WK)return;
+  // Update exercise sets target in sess (in-memory only for this workout)
+  const ex=WK.sess.exercises.find(e=>e.id===EL.exId);
+  if(ex){
+    const oldSets=ex.sets||2;ex.sets=EL.sets;ex.load=EL.kg;
+    // Sync rows: add missing rows, prefill kg placeholder
+    const rowsEl=document.getElementById(`${EL.exId}-rows`);
+    if(rowsEl){
+      const cur=rowsEl.querySelectorAll('.sl-row').length;
+      for(let si=cur+1;si<=EL.sets;si++){
+        const prev=getPrev(EL.exId);const p=prev&&prev[si];
+        const d=document.createElement('div');d.className='sl-row';d.id=`${EL.exId}-r${si}`;
+        d.innerHTML=`<div class="sl-num">${si}</div><span class="sl-prev">${p?`${p.kg}×${p.reps}`:'—'}</span><input class="sl-cell" id="${EL.exId}-k${si}" type="number" placeholder="${EL.kg||'—'}" step="2.5" inputmode="decimal" onchange="wkSave('${EL.exId}',${si})"><input class="sl-cell" id="${EL.exId}-p${si}" type="number" placeholder="${p?p.reps:'—'}" step="1" inputmode="numeric" onchange="wkSave('${EL.exId}',${si})"><button class="sl-check" id="${EL.exId}-c${si}" onclick="wkCheck('${EL.exId}',${si},'${ex.name.replace(/'/g,"\\'")}')"></button>`;
+        rowsEl.appendChild(d);
+      }
+      // Update all unfilled kg placeholders
+      for(let si=1;si<=EL.sets;si++){
+        const inp=document.getElementById(`${EL.exId}-k${si}`);
+        if(inp&&!inp.value)inp.placeholder=EL.kg||'—';
+      }
+    }
+    wkUpdateProg();
+  }
+  exEditClose();toast(`✓ Beban → ${EL.kg}kg · ${EL.sets} sets`);
+}
+
+/* ── SHARE PROGRESS (Canvas API) ── */
+function shareOpen(){
+  pcClose();
+  const pts=pcPts();const exName=PC.name;const mode=PC.mode;
+  const canvas=document.getElementById('share-canvas');
+  const ctx=canvas.getContext('2d');
+  const W=800,H=420;canvas.width=W;canvas.height=H;
+  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
+  const bg=isDark?'#0C0C0F':'#F5F4F0';
+  const bg1=isDark?'#141418':'#EDEDEA';
+  const bg2=isDark?'#1C1C22':'#E5E4E0';
+  const ink=isDark?'#F2F0EB':'#111010';
+  const ink2=isDark?'#9997A0':'#6B6966';
+  const ink3=isDark?'#5A5865':'#AAA9A5';
+  const lime=isDark?'#C8F03A':'#6EA800';
+  const edge=isDark?'rgba(255,255,255,.08)':'rgba(0,0,0,.08)';
+
+  // Background
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  // Top bar
+  ctx.fillStyle=bg1;ctx.fillRect(0,0,W,56);
+  ctx.strokeStyle=edge;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,56);ctx.lineTo(W,56);ctx.stroke();
+
+  // Logo
+  ctx.fillStyle=lime;ctx.font='700 15px "DM Sans",sans-serif';ctx.fillText('GymLog',24,34);
+  // Exercise name
+  ctx.fillStyle=ink;ctx.font='600 18px "DM Sans",sans-serif';
+  ctx.fillText(exName,W/2-(ctx.measureText(exName).width/2),34);
+  // Date
+  const dateStr=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+  ctx.fillStyle=ink3;ctx.font='500 12px "DM Mono",monospace';
+  ctx.fillText(dateStr,W-24-(ctx.measureText(dateStr).width),34);
+
+  if(!pts.length){
+    ctx.fillStyle=ink3;ctx.font='500 14px "DM Mono",monospace';ctx.textAlign='center';
+    ctx.fillText('NO DATA YET',W/2,H/2);ctx.textAlign='left';
+  } else {
+    // Stats row
+    const vals=pts.map(p=>p[mode]);const mx=Math.max(...vals);const mn=Math.min(...vals);
+    const trend=vals.length>=2?((vals[vals.length-1]-vals[0])/(vals[0]||1)*100).toFixed(1):null;
+    const stats=[
+      {label:'Best',val:mx+(mode==='kg'?' kg':mode==='reps'?' reps':' vol')},
+      {label:'Sessions',val:pts.length},
+      {label:'Trend',val:trend?(+(trend)>=0?'+':'')+trend+'%':'—'},
+    ];
+    const sw=W/3;
+    stats.forEach((s,i)=>{
+      const x=i*sw+sw/2;
+      ctx.fillStyle=lime;ctx.font='700 22px "DM Mono",monospace';ctx.textAlign='center';
+      ctx.fillText(s.val,x,100);
+      ctx.fillStyle=ink3;ctx.font='500 11px "DM Mono",monospace';ctx.textAlign='center';
+      ctx.fillText(s.label.toUpperCase(),x,118);
+      if(i<2){ctx.strokeStyle=edge;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo((i+1)*sw,72);ctx.lineTo((i+1)*sw,122);ctx.stroke();}
+    });
+    ctx.textAlign='left';
+
+    // Chart
+    const PD={t:140,r:32,b:48,l:44};const cW=W-PD.l-PD.r;const cH=H-PD.t-PD.b;
+    const n=pts.length;const rng=mx-mn||1;
+    const xO=i=>PD.l+(n===1?cW/2:(i/(n-1))*cW);
+    const yO=v=>PD.t+cH-((v-mn)/rng)*cH;
+
+    // Grid lines
+    [0,.5,1].forEach(f=>{
+      const y=PD.t+cH-f*cH;const v=(mn+f*rng).toFixed(1);
+      ctx.strokeStyle=edge;ctx.lineWidth=1;ctx.setLineDash([3,4]);
+      ctx.beginPath();ctx.moveTo(PD.l,y);ctx.lineTo(W-PD.r,y);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle=ink3;ctx.font='500 10px "DM Mono",monospace';ctx.textAlign='right';
+      ctx.fillText(v,PD.l-6,y+4);
+    });
+    ctx.textAlign='left';
+
+    // Area fill
+    const grad=ctx.createLinearGradient(0,PD.t,0,PD.t+cH);
+    grad.addColorStop(0,'rgba(200,240,58,.18)');grad.addColorStop(1,'rgba(200,240,58,0)');
+    ctx.fillStyle=grad;ctx.beginPath();
+    pts.forEach((p,i)=>{i===0?ctx.moveTo(xO(i),yO(p[mode])):ctx.lineTo(xO(i),yO(p[mode]));});
+    ctx.lineTo(xO(n-1),PD.t+cH);ctx.lineTo(xO(0),PD.t+cH);ctx.closePath();ctx.fill();
+
+    // Line
+    ctx.strokeStyle=lime;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.beginPath();pts.forEach((p,i)=>{i===0?ctx.moveTo(xO(i),yO(p[mode])):ctx.lineTo(xO(i),yO(p[mode]));});ctx.stroke();
+
+    // Dots + labels
+    pts.forEach((p,i)=>{
+      const x=xO(i),y=yO(p[mode]),isL=i===n-1;
+      ctx.beginPath();ctx.arc(x,y,isL?6:4,0,2*Math.PI);
+      ctx.fillStyle=isL?lime:bg1;ctx.fill();
+      ctx.strokeStyle=lime;ctx.lineWidth=2;ctx.stroke();
+      if(isL||n<=8){
+        ctx.fillStyle=lime;ctx.font=`600 10px "DM Mono",monospace`;ctx.textAlign='center';
+        ctx.fillText(p.lbl,x,y<PD.t+20?y+18:y-10);
+      }
+    });
+    ctx.textAlign='left';
+  }
+
+  // Footer branding
+  ctx.fillStyle=bg2;ctx.fillRect(0,H-36,W,36);
+  ctx.fillStyle=ink3;ctx.font='500 11px "DM Mono",monospace';
+  ctx.fillText('Track your lifts with GymLog',24,H-14);
+  ctx.fillStyle=lime;ctx.textAlign='right';
+  ctx.fillText('gymlog.app',W-24,H-14);
+  ctx.textAlign='left';
+
+  shOpen('sp');
+}
+function shareClose(){shClose('sp');}
+function shareDownload(){
+  const a=document.createElement('a');a.href=document.getElementById('share-canvas').toDataURL('image/png');
+  a.download='gymlog-'+PC.name.replace(/\s+/g,'-').toLowerCase()+'-'+today()+'.png';a.click();
+  toast('💾 Tersimpan!');
+}
+async function shareNative(){
+  const canvas=document.getElementById('share-canvas');
+  if(navigator.share&&navigator.canShare){
+    try{
+      const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));
+      const file=new File([blob],'gymlog-progress.png',{type:'image/png'});
+      if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title:`Progress ${PC.name}`,text:`GymLog — ${PC.name} progress`});return;}
+    }catch(e){}
+  }
+  shareDownload();
+}
 
 /* ── TOAST ── */
 let TT=null;
