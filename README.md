@@ -40,7 +40,7 @@ Single file HTML, vanilla JS, localStorage. No build step.
 Vanilla HTML · CSS · JavaScript — zero dependencies, zero build step.
 
 ```
-index.html   ← single file (~104KB)
+index.html   ← single file (~109KB)
 ```
 
 Font: `DM Sans` · `DM Mono` via Google Fonts
@@ -119,6 +119,33 @@ python3 -m http.server 8000
 ---
 
 ## Changelog
+
+### [4.2.0] — 2026-05-08
+
+**Data: Nishaa Precision Cut + Library Expansion**
+
+- Template HILV diganti dengan **Nishaa Precision Cut (HILV High Freq)** — program 5 hari Upper-Lower dengan beban & exercise aktual
+  - Upper A: Incline DB Press · Cable Fly · CS Row Wide · Lateral Raise · Rope Pushdown · Incline DB Curl · Cardio
+  - Lower A: Smith Squat · Single-Leg Ext · Single-Leg Curl · Adductor · Calf Raise · Hanging Leg Raise
+  - Upper B: Close-Grip Pulldown · Smith Incline BP · CS Row Neutral · Pec Deck · Straight-Arm Pulldown · Rev Pec Deck · Hammer Curl · Cardio
+  - Lower B: RDL · Single-Leg Curl · Abductor · High-Foot Leg Press · LP Calf Raise · Hanging Leg Raise
+  - Upper C: Smith Shoulder Press · Lateral Raise · Seated Face Pull · Barbell Shrug · Preacher Curl · Reverse Curl · OH Tricep Ext · Cardio
+- Exercise library: **40 → 93 exercises**
+  - Chest: +5 (Smith Incline BP, Pec Deck, Low-to-High Fly, Decline BP, Cable Crossover)
+  - Back: +7 (Close-Grip Pulldown, CS Row Neutral, Straight-Arm Pulldown, Barbell Row, Meadows Row, Rack Pull, CS DB Row)
+  - Shoulders: +8 (Smith Seated Press, Seated Face Pull, Rev Pec Deck, Barbell Shrug, DB Shrug, Cable Lateral Raise, Arnold Press, Behind-Neck Press)
+  - Triceps: +4 (Skull Crushers, Tricep Dip, Cable Kickback, Single-Arm OH Extension)
+  - Biceps: +5 (Preacher Curl, Reverse Curl, Concentration Curl, Spider Curl, Cable Hammer Curl)
+  - Quads: +5 (Hack Squat, Front Squat, Leg Press Bilateral, Leg Extension Bilateral, Walking Lunge)
+  - Hamstrings: +3 (Nordic Curl, Good Morning, Stiff-Leg Deadlift)
+  - Glutes: +3 (Cable Pull-Through, Glute Kickback, Smith Hip Thrust)
+  - Abductors: +3 (Hip Abductor Machine, Cable Hip Abduction, Clamshell) — muscle group baru
+  - Calves: +2 (Leg Press Calf Raise, Donkey Calf Raise)
+  - Core: +4 (Ab Wheel, Decline Sit-Up, Russian Twist, Side Plank)
+  - Cardio: +3 (Stairmaster, Elliptical, Jump Rope)
+- Filter muscle "Abductors" ditambahkan ke Exercise Library
+
+---
 
 ### [4.1.0] — 2026-05-08
 
