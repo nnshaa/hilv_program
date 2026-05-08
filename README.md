@@ -1,49 +1,35 @@
-# HILV — High Frequency Program
+# GymLog
 
-> *"Optimal bukan yang terbanyak. Optimal yang bisa disustain."*
+> Gym tracking app — mobile-first, PWA, zero dependencies.
 
-Program tracking app untuk **natural lifter** di fase cutting — dirancang di minimum effective dose, bukan maksimum toleransi.
+Dimulai sebagai HILV program tracker untuk natural lifter cutting phase, berkembang menjadi full gym tracking app yang bisa dipakai siapa saja dengan program apapun.
 
----
-
-## Overview
-
-| | |
-|---|---|
-| **Phase** | Cutting |
-| **Frequency** | 5 Days / Week |
-| **Split** | Upper A · Lower A · Upper B · Lower B · Upper C |
-| **Rep Range** | 6–8 compound · 6–10 isolation |
-| **Volume Target** | MED (Minimum Effective Dose) |
-| **Cardio** | Incline treadmill walk 20 min × 3 sesi/week |
-
----
-
-## Schedule
-
-| Day | Session | Focus |
-|-----|---------|-------|
-| SAT | Upper A | Chest · Upper Back · Lat Delt · Tricep · Bicep |
-| SUN | Lower A | Quad Focus · Hamstring · Adductor · Calf · Core |
-| MON | Rest | Full recovery |
-| TUE | Upper B | Back · Chest Balance · Rear Delt · Bicep |
-| WED | Lower B | Hamstring · Glute · Quad · Calf · Core |
-| THU | Upper C | Delts · Arms · Traps |
-| FRI | Rest | Buffer sebelum siklus ulang |
+Single file HTML, vanilla JS, localStorage. No build step.
 
 ---
 
 ## Features
 
-- **Today detection** — auto-highlight sesi hari ini dan langsung jump ke tab yang relevan
-- **Set logger** — input KG & Reps per set, checkmark saat selesai
-- **Previous session** — data sesi terakhir ditampilkan di kolom Previous sebagai referensi
-- **Persistent storage** — semua log tersimpan di `localStorage`, aman refresh
-- **Add Set** — tambah set ekstra mid-session tanpa reload
-- **Volume tracker** — sets per muscle group per minggu dengan progress bar
-- **Recovery windows** — kalkulasi gap antar sesi upper/lower
-- **Scroll reveal** — elemen muncul smooth saat di-scroll
-- **Fully responsive** — mobile-first, tested dari 320px ke desktop
+- **Home** — greeting, streak tracker, today's session card, quick stats, body weight log, recent PRs
+- **Workout** — set logger, previous session reference, rest timer, PR detection, progress chart per exercise
+- **Program** — multiple programs, switch aktif, detail sesi, start workout langsung
+- **History** — log sesi yang sudah selesai
+
+**Program Builder**
+- Buat dari template (HILV Cutting · PPL Bulking · Full Body 3x) atau kosong
+- Edit nama, ikon emoji, tujuan program (cutting/bulking/strength/general)
+- Tambah/edit/hapus sesi — nama, focus, hari latihan
+- Weekly planner — assign sesi ke hari via visual 7-day grid
+- Exercise library — 40 built-in, search, filter by muscle, tambah custom
+
+**Lainnya**
+- Rest Timer — circular countdown, preset 1:00–3:00, haptic feedback
+- PR Detection — otomatis deteksi personal record saat set di-check
+- Streak Tracker — dot grid 14 hari, emoji berubah sesuai momentum
+- Body Weight Log — histori 5 entry terakhir, delta per hari
+- Backup & Restore — export/import JSON, hapus semua data
+- Dark/Light mode toggle
+- PWA — installable, offline-ready, iOS install hint
 
 ---
 
@@ -52,20 +38,18 @@ Program tracking app untuk **natural lifter** di fase cutting — dirancang di m
 Vanilla HTML · CSS · JavaScript — zero dependencies, zero build step.
 
 ```
-index.html   ← single file, self-contained
+index.html   ← single file (~92KB)
 ```
 
-Font: `Bebas Neue` · `Outfit` · `JetBrains Mono` via Google Fonts
+Font: `DM Sans` · `DM Mono` via Google Fonts
 
 ---
 
-## Local Usage
+## Usage
 
 ```bash
-# Cukup buka langsung di browser
 open index.html
 
-# Atau serve lokal
 npx serve .
 python3 -m http.server 8000
 ```
@@ -74,281 +58,201 @@ python3 -m http.server 8000
 
 ## Storage
 
-Data log tersimpan di `localStorage` dengan key `hilv_sets_v2`.
+| Key      | Isi                        |
+|----------|----------------------------|
+| `gl_p`   | Array of programs          |
+| `gl_a`   | Active program ID          |
+| `gl_l`   | Log sets per exercise      |
+| `gl_lib` | Custom exercise library    |
+| `gl_bw`  | Body weight entries        |
+| `gl_h`   | Session history            |
+| `gl_t`   | Theme preference           |
 
+**Program structure**
 ```js
-// struktur per exercise
 {
-  "p1-01": [
-    { _date: "Sat May 02 2026", 1: { kg: 80, reps: 8 }, 2: { kg: 80, reps: 7 } },
-    ...
+  id, name, emoji, goal,
+  sessions: [{
+    id, name, focus,
+    day,        // 0=Sun … 6=Sat, -1=unassigned
+    exercises: [{ id, lid, name, sets, reps, load, rir }]
+  }]
+}
+```
+
+**Log structure**
+```js
+{
+  [exId]: [
+    { _date: '2026-05-08', _lbl: 'Fri May 08 2026',
+      1: { kg: 80, reps: 8 },
+      2: { kg: 78, reps: 8 } }
   ]
 }
 ```
 
-Maksimum 12 sesi terakhir per exercise disimpan. Same-day session akan overwrite entry hari yang sama.
+---
+
+## Templates
+
+| Template | Split | Days | Goal |
+|----------|-------|------|------|
+| HILV High Frequency | Upper-Lower | 5 | Cutting |
+| PPL 6 Days | Push-Pull-Legs | 6 | Bulking |
+| Full Body 3x | Full Body | 3 | General |
 
 ---
 
 ## Changelog
 
+### [4.0.0] — 2026-05-08
+
+**Full Rebuild — landing page → gym tracking app**
+
+- Arsitektur dirombak total: 4-tab bottom navigation (Home · Workout · Program · History)
+- Mobile-first layout dengan CSS custom properties dan DM Sans/DM Mono
+- Semua konten dinamis — tidak ada hardcoded program-specific content
+- Storage keys baru (`gl_*`), data structure lebih bersih
+- File size: ~280KB → ~92KB
+- Hapus: hero section, panduan eksekusi, volume tracker static, weekly overview static
+
+**Added**
+- Template picker saat buat program baru
+- Weekly planner embedded di program builder
+- Session picker di Workout tab saat tidak ada active workout
+- Workout elapsed timer + progress bar
+- Session history di History tab
+
+---
+
 ### [3.2.0] — 2026-05-03
 
 **Changed**
-- Volume Tracker (02) — sekarang dihitung otomatis dari exercise di program aktif, muscle group terdeteksi dari nama exercise
-- Weekly Overview (03) — schedule 7 hari dirender dari data program, hari latihan vs rest otomatis, chips muscle group per sesi
-- Recovery Windows — dihitung otomatis dari gap antar hari latihan (misal SAT→TUE = 72h)
-- Execution Guide (04) — konten berubah sesuai tujuan program yang terdeteksi:
-  - **Cutting** → Panduan strength retention, defisit kalori, ekspektasi realistis
-  - **Bulking** → Panduan progressive overload, volume, nutrition surplus
-  - **General** → Panduan universal konsistensi, recovery, teknik
-- Footer — nama program, phase, dan quote berubah sesuai program aktif
-- Semua section re-render otomatis saat switch program atau save perubahan
-
-**Fixed**
-- Seluruh section informasi sekarang dinamis — tidak ada lagi hardcoded HILV-specific content yang muncul di program lain
+- Volume Tracker, Weekly Overview, Execution Guide, Footer — semua dinamis berdasarkan program aktif
+- Execution Guide berubah konten sesuai goal: Cutting / Bulking / General
+- Re-render otomatis saat switch program atau save
 
 ---
 
 ### [3.1.0] — 2026-05-03
 
 **Added**
-- Template System — saat buat program baru, muncul picker dengan 3 preset:
-  - 🏋️ **HILV High Frequency Cutting** — 5 hari, Upper-Lower split, semua exercise lengkap dengan load, sets, RIR
-  - ⚡ **PPL Push Pull Legs** — 6 hari, volume tinggi, intermediate
-  - 🔥 **Full Body 3x** — 3 hari, cocok pemula / jadwal padat
-  - 📋 **Kosong** — mulai dari nol
-- Template di-clone jadi program baru yang bisa diedit bebas, template asli tidak berubah
-- Tag kategori per template (Cutting / Bulking / Beginner, jumlah hari, split type)
-- Weekly Planner — tombol 📅 Hari di program builder, fullscreen 7-day grid
-- Visual assign sesi ke hari: drag & drop (desktop) atau tap chip → day picker (mobile)
-- Slot hari kosong menampilkan + Assign, slot terisi menampilkan chip nama sesi
-- Unassign sesi: tap ✕ di chip, sesi masuk daftar "belum diassign" di bawah grid
-- Day picker bottom sheet untuk mobile: tap chip unassigned → pilih hari, slot yang sudah dipakai di-grey out
-- Drag & drop antar hari di weekly planner
+- Template system: HILV · PPL · Full Body 3x · Kosong
+- Weekly Planner — 7-day grid, drag & drop (desktop), tap → day picker (mobile)
 
 ---
 
 ### [3.0.0] — 2026-05-03
 
 **Added**
-- Program Manager — buat, edit, switch, hapus program via modal bottom sheet
-- Program switcher di bar kanan — tap untuk ganti program aktif
-- Program Builder — fullscreen editor: nama, ikon emoji, tambah/edit/hapus sesi
-- Session Editor — bottom sheet per sesi: nama, focus/subtitle, pilih hari latihan
-- Exercise Library — 40 exercise default kategorized by muscle group, searchable, filterable
-- Multi-select exercise dari library → tambah ke sesi sekaligus
-- Dynamic tabs & panels — rebuild dari data program aktif, bukan hardcoded HTML
-- HILV program auto-extract dari DOM sebagai template default (pertama kali buka)
-- Multiple programs support — setiap program punya sessions & exercises sendiri
-- Custom program dari nol: mulai kosong, tambah sesi, isi exercise dari library
-- Semua storage key baru (`hilv_programs`, `hilv_active_prog`, `hilv_ex_library`) masuk `ALL_KEYS`
+- Program Manager — buat, edit, switch, hapus program
+- Program Builder — fullscreen editor: nama, emoji, sesi
+- Session Editor — nama, focus, hari latihan
+- Exercise Library — 40 exercise, searchable, filterable, multi-select
+- Dynamic tabs & panels dirender dari data program
 
 ---
 
 ### [2.1.0] — 2026-05-03
 
 **Added**
-- Swipe antar tab — geser kiri/kanan di area panel untuk pindah sesi, haptic ringan saat switch
-- Streak Tracker — bar di atas panel, hitung streak hari berturut-turut latihan, dot 14 hari terakhir (hijau=latihan, merah=skip, abu=rest day)
-- Best streak tersimpan, emoji berubah sesuai momentum (💪→⚡→🔥)
-- Body Weight Log — input + chart line harian, stat: current/change/7-day avg, warna chart hijau kalau turun, merah kalau naik
-- Simpan 90 hari terakhir, same-day overwrite
-- Share Progress — generate kartu PNG via Canvas API: streak, sets/week, volume, body weight, PR list minggu ini, watermark HILV
-- Preview sebelum download, save ke `hilv-progress-YYYY-MM-DD.png`
-- BW log dan streak ikut ter-backup dan di-restore via Backup & Restore
+- Swipe antar tab (mobile)
+- Streak Tracker — dot 14 hari, best streak, emoji momentum
+- Body Weight Log — input + line chart, delta harian
+- Share Progress — kartu PNG via Canvas API
 
 ---
 
 ### [2.0.1] — 2026-05-03
 
 **Fixed**
-- `bkClearAll` hanya hapus 2 dari 9 localStorage key — sekarang hapus semua via `ALL_KEYS`
-- `bkExport` tidak menyertakan `loads`, `hidden`, `order`, `moved` — sekarang backup lengkap
-- `bkParseFile` tidak restore `loads/hidden/order/moved` saat import — sekarang restore semua
-- `loadAll` tidak ada guard untuk data corrupt (non-object) — tambah early return
-- `saveAll` tidak handle `QuotaExceededError` — sekarang tampil toast warning
-- Custom exercise exid pakai `Date.now()` (collision risk di rapid create) — ganti ke `crypto.randomUUID()`
-- Deload + edit beban: kalau beban di-set ke 0/BW, deload label sekarang tampil `BW` bukan `NaN kg`
-- Pindah exercise lalu sembunyikan: `hidden[exid].pid` tidak terupdate — sekarang sync saat `mexMove`
-- `rtTick` akses DOM element tanpa null check — bisa crash kalau sheet di-remove prematur
-- Semua storage key di-centralize di `ALL_KEYS` constant untuk menghindari typo
+- `bkClearAll` hanya hapus 2/9 localStorage key
+- Backup tidak lengkap — sekarang include semua keys
+- `loadAll` tidak guard data corrupt
+- `saveAll` tidak handle QuotaExceededError
+- Custom exercise exid pakai `Date.now()` (collision risk) → `crypto.randomUUID()`
+- Deload + BW = 0 menampilkan `NaN kg`
+- `rtTick` crash kalau DOM element null
 
 ---
 
 ### [2.0.0] — 2026-05-03
 
 **Added**
-- Edit beban & sets langsung dari UI — tap `.xload` atau `.xsets` saat edit mode aktif
-- Bottom sheet dengan stepper ±2.5kg untuk beban, input sets & rep range
-- Quick preset buttons: −10%, −5%, +5%, +10% dari beban saat ini (atau fixed value untuk BW)
-- Perubahan tersimpan di localStorage (`hilv_ex_loads`), persist setelah reload
-- Auto-apply ke deload mode — kalau deload aktif, beban baru langsung dihitung -40%
-- Flash animation pada `.xload` setelah simpan
-- Toast konfirmasi dengan nilai baru
+- Edit beban & sets dari UI — tap di edit mode, bottom sheet stepper ±2.5kg
+- Quick preset ±5% ±10%, persist ke localStorage
 
 ---
 
 ### [1.9.0] — 2026-05-03
 
 **Added**
-- Edit Mode per panel — tombol ✎ Edit di setiap sesi, aktifkan untuk masuk mode edit
-- Sembunyikan exercise — tombol − per row, exercise hilang dari tampilan tapi data tetap ada
-- Restore exercise — tombol ↩ Restore muncul di edit mode, tampilkan semua exercise yang disembunyikan beserta asal sesinya
-- Pindah exercise antar sesi — tombol ↗ per row, pilih sesi tujuan dari bottom sheet
-- Drag & drop reorder — handle ⠿ muncul di edit mode, seret untuk ubah urutan exercise
-- Urutan custom tersimpan di localStorage (`hilv_ex_order`), persist setelah reload
-- Status moved tersimpan di `hilv_ex_moved`, exercise tetap di posisi baru setelah reload
-- Status hidden tersimpan di `hilv_ex_hidden`, persist setelah reload
-- Exercise bawaan bisa di-restore kapanpun, data log tidak ikut terhapus
+- Edit Mode per panel — sembunyikan, pindah, reorder exercise
+- Drag & drop reorder, persist urutan
 
 ---
 
 ### [1.8.0] — 2026-05-03
 
-**Fixed**
-- Onboarding slide 2, 3, 4 tidak tampil karena missing closing `</div>` tag — semua slide sekarang punya konten penuh dan markup yang benar
-- Deload rounding: hasil 60% kini dibulatkan ke kelipatan 2.5 terdekat dengan minimum 5kg (contoh: 85kg → 52.5kg bukan 51kg)
-- Custom exercise tidak bisa dihapus — sekarang ada tombol ✕ kecil di setiap custom exercise row
+**Fixed** — onboarding slides, deload rounding, custom ex delete
 
-**Added**
-- Backup & Restore modal — tombol di footer
-- Export backup: download seluruh log + custom exercise + settings sebagai `.json`
-- Import backup: pilih file atau drag & drop, merge dengan data yang sudah ada (tidak overwrite)
-- Clear all data: hapus seluruh localStorage dengan konfirmasi
-- Backup menyimpan: log sesi, custom exercise, theme preference, deload state
+**Added** — Backup & Restore modal (export JSON, import, clear all)
 
 ---
 
 ### [1.7.0] — 2026-05-03
 
-**Added**
-- Dark/Light mode toggle — tombol ☀️/🌙 di bar, state tersimpan di localStorage
-- Light mode full: background, card, input, modal, semua elemen ikut berubah
-- Onboarding — 4-step walkthrough muncul saat pertama buka app, bisa di-skip
-- Custom Exercise — tambah exercise sendiri ke sesi manapun (nama, muscle, sets, load)
-- Custom exercise tersimpan di localStorage, muncul kembali saat reload
-- Badge "custom" di setiap exercise yang ditambah sendiri
-- Custom exercise punya tracker, chart progress, dan reset log seperti exercise bawaan
-- Tombol "+ Custom Exercise" muncul di bawah setiap panel sesi
-- Deload Week mode — aktifkan via footer, beban otomatis dikurangi 40%
-- Banner deload muncul di atas panel saat mode aktif
-- Strikethrough beban asli + tampilkan beban deload di sebelahnya
-- State deload tersimpan di localStorage, persist setelah reload
+**Added** — Dark/Light mode, onboarding 4-step, custom exercise, deload week mode
 
 ---
 
 ### [1.6.0] — 2026-05-03
 
-**Added**
-- iOS Install Hint — banner muncul di Safari iPhone dengan instruksi "Tap ↑ Share → Add to Home Screen", tidak muncul kalau sudah standalone
-- PR Detection — otomatis deteksi Personal Record saat set di-check, bandingkan vs seluruh history sebelum hari ini
-- PR Toast — notifikasi slide-in di atas layar dengan nama exercise + nilai PR baru, haptic pola khusus
-- Weekly Summary section — tampil di bawah program, auto-hitung dari localStorage
-- 4 stat cards: Sets Done · Total Volume · Sessions · New PRs, masing-masing ada delta % vs minggu lalu
-- PR list minggu ini — daftar exercise yang tembus PR, sorted by exercise
-- Week range label (M/D — M/D) auto-update setiap hari
+**Added** — iOS install hint, PR detection + toast, weekly summary section
 
 ---
 
 ### [1.5.0] — 2026-05-03
 
-**Added**
-- PWA support — app bisa diinstall ke homescreen Android & iOS
-- Manifest inline sebagai Blob URL — zero file tambahan, tetap single file
-- Service Worker via Blob URL — cache-first strategy, fallback ke index.html
-- Offline mode — app tetap bisa diakses tanpa koneksi, toast "⚡ Offline mode" muncul otomatis
-- Install banner slide-down muncul 1.5 detik setelah buka app (sekali per sesi)
-- Tombol dismiss — banner tidak muncul lagi di sesi yang sama (`sessionStorage`)
-- `appinstalled` event — toast konfirmasi setelah install berhasil
-- Cache versioning `hilv-v1.4` — old cache otomatis dihapus saat update
+**Added** — PWA: manifest blob, service worker, offline mode, install banner
 
 ---
 
 ### [1.4.0] — 2026-05-03
 
-**Added**
-- Notes per set — textarea muncul di bawah setiap set row, simpan RPE/feeling/teknik
-- Notes ikut tersimpan di localStorage dan di-restore saat buka ulang
-- Auto-resize textarea sesuai konten, border lime jika ada isi
-- Notes ikut ter-export ke CSV sebagai kolom tambahan
-- Reset log per exercise — tombol merah di bawah set tracker
-- Confirm dialog sebelum hapus: nama exercise + warning permanen
-- Reset hapus semua history exercise dari localStorage + clear UI
-- Toast konfirmasi setelah reset berhasil
+**Added** — Notes per set, reset log per exercise
 
 ---
 
 ### [1.3.1] — 2026-05-02
 
-**Fixed**
-- Chart hanya tampil 1 titik meski sudah ada data dari minggu lalu
-- Format tanggal tidak konsisten — `toDateString()` diganti ke ISO `"YYYY-MM-DD"` sebagai `_date`, display label disimpan terpisah di `_dateLabel`
-- Same-day detection gagal saat format `_date` berbeda (ISO vs toDateString) — sekarang cek keduanya
-- `pcGetPoints` ikut menghitung `_dateLabel` sebagai set data — fix filter ke `!k.startsWith('_')`
-- `loadAll` kini auto-migrate data lama ke format baru saat pertama dibuka — tidak perlu reset localStorage
+**Fixed** — Multi-session chart bug, date storage normalization, data migration
 
 ---
 
 ### [1.3.0] — 2026-05-02
 
-**Added**
-- Progress Chart — modal grafik per exercise, muncul saat tap nama exercise
-- Line chart SVG dengan area fill gradient, dot per sesi, label nilai
-- 3 mode tampilan: KG · Reps · Volume (kg×reps total)
-- Stat strip: Best KG · Sessions · Trend (% perubahan dari sesi pertama)
-- Grid Y-axis dengan label nilai, X-axis dengan tanggal (M/D)
-- Last session dot lebih besar + selalu diberi label
-- Backdrop blur + card slide-in animation
-- Nama exercise berubah jadi clickable (hover: lime + ↗)
-- Empty state jika belum ada log
+**Added** — Progress chart per exercise (KG · Reps · Volume), SVG line chart
 
 ---
 
 ### [1.2.0] — 2026-05-02
 
-**Added**
-- Export Log CSV — tombol di footer, download otomatis ke file `hilv-log-YYYY-MM-DD.csv`
-- Kolom CSV: Date · Session · Exercise · Set · KG · Reps
-- Nama exercise diambil langsung dari DOM — selalu sinkron dengan program
-- Toast notification saat export berhasil (jumlah set yang diexport)
-- Toast amber jika belum ada log tersimpan
-- Haptic feedback saat export
+**Added** — Export log CSV
 
 ---
 
 ### [1.1.0] — 2026-05-02
 
-**Added**
-- Rest Timer — bottom sheet otomatis muncul setelah set di-check
-- SVG circular progress ring dengan countdown real-time
-- Preset waktu: 1:00 · 1:30 · 2:00 · 3:00 (bisa ganti mid-countdown)
-- Haptic feedback saat timer mulai, urgent (10 detik terakhir), dan selesai
-- Auto-close setelah rest selesai + pola vibrate berbeda tiap state
-- Tombol Skip dan Restart di dalam sheet
-- Backdrop blur saat timer aktif
-- Timer tidak muncul untuk warm-up row (WU)
+**Added** — Rest Timer (circular countdown, preset, haptic)
 
 ---
 
 ### [1.0.0] — 2026-05-02
 
-Initial release.
+Initial release — HILV program tracker untuk natural lifter cutting phase.
 
-**Added**
-- Single-file HTML app, zero dependencies, zero build step
-- 5 training days: Upper A · Lower A · Upper B · Lower B · Upper C
-- Per-exercise data: nama, muscle note, sets × reps, load (kg), RIR badge
-- Warm-up rows (WU) dengan styling tersendiri
-- Incline treadmill cardio block di setiap upper session
-- Set logger: input KG & Reps, checkmark animasi, done state (lime tint)
-- Kolom Previous — referensi beban dari sesi terakhir
-- Add Set — tambah set ekstra mid-session
-- `localStorage` persistence key `hilv_sets_v2`, maks 12 sesi/exercise
-- Same-day session overwrite — tidak duplikat entry
-- Today detection — auto-tab dan banner sesi hari ini
-- Volume tracker per muscle group dengan progress bar (IntersectionObserver)
-- Recovery windows — gap antar sesi upper/lower dalam jam
-- Execution guide — 4 panel panduan fisiologi cutting
-- Scroll reveal animation pada semua card dan section
-- Mobile-first responsive: 320px → 400px → 560px → 640px → desktop
+- Single-file HTML, set logger, previous session reference
+- localStorage persistence, same-day overwrite, max 12 sesi per exercise
+- Today detection, volume tracker, recovery windows, scroll reveal
+- Mobile-first responsive: 320px → desktop
