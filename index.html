@@ -138,7 +138,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 [data-theme="light"] .wk-header{background:rgba(245,244,240,.94)}
 .wk-hd-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
 .wk-sess-name{font-size:18px;font-weight:700;flex:1}
-.wk-elapsed{font-family:'DM Mono',monospace;font-size:14px;font-weight:600;color:var(--lime);flex-shrink:0}
+.wk-elapsed{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--lime);flex-shrink:0;cursor:pointer;padding:4px 8px;border-radius:8px;border:1px solid rgba(200,240,58,.2);transition:background .15s;user-select:none}
+.wk-elapsed:hover{background:rgba(200,240,58,.08)}
 .wk-finish{padding:8px 16px;border-radius:8px;background:rgba(200,240,58,.12);color:var(--lime);border:1px solid rgba(200,240,58,.25);font-size:12px;font-weight:700;flex-shrink:0;transition:all .15s}
 .wk-progbar{height:3px;background:var(--bg2);border-radius:99px;overflow:hidden}
 .wk-progfill{height:100%;background:var(--lime);border-radius:99px;transition:width .4s ease}
@@ -243,15 +244,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .cardio-input:focus{outline:none;border-color:rgba(200,240,58,.4);color:var(--lime)}
 .cardio-input::-webkit-inner-spin-button,.cardio-input::-webkit-outer-spin-button{-webkit-appearance:none}
 .cardio-unit{font-size:10px;color:var(--ink3);text-align:center;font-family:'DM Mono',monospace;margin-top:2px}
-.cardio-timer-row{display:flex;align-items:center;gap:10px}
-.cardio-countdown{font-family:'DM Mono',monospace;font-size:34px;font-weight:700;color:var(--lime);min-width:88px;letter-spacing:.03em;transition:color .3s}
-.cardio-countdown.done-col{color:var(--ink3)}
-@keyframes pulse-lime{0%,100%{opacity:1}50%{opacity:.55}}
-.cardio-countdown.running{animation:pulse-lime 1.8s ease-in-out infinite}
-.cardio-tbtn{height:44px;padding:0 18px;border-radius:10px;border:1.5px solid rgba(200,240,58,.3);background:rgba(200,240,58,.07);color:var(--lime);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;flex-shrink:0}
-.cardio-tbtn:hover{background:rgba(200,240,58,.15);border-color:rgba(200,240,58,.5)}
-.cardio-tbtn.stop{border-color:rgba(255,80,80,.3);background:rgba(255,80,80,.06);color:#ff6060}
-.cardio-tbtn.reset{border-color:var(--edge);background:var(--bg2);color:var(--ink3);padding:0 12px}
 .cardio-done-row{display:flex;align-items:center;gap:8px}
 .cardio-chk{height:44px;border-radius:10px;border:1.5px solid var(--edge);background:var(--bg2);color:var(--ink3);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;flex:1}
 .cardio-chk.done{background:var(--lime);border-color:var(--lime);color:#0C0C0F;box-shadow:0 0 16px rgba(200,240,58,.25)}
@@ -1162,7 +1154,7 @@ function renderHomePRs(prog){
 }
 
 /* ── WORKOUT ── */
-let WK=null,WK_TMR=null;
+let WK=null,WK_TMR=null,WK_TARGET=60;// default 60 min
 function startWorkout(progId,sessId){
   const ps=loadProgs();const prog=ps.find(p=>p.id===progId);const sess=prog?.sessions?.find(s=>s.id===sessId);
   if(!sess)return;
@@ -1171,10 +1163,10 @@ function startWorkout(progId,sessId){
 }
 function renderWorkout(){
   const{sess,t0}=WK;const c=document.getElementById('wk-content');
-  c.innerHTML=`<div class="wk-header"><div class="wk-hd-row"><div class="wk-sess-name">${sess.name}</div><div class="wk-elapsed" id="wk-t">0:00</div><button class="wk-finish" onclick="finishWK()">Finish</button></div><div class="wk-progbar"><div class="wk-progfill" id="wk-pf" style="width:0%"></div></div></div><div style="padding:12px 16px;max-width:600px;margin:0 auto" id="wk-exs"></div>`;
+  c.innerHTML=`<div class="wk-header"><div class="wk-hd-row"><div class="wk-sess-name">${sess.name}</div><div class="wk-elapsed" id="wk-t" onclick="wkSetTarget()" title="Tap untuk set target waktu">⏱ ${WK_TARGET}:00</div><button class="wk-finish" onclick="finishWK()">Finish</button></div><div class="wk-progbar"><div class="wk-progfill" id="wk-pf" style="width:0%"></div></div></div><div style="padding:12px 16px;max-width:600px;margin:0 auto" id="wk-exs"></div>`;
   const exs=document.getElementById('wk-exs');
   (sess.exercises||[]).forEach((ex,i)=>exs.appendChild(makeExBlock(ex,i)));
-  // restore today
+  // restore today's sets
   (sess.exercises||[]).forEach(ex=>{
     const td=getToday(ex.id);if(!td)return;
     if(!WK.states[ex.id])WK.states[ex.id]={};
@@ -1191,9 +1183,30 @@ function renderWorkout(){
   clearInterval(WK_TMR);
   WK_TMR=setInterval(()=>{
     const el=document.getElementById('wk-t');if(!el){clearInterval(WK_TMR);return;}
-    const s=Math.floor((Date.now()-t0)/1000);el.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+    const elapsed=Math.floor((Date.now()-WK.t0)/1000);
+    const remaining=WK_TARGET*60-elapsed;
+    if(remaining>0){
+      const m=Math.floor(remaining/60);const s=remaining%60;
+      el.textContent=`⏱ ${m}:${String(s).padStart(2,'0')}`;
+      el.style.color='var(--lime)';
+    } else {
+      const over=Math.abs(remaining);
+      const m=Math.floor(over/60);const s=over%60;
+      el.textContent=`+${m}:${String(s).padStart(2,'0')}`;
+      el.style.color='var(--amber)';
+      if(over===0){toast('⏰ Target waktu tercapai!');if(navigator.vibrate)navigator.vibrate([60,40,60]);}
+    }
     wkUpdateProg();
   },1000);
+}
+function wkSetTarget(){
+  const cur=WK_TARGET;
+  const v=prompt(`Target durasi workout (menit):\nSekarang: ${cur} menit`,''+cur);
+  if(v===null)return;
+  const n=parseInt(v);
+  if(isNaN(n)||n<1||n>300){toast('Masukkan angka 1–300 menit');return;}
+  WK_TARGET=n;
+  toast(`⏱ Target: ${n} menit`);
 }
 function makeExBlock(ex,idx){
   const div=document.createElement('div');div.className='ex-block';
@@ -1202,13 +1215,12 @@ function makeExBlock(ex,idx){
 
   if(isCardio){
     const prev=getPrev(ex.id);const lp=prev&&prev[1];
-    // Fields: dur always + incline+speed for treadmill, resistance for others
     const hasIncline='incline'in ex||ex.lid==='l38';
     const hasSpeed='speed'in ex||ex.lid==='l38';
     const durVal=ex.dur||20;const inclineVal=ex.incline??8;const speedVal=ex.speed??6;
     const prevStr=lp?`Prev: ${lp.dur||'?'}min${lp.incline!=null?' · '+lp.incline+'%':''}${lp.speed!=null?' · '+lp.speed+'km/h':''}`:null;
     const field2=hasIncline
-      ?`<div class="cardio-field"><div class="cardio-lbl">Incline %</div><input class="cardio-input" id="${ex.id}-incline" type="number" value="${inclineVal}" step="1" min="0" max="30" inputmode="decimal" onchange="wkSaveCardio('${ex.id}')"><div class="cardio-unit">%</div></div>`
+      ?`<div class="cardio-field"><div class="cardio-lbl">Incline</div><input class="cardio-input" id="${ex.id}-incline" type="number" value="${inclineVal}" step="1" min="0" max="30" inputmode="decimal" onchange="wkSaveCardio('${ex.id}')"><div class="cardio-unit">%</div></div>`
       :'';
     const field3=hasSpeed
       ?`<div class="cardio-field"><div class="cardio-lbl">Speed</div><input class="cardio-input" id="${ex.id}-speed" type="number" value="${speedVal}" step="0.5" min="1" max="20" inputmode="decimal" onchange="wkSaveCardio('${ex.id}')"><div class="cardio-unit">km/h</div></div>`
@@ -1217,7 +1229,7 @@ function makeExBlock(ex,idx){
       <div class="ex-hd">
         <div class="ex-num">${String(idx+1).padStart(2,'0')}</div>
         <div class="ex-name"><span class="ex-name-text">🚶 ${ex.name}</span></div>
-        <div style="display:flex;gap:6px;align-items:center"><span class="pill pill-muted" style="font-size:10px">Cardio</span></div>
+        <span class="pill pill-muted" style="font-size:10px;flex-shrink:0">Cardio</span>
       </div>
       <div class="cardio-block">
         <div class="cardio-fields">
@@ -1227,11 +1239,6 @@ function makeExBlock(ex,idx){
             <div class="cardio-unit">menit</div>
           </div>
           ${field2}${field3}
-        </div>
-        <div class="cardio-timer-row">
-          <div class="cardio-countdown" id="${ex.id}-cd">—:——</div>
-          <button class="cardio-tbtn" id="${ex.id}-tbtn" onclick="cardioTimerToggle('${ex.id}')">▶ Start</button>
-          <button class="cardio-tbtn reset" onclick="cardioTimerReset('${ex.id}')" title="Reset">↺</button>
         </div>
         <div class="cardio-done-row">
           <button class="cardio-chk" id="${ex.id}-done" onclick="cardioCheck('${ex.id}','${ex.name.replace(/'/g,"\\'")}')">✓ Selesai</button>
@@ -1315,55 +1322,16 @@ function wkAddSet(exId){
   rowsEl.appendChild(d);
 }
 
-/* ── CARDIO TIMER ── */
-const CARDIO_TMRS={};// exId → {tmr, remaining, total}
-function cardioFmtTime(sec){const m=Math.floor(sec/60);const s=sec%60;return`${m}:${String(s).padStart(2,'0')}`;}
-function cardioTimerToggle(exId){
-  const state=CARDIO_TMRS[exId];const btn=document.getElementById(`${exId}-tbtn`);const cd=document.getElementById(`${exId}-cd`);
-  if(state&&state.tmr){
-    // Pause
-    clearInterval(state.tmr);state.tmr=null;
-    btn.textContent='▶ Lanjut';btn.classList.remove('stop');
-    cd.classList.remove('running');
-  } else {
-    // Start / resume
-    const durEl=document.getElementById(`${exId}-dur`);
-    const totalSec=(parseFloat(durEl?.value)||20)*60;
-    if(!CARDIO_TMRS[exId])CARDIO_TMRS[exId]={remaining:totalSec,total:totalSec,tmr:null};
-    const s=CARDIO_TMRS[exId];
-    if(s.remaining<=0){s.remaining=totalSec;s.total=totalSec;}
-    cd.textContent=cardioFmtTime(s.remaining);cd.classList.add('running');
-    btn.textContent='⏸ Pause';btn.classList.add('stop');
-    s.tmr=setInterval(()=>{
-      s.remaining--;
-      const cdEl=document.getElementById(`${exId}-cd`);
-      if(!cdEl){clearInterval(s.tmr);return;}
-      cdEl.textContent=cardioFmtTime(Math.max(0,s.remaining));
-      if(s.remaining<=0){
-        clearInterval(s.tmr);s.tmr=null;
-        cdEl.classList.remove('running');cdEl.classList.add('done-col');
-        const b=document.getElementById(`${exId}-tbtn`);if(b){b.textContent='✓ Done';b.classList.remove('stop');}
-        toast('✅ Cardio selesai!');if(navigator.vibrate)navigator.vibrate([60,40,120]);
-      }
-    },1000);
-  }
-}
-function cardioTimerReset(exId){
-  const state=CARDIO_TMRS[exId];
-  if(state?.tmr)clearInterval(state.tmr);
-  delete CARDIO_TMRS[exId];
-  const durEl=document.getElementById(`${exId}-dur`);const total=(parseFloat(durEl?.value)||20)*60;
-  const cd=document.getElementById(`${exId}-cd`);if(cd){cd.textContent=cardioFmtTime(total);cd.classList.remove('running','done-col');}
-  const btn=document.getElementById(`${exId}-tbtn`);if(btn){btn.textContent='▶ Start';btn.classList.remove('stop');}
-}
+/* ── CARDIO ── */
+const CARDIO_TMRS={};// kept for compat, unused
 function wkSaveCardio(exId){
   const dur=parseFloat(document.getElementById(`${exId}-dur`)?.value)||0;
-  const incline=parseFloat(document.getElementById(`${exId}-incline`)?.value??'');
-  const speed=parseFloat(document.getElementById(`${exId}-speed`)?.value??'');
+  const inclineEl=document.getElementById(`${exId}-incline`);
+  const speedEl=document.getElementById(`${exId}-speed`);
+  const incline=inclineEl?parseFloat(inclineEl.value):undefined;
+  const speed=speedEl?parseFloat(speedEl.value):undefined;
   if(!WK.states[exId])WK.states[exId]={};
-  WK.states[exId][1]={dur,...(!isNaN(incline)?{incline}:{}),...(!isNaN(speed)?{speed}:{})};
-  // Also reset timer if dur changed
-  const state=CARDIO_TMRS[exId];if(state&&!state.tmr){delete CARDIO_TMRS[exId];cardioTimerReset(exId);}
+  WK.states[exId][1]={dur,...(incline!=null&&!isNaN(incline)?{incline}:{}),...(speed!=null&&!isNaN(speed)?{speed}:{})};
 }
 function cardioCheck(exId,name){
   const btn=document.getElementById(`${exId}-done`);if(!btn)return;
@@ -1371,12 +1339,12 @@ function cardioCheck(exId,name){
   btn.textContent=isDone?'✓ Selesai ✓':'✓ Selesai';
   if(!WK.states[exId])WK.states[exId]={};
   const dur=parseFloat(document.getElementById(`${exId}-dur`)?.value)||0;
-  const incline=parseFloat(document.getElementById(`${exId}-incline`)?.value??'');
-  const speed=parseFloat(document.getElementById(`${exId}-speed`)?.value??'');
+  const inclineEl=document.getElementById(`${exId}-incline`);
+  const speedEl=document.getElementById(`${exId}-speed`);
+  const incline=inclineEl?parseFloat(inclineEl.value):undefined;
+  const speed=speedEl?parseFloat(speedEl.value):undefined;
   if(isDone){
-    WK.states[exId][1]={dur,...(!isNaN(incline)?{incline}:{}),...(!isNaN(speed)?{speed}:{}),done:true};
-    // Stop timer if running
-    const st=CARDIO_TMRS[exId];if(st?.tmr){clearInterval(st.tmr);st.tmr=null;}
+    WK.states[exId][1]={dur,...(incline!=null&&!isNaN(incline)?{incline}:{}),...(speed!=null&&!isNaN(speed)?{speed}:{}),done:true};
     wkPersist(exId);if(navigator.vibrate)navigator.vibrate(20);
   } else {delete WK.states[exId][1];wkPersist(exId);}
   wkUpdateProg();
