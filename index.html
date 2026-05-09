@@ -595,15 +595,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
     <div class="rt-title">Rest Timer</div>
     <div class="rt-ring">
       <svg class="rt-svg" viewBox="0 0 120 120"><circle class="rt-track" cx="60" cy="60" r="54"/><circle class="rt-prog" id="rt-prog" cx="60" cy="60" r="54"/></svg>
-      <div class="rt-center"><div class="rt-time" id="rt-time">1:30</div><div class="rt-status" id="rt-st">Resting…</div></div>
+      <div class="rt-center"><div class="rt-time" id="rt-time">2:00</div><div class="rt-status" id="rt-st">Tap Start</div></div>
     </div>
     <div class="rt-presets">
-      <button class="rt-pre" onclick="rtSet(60)">1:00</button>
-      <button class="rt-pre on" onclick="rtSet(90)">1:30</button>
-      <button class="rt-pre" onclick="rtSet(120)">2:00</button>
-      <button class="rt-pre" onclick="rtSet(180)">3:00</button>
+      <button class="rt-pre" onclick="rtSet(60)" data-sec="60">1:00</button>
+      <button class="rt-pre" onclick="rtSet(90)" data-sec="90">1:30</button>
+      <button class="rt-pre on" onclick="rtSet(120)" data-sec="120">2:00</button>
+      <button class="rt-pre" onclick="rtSet(180)" data-sec="180">3:00</button>
+      <button class="rt-pre" onclick="rtCustom()" data-sec="0">✎</button>
     </div>
-    <div class="rt-btns"><button class="rt-skip" onclick="rtClose()">Skip</button><button class="rt-restart" onclick="rtRestart()">↺ Restart</button></div>
+    <div class="rt-btns">
+      <button class="rt-skip" onclick="rtClose()">Skip</button>
+      <button class="rt-restart" id="rt-startbtn" onclick="rtStartOrRestart()">▶ Start</button>
+    </div>
   </div>
 </div>
 
@@ -1260,7 +1264,7 @@ function wkCheck(exId,si,name){
   const reps=parseInt(document.getElementById(`${exId}-p${si}`)?.value)||0;
   const done=row.classList.toggle('done');ck.classList.toggle('checked',done);
   if(!WK.states[exId])WK.states[exId]={};
-  if(done){WK.states[exId][si]={kg,reps,done:true};wkPersist(exId);checkPR(exId,name,kg);rtOpen();if(navigator.vibrate)navigator.vibrate(20);}
+  if(done){WK.states[exId][si]={kg,reps,done:true};wkPersist(exId);checkPR(exId,name,kg);rtOpen(true);if(navigator.vibrate)navigator.vibrate(20);}
   else{delete WK.states[exId][si];wkPersist(exId);}
   wkUpdateProg();
 }
@@ -1425,41 +1429,92 @@ function _doFinish(elSec,note){
 }
 
 /* ── REST TIMER ── */
-const RT={tot:90,rem:90,run:false,iv:null,pre:90,c:2*Math.PI*54};
-function rtOpen(pre){
-  const s=pre||RT.pre;RT.tot=s;RT.rem=s;RT.pre=s;RT.run=true;
-  document.querySelectorAll('.rt-pre').forEach(b=>{const v=parseInt(b.textContent.split(':')[0])*60+parseInt(b.textContent.split(':')[1]||0);b.classList.toggle('on',v===s);});
-  document.getElementById('rt-bd').style.cssText='position:fixed;inset:0;z-index:159;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);opacity:1;pointer-events:auto;transition:opacity .25s';
-  document.getElementById('rt-sheet').classList.add('show');
-  clearInterval(RT.iv);RT.iv=setInterval(rtTick,1000);rtTick();
-  if(navigator.vibrate)navigator.vibrate(20);
+/* ── REST TIMER ── */
+const RT={tot:120,rem:120,run:false,iv:null,pre:120,c:2*Math.PI*54};
+function rtMarkPreset(sec){
+  document.querySelectorAll('.rt-pre').forEach(b=>{
+    b.classList.toggle('on',parseInt(b.dataset.sec||0)===sec);
+  });
+}
+function rtUpdateDisplay(){
+  const m=Math.floor(RT.rem/60),s=RT.rem%60;
+  const t=document.getElementById('rt-time');
+  const pr=document.getElementById('rt-prog');
+  const st=document.getElementById('rt-st');
+  const btn=document.getElementById('rt-startbtn');
+  if(!t)return;
+  t.textContent=m+':'+String(s).padStart(2,'0');
+  const pct=RT.tot>0?RT.rem/RT.tot:0;
+  if(pr){pr.style.strokeDasharray=RT.c;pr.style.strokeDashoffset=RT.c*(1-pct);}
+  const urg=RT.rem<=10&&RT.rem>0&&RT.run;
+  if(t)t.className='rt-time'+(urg?' urgent':RT.rem===0&&RT.run===false?' done':'');
+  if(pr)pr.className='rt-prog'+(urg?' urgent':'');
+  if(st)st.textContent=RT.run?(urg?'Almost…':'Resting…'):(RT.rem===0?'Done! ✓':'Tap Start');
+  if(btn)btn.textContent=RT.run?'⏸ Pause':'▶ '+(RT.rem<RT.tot&&RT.rem>0?'Resume':'Start');
+  if(urg&&navigator.vibrate)navigator.vibrate(12);
 }
 function rtTick(){
-  const t=document.getElementById('rt-time');const st=document.getElementById('rt-st');const pr=document.getElementById('rt-prog');
-  if(!t||!st||!pr){clearInterval(RT.iv);return;}
-  if(RT.rem<0){rtDone();return;}
-  const m=Math.floor(RT.rem/60),s=RT.rem%60;t.textContent=m+':'+String(s).padStart(2,'0');
-  const pct=RT.rem/RT.tot;pr.style.strokeDasharray=RT.c;pr.style.strokeDashoffset=RT.c*(1-pct);
-  const urg=RT.rem<=10&&RT.rem>0;t.className='rt-time'+(urg?' urgent':'');pr.className='rt-prog'+(urg?' urgent':'');
-  st.textContent=urg?'Almost…':RT.rem===0?'Done!':'Resting…';
-  if(urg&&navigator.vibrate)navigator.vibrate(12);
+  if(!RT.run)return;
   RT.rem--;
+  rtUpdateDisplay();
+  if(RT.rem<0){
+    clearInterval(RT.iv);RT.iv=null;RT.run=false;
+    const t=document.getElementById('rt-time');if(t){t.textContent='0:00';t.className='rt-time done';}
+    const st=document.getElementById('rt-st');if(st)st.textContent='Done! ✓';
+    const btn=document.getElementById('rt-startbtn');if(btn)btn.textContent='↺ Restart';
+    if(navigator.vibrate)navigator.vibrate([60,40,60,40,120]);
+    setTimeout(rtClose,2000);
+  }
 }
-function rtDone(){
-  clearInterval(RT.iv);RT.run=false;
-  const t=document.getElementById('rt-time');if(t){t.textContent='0:00';t.className='rt-time done';}
-  const pr=document.getElementById('rt-prog');if(pr)pr.style.strokeDashoffset=0;
-  const st=document.getElementById('rt-st');if(st)st.textContent='Done!';
-  if(navigator.vibrate)navigator.vibrate([60,40,60,40,120]);
-  setTimeout(rtClose,1800);
+function rtOpen(autoStart){
+  // Reset to preset if not running
+  if(!RT.run&&RT.rem<=0){RT.rem=RT.tot;}
+  rtMarkPreset(RT.pre);
+  document.getElementById('rt-bd').style.cssText='position:fixed;inset:0;z-index:159;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);opacity:1;pointer-events:auto;transition:opacity .25s';
+  document.getElementById('rt-sheet').classList.add('show');
+  rtUpdateDisplay();
+  if(autoStart&&!RT.run){rtStartOrRestart();}
+  if(navigator.vibrate)navigator.vibrate(20);
+}
+function rtStartOrRestart(){
+  if(RT.run){
+    // Pause
+    clearInterval(RT.iv);RT.iv=null;RT.run=false;
+  } else {
+    // Start or restart
+    if(RT.rem<=0)RT.rem=RT.tot;
+    RT.run=true;
+    clearInterval(RT.iv);
+    RT.iv=setInterval(rtTick,1000);
+  }
+  rtUpdateDisplay();
+}
+function rtSet(sec){
+  clearInterval(RT.iv);RT.iv=null;RT.run=false;
+  RT.tot=sec;RT.rem=sec;RT.pre=sec;
+  rtMarkPreset(sec);
+  rtUpdateDisplay();
+}
+function rtCustom(){
+  const v=prompt('Custom rest time (detik):\nContoh: 150 = 2:30',''+RT.pre);
+  if(v===null)return;
+  const n=parseInt(v);
+  if(isNaN(n)||n<5||n>600){toast('Masukkan 5–600 detik');return;}
+  rtSet(n);
+  // unmark all presets since this is custom
+  document.querySelectorAll('.rt-pre').forEach(b=>b.classList.remove('on'));
+}
+function rtRestart(){
+  clearInterval(RT.iv);RT.iv=null;RT.run=false;
+  RT.rem=RT.tot;
+  rtUpdateDisplay();
 }
 function rtClose(){
-  clearInterval(RT.iv);RT.run=false;
-  const bd=document.getElementById('rt-bd');if(bd)bd.style.cssText='position:fixed;inset:0;z-index:159;opacity:0;pointer-events:none;transition:opacity .25s';
-  document.getElementById('rt-sheet').classList.remove('show');
+  clearInterval(RT.iv);RT.iv=null;RT.run=false;
+  const bd=document.getElementById('rt-bd');
+  if(bd)bd.style.cssText='position:fixed;inset:0;z-index:159;opacity:0;pointer-events:none;transition:opacity .25s';
+  document.getElementById('rt-sheet')?.classList.remove('show');
 }
-function rtRestart(){clearInterval(RT.iv);RT.rem=RT.tot;RT.run=true;RT.iv=setInterval(rtTick,1000);rtTick();}
-function rtSet(s){RT.tot=s;RT.rem=s;RT.pre=s;document.querySelectorAll('.rt-pre').forEach(b=>{const v=parseInt(b.textContent.split(':')[0])*60+parseInt(b.textContent.split(':')[1]||0);b.classList.toggle('on',v===s);});clearInterval(RT.iv);RT.iv=setInterval(rtTick,1000);rtTick();}
 
 /* ── PROGRESS CHART ── */
 let PC={id:null,name:null,mode:'kg'};
