@@ -206,6 +206,38 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .ol-name{font-size:12px;color:var(--ink2);flex:1}
 .ol-sug{font-size:12px;font-weight:700;font-family:'DM Mono',monospace;color:var(--lime)}
 .ol-reason{font-size:10px;color:var(--ink3)}
+
+/* ── VOLUME HEATMAP ── */
+.heatmap-wrap{margin-bottom:12px}
+.heatmap-grid{display:grid;grid-template-columns:repeat(15,1fr);gap:3px;margin-bottom:6px}
+.hm-cell{aspect-ratio:1;border-radius:3px;background:var(--bg2);cursor:default;transition:transform .1s}
+.hm-cell:hover{transform:scale(1.2)}
+.hm-cell.l0{background:var(--bg2)}
+.hm-cell.l1{background:rgba(200,240,58,.2)}
+.hm-cell.l2{background:rgba(200,240,58,.42)}
+.hm-cell.l3{background:rgba(200,240,58,.65)}
+.hm-cell.l4{background:rgba(200,240,58,.9)}
+.hm-cell.today{outline:2px solid var(--lime);outline-offset:1px}
+.hm-cell.rest{background:rgba(255,255,255,.03)}
+.hm-footer{display:flex;justify-content:space-between;align-items:center}
+.hm-legend{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--ink3)}
+.hm-lc{width:10px;height:10px;border-radius:2px}
+
+/* ── SESSION NOTES ── */
+.hist-note-toggle{font-size:11px;color:var(--ink3);background:none;border:none;padding:2px 0;cursor:pointer;display:flex;align-items:center;gap:4px;margin-top:6px;font-family:inherit}
+.hist-note-toggle:hover{color:var(--lime)}
+.hist-note-body{margin-top:8px;padding-top:8px;border-top:1px solid var(--edge);display:none}
+.hist-note-body.open{display:block}
+.hist-note-text{font-size:12px;color:var(--ink2);line-height:1.5;white-space:pre-wrap;margin-bottom:6px}
+.hist-note-edit{width:100%;background:var(--bg2);border:1.5px solid var(--edge);border-radius:8px;color:var(--ink);font-size:12px;padding:8px 10px;resize:none;font-family:'DM Sans',sans-serif;line-height:1.5;transition:border-color .2s;box-sizing:border-box}
+.hist-note-edit:focus{outline:none;border-color:rgba(200,240,58,.35)}
+.hist-note-save{font-size:11px;padding:5px 12px;margin-top:6px}
+
+/* ── FINISH WORKOUT NOTES ── */
+.fn-label{font-size:13px;color:var(--ink2);margin-bottom:8px;font-weight:500}
+.fn-textarea{width:100%;background:var(--bg2);border:1.5px solid var(--edge);border-radius:10px;color:var(--ink);font-size:13px;padding:10px 12px;resize:none;font-family:'DM Sans',sans-serif;min-height:80px;transition:border-color .2s;box-sizing:border-box}
+.fn-textarea:focus{outline:none;border-color:rgba(200,240,58,.35)}
+
 .sl-row.warmup{background:rgba(251,191,36,.03)}
 .sl-row.warmup .sl-num{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.25);color:var(--amber)}
 .sl-row.warmup .sl-cell{border-color:rgba(251,191,36,.18);color:var(--amber)}
@@ -493,6 +525,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
       <div class="stat-card"><div class="stat-val" id="h-bw">—</div><div class="stat-lbl">Body weight</div></div>
     </div>
 
+    <!-- VOLUME HEATMAP -->
+    <div id="h-heatmap-wrap" style="display:none" class="fade-up">
+      <div class="sec-label" style="display:flex;justify-content:space-between;align-items:center">
+        Volume (15 weeks) <span class="hm-legend"><span style="color:var(--ink3)">Less</span><span class="hm-lc l0" style="background:var(--bg2)"></span><span class="hm-lc" style="background:rgba(200,240,58,.2)"></span><span class="hm-lc" style="background:rgba(200,240,58,.45)"></span><span class="hm-lc" style="background:rgba(200,240,58,.7)"></span><span class="hm-lc" style="background:rgba(200,240,58,.9)"></span><span style="color:var(--ink3)">More</span></span>
+      </div>
+      <div class="card card-pad" style="padding:12px 14px">
+        <div class="heatmap-grid" id="h-hm-grid"></div>
+        <div class="hm-footer"><div id="h-hm-lbl" style="font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace;min-height:14px"></div><div style="font-size:11px;color:var(--ink3)">Tap cell for detail</div></div>
+      </div>
+    </div>
+
     <!-- OVERLOAD SUGGESTIONS -->
     <div id="h-ol-wrap" style="display:none">
       <div class="sec-label" style="display:flex;align-items:center;justify-content:space-between">
@@ -657,6 +700,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
       <button class="btn btn-secondary" onclick="shareDownload()">💾 Simpan</button>
       <button class="btn btn-primary" onclick="shareNative()">↑ Share</button>
     </div>
+  </div>
+</div>
+
+<!-- FINISH NOTES SHEET -->
+<div class="backdrop" id="fn-bd" onclick="fnClose()"></div>
+<div class="sheet" id="fn-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-hd"><div class="sheet-title">🎉 Workout Selesai!</div></div>
+  <div class="sheet-body">
+    <div class="fn-label">Catatan sesi (opsional)</div>
+    <textarea class="fn-textarea" id="fn-note" placeholder="Kondisi hari ini, hal yang dirasakan, PR baru…" rows="3"></textarea>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn btn-secondary" onclick="fnClose()">Lewati</button>
+    <button class="btn btn-primary" onclick="fnSave()">Simpan & Selesai</button>
   </div>
 </div>
 
@@ -990,7 +1048,7 @@ function renderHome(){
   document.getElementById('g-name').textContent=getGreeting();
   document.getElementById('g-sub').textContent=prog?prog.name:'No program — tap + to create one';
   renderStreak(prog);renderHomeToday(prog,dow);renderStats();renderBW();renderHomePRs(prog);
-  renderDeloadBanner();renderOverload(prog);
+  renderDeloadBanner();renderOverload(prog);renderHeatmap();
 }
 function renderOverload(prog){
   const wrap=document.getElementById('h-ol-wrap');const el=document.getElementById('h-ol');
@@ -1003,6 +1061,41 @@ function renderOverload(prog){
       <div class="ol-name">${s.name}</div>
       <div style="text-align:right"><div class="ol-sug">${s.sug} kg</div><div class="ol-reason">${s.reason}</div></div>
     </div>`).join('');
+}
+function renderHeatmap(){
+  const wrap=document.getElementById('h-heatmap-wrap');const grid=document.getElementById('h-hm-grid');
+  if(!wrap||!grid)return;
+  const log=loadLog();const DAYS=105;// 15 weeks
+  const td=today();
+  // Build daily sets map
+  const daily={};
+  Object.values(log).forEach(entries=>entries.forEach(s=>{
+    const d=s._date;if(!d)return;
+    const cnt=Object.keys(s).filter(k=>!k.startsWith('_')).length;
+    daily[d]=(daily[d]||0)+cnt;
+  }));
+  const vals=Object.values(daily).filter(v=>v>0);
+  if(!vals.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  const max=Math.max(...vals);
+  const level=v=>{if(!v)return 0;const p=v/max;return p<.2?1:p<.45?2:p<.75?3:4;};
+  // Start from DAYS ago (align to Sunday)
+  const start=new Date();start.setDate(start.getDate()-DAYS+1);start.setHours(0,0,0,0);
+  let cells='';
+  for(let i=0;i<DAYS;i++){
+    const d=new Date(start);d.setDate(d.getDate()+i);
+    const ds=d.toISOString().slice(0,10);const sets=daily[ds]||0;
+    const isToday=ds===td;const lv=level(sets);
+    const isFut=ds>td;
+    cells+=`<div class="hm-cell l${isFut?'0':lv}${isToday?' today':''}${isFut?' rest':''}" title="${ds}${sets?' · '+sets+' sets':''}" onclick="hmTap('${ds}',${sets})"></div>`;
+  }
+  grid.innerHTML=cells;
+}
+function hmTap(date,sets){
+  const lbl=document.getElementById('h-hm-lbl');if(!lbl)return;
+  if(!sets){lbl.textContent=`${date} — rest day`;return;}
+  lbl.textContent=`${date} — ${sets} sets`;
+  setTimeout(()=>{if(lbl.textContent.startsWith(date))lbl.textContent='';},3000);
 }
 function renderStreak(prog){
   const el=document.getElementById('h-streak');const{streak,best,last14}=calcStreak(prog);
@@ -1216,11 +1309,29 @@ function wkUpdateProg(){
 }
 function finishWK(){
   if(!WK){navTo('home');return;}
+  // Show notes sheet first
+  document.getElementById('fn-note').value='';
+  shOpen('fn');
+}
+let FN_WK=null;// snapshot for finishWK after notes
+function fnClose(){
+  shClose('fn');
+  if(!WK)return;
+  _doFinish('');
+}
+function fnSave(){
+  const note=document.getElementById('fn-note').value.trim();
+  shClose('fn');
+  _doFinish(note);
+}
+function _doFinish(note){
+  if(!WK)return;
   const hist=sg(K.hist,[]);const el=Math.floor((Date.now()-WK.t0)/1000);
   let totalSets=0;Object.values(WK.states).forEach(es=>Object.entries(es).forEach(([k,v])=>{if(!k.startsWith('_')&&(v.done||v.kg))totalSets++;}));
   const d=new Date();const dateLbl=d.toLocaleDateString('id-ID',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
-  hist.unshift({date:today(),dateLbl,name:WK.sess.name,prog:WK.prog?.name||'',el,exs:Object.keys(WK.states).length,sets:totalSets});
-  if(hist.length>50)hist.pop();ss(K.hist,hist);
+  const entry={date:today(),dateLbl,name:WK.sess.name,prog:WK.prog?.name||'',el,exs:Object.keys(WK.states).length,sets:totalSets};
+  if(note)entry.note=note;
+  hist.unshift(entry);if(hist.length>50)hist.pop();ss(K.hist,hist);
   clearInterval(WK_TMR);WK=null;
   toast('🎉 Workout selesai!');if(navigator.vibrate)navigator.vibrate([40,30,80]);
   navTo('home');renderHome();
@@ -1323,9 +1434,35 @@ function renderHist(){
   if(!hist.length){w.innerHTML=`<div class="empty-state"><div class="empty-state-icon">📈</div>Selesaikan workout pertamamu.<br><br><span style="font-size:11px;color:var(--ink3)">Tap nama exercise di workout untuk progress chart</span></div>`;return;}
   w.innerHTML=hist.slice(0,30).map((h,i)=>{
     const dur=h.el?`${Math.floor(h.el/60)}m ${h.el%60}s`:'—';
-    const date=h.date||'';
-    return`<div class="hist-date-lbl">${h.dateLbl||date}</div><div class="hist-card"><div class="hist-hd"><div class="hist-name">${h.prog?`${h.prog} — `:''}${h.name}</div><div class="hist-time">${dur}</div></div><div style="font-size:12px;color:var(--ink3);display:flex;align-items:center;gap:8px">${h.exs} exercise logged${h.sets?` · ${h.sets} sets total`:''}</div></div>`;
+    const noteHtml=h.note
+      ?`<button class="hist-note-toggle" onclick="histNoteToggle(this)">📝 Catatan <span style="font-size:9px;opacity:.6">▾</span></button><div class="hist-note-body"><div class="hist-note-text">${h.note.replace(/</g,'&lt;')}</div><textarea class="hist-note-edit" placeholder="Edit catatan…" rows="2" style="display:none">${h.note.replace(/</g,'&lt;')}</textarea><button class="btn btn-secondary hist-note-save" style="display:none" onclick="histNoteSave(this,${i})">Simpan</button></div>`
+      :`<button class="hist-note-toggle" onclick="histNoteToggle(this)">✏️ Tambah catatan</button><div class="hist-note-body"><textarea class="hist-note-edit" placeholder="Kondisi hari ini, PR, catatan…" rows="2"></textarea><button class="btn btn-secondary hist-note-save" onclick="histNoteSave(this,${i})">Simpan</button></div>`;
+    return`<div class="hist-date-lbl">${h.dateLbl||h.date||''}</div>
+    <div class="hist-card">
+      <div class="hist-hd"><div class="hist-name">${h.prog?`<span style="color:var(--ink3);font-size:11px">${h.prog} — </span>`:''}${h.name}</div><div class="hist-time">${dur}</div></div>
+      <div style="font-size:12px;color:var(--ink3)">${h.exs||0} exercise · ${h.sets||0} sets</div>
+      ${noteHtml}
+    </div>`;
   }).join('');
+}
+function histNoteToggle(btn){
+  const body=btn.nextElementSibling;body.classList.toggle('open');
+  const ta=body.querySelector('.hist-note-edit');const sv=body.querySelector('.hist-note-save');
+  const txt=body.querySelector('.hist-note-text');
+  if(body.classList.contains('open')&&ta){
+    if(txt)txt.style.display='none';
+    ta.style.display='block';sv.style.display='block';
+    ta.focus();ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';
+  } else {
+    if(txt)txt.style.display='block';
+    if(ta)ta.style.display='none';if(sv)sv.style.display='none';
+  }
+}
+function histNoteSave(btn,idx){
+  const hist=sg(K.hist,[]);if(!hist[idx])return;
+  const ta=btn.previousElementSibling;const note=ta.value.trim();
+  hist[idx].note=note;ss(K.hist,hist);
+  renderHist();toast('✓ Catatan disimpan');
 }
 
 /* ── TEMPLATE PICKER ── */

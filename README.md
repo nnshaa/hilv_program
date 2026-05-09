@@ -120,6 +120,26 @@ python3 -m http.server 8000
 
 ## Changelog
 
+### [4.4.0] — 2026-05-09
+
+**Medium Features: Volume Heatmap · Session Notes**
+
+**Volume Heatmap (15 Weeks)**
+- Grid 15×7 hari di Home, muncul otomatis kalau ada log data
+- 5 level warna (lime intensity) berdasarkan total sets hari itu relatif ke max
+- Cell hari ini punya outline lime
+- Tap cell → tampil info date + sets di footer
+- Legend Less/More di header section
+
+**Session Notes**
+- Saat finish workout: sheet muncul dengan textarea "Catatan sesi"
+- Bisa dilewati (tombol Lewati) atau diisi dulu baru Simpan & Selesai
+- History card: tap "📝 Catatan" untuk expand/edit note yang ada
+- History card tanpa note: tap "✏️ Tambah catatan" untuk add
+- Notes tersimpan ke `gl_h` bersama data sesi, max 50 sesi
+
+---
+
 ### [4.3.0] — 2026-05-09
 
 **Quick Wins: Deload Mode · RIR Aktual · 1RM Estimator · Overload Suggester**
