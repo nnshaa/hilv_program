@@ -138,8 +138,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 [data-theme="light"] .wk-header{background:rgba(245,244,240,.94)}
 .wk-hd-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
 .wk-sess-name{font-size:18px;font-weight:700;flex:1}
-.wk-elapsed{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--lime);flex-shrink:0;cursor:pointer;padding:4px 8px;border-radius:8px;border:1px solid rgba(200,240,58,.2);transition:background .15s;user-select:none}
-.wk-elapsed:hover{background:rgba(200,240,58,.08)}
+.wk-elapsed{font-family:'DM Mono',monospace;font-size:14px;font-weight:600;color:var(--lime);flex-shrink:0}
 .wk-finish{padding:8px 16px;border-radius:8px;background:rgba(200,240,58,.12);color:var(--lime);border:1px solid rgba(200,240,58,.25);font-size:12px;font-weight:700;flex-shrink:0;transition:all .15s}
 .wk-progbar{height:3px;background:var(--bg2);border-radius:99px;overflow:hidden}
 .wk-progfill{height:100%;background:var(--lime);border-radius:99px;transition:width .4s ease}
@@ -724,6 +723,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
   <div class="sheet-handle"></div>
   <div class="sheet-hd"><div class="sheet-title">🎉 Workout Selesai!</div></div>
   <div class="sheet-body">
+    <div class="fn-label">Total waktu</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <input id="fn-min" class="cardio-input" type="number" min="0" max="300" step="1" inputmode="numeric" style="flex:1;font-size:28px;padding:10px 4px">
+      <span style="font-size:20px;font-weight:700;color:var(--ink3)">:</span>
+      <input id="fn-sec" class="cardio-input" type="number" min="0" max="59" step="1" inputmode="numeric" style="flex:1;font-size:28px;padding:10px 4px">
+      <span style="font-size:13px;color:var(--ink3);white-space:nowrap">min · sek</span>
+    </div>
     <div class="fn-label">Catatan sesi (opsional)</div>
     <textarea class="fn-textarea" id="fn-note" placeholder="Kondisi hari ini, hal yang dirasakan, PR baru…" rows="3"></textarea>
   </div>
@@ -1154,7 +1160,7 @@ function renderHomePRs(prog){
 }
 
 /* ── WORKOUT ── */
-let WK=null,WK_TMR=null,WK_TARGET=60;// default 60 min
+let WK=null,WK_TMR=null;
 function startWorkout(progId,sessId){
   const ps=loadProgs();const prog=ps.find(p=>p.id===progId);const sess=prog?.sessions?.find(s=>s.id===sessId);
   if(!sess)return;
@@ -1163,10 +1169,9 @@ function startWorkout(progId,sessId){
 }
 function renderWorkout(){
   const{sess,t0}=WK;const c=document.getElementById('wk-content');
-  c.innerHTML=`<div class="wk-header"><div class="wk-hd-row"><div class="wk-sess-name">${sess.name}</div><div class="wk-elapsed" id="wk-t" onclick="wkSetTarget()" title="Tap untuk set target waktu">⏱ ${WK_TARGET}:00</div><button class="wk-finish" onclick="finishWK()">Finish</button></div><div class="wk-progbar"><div class="wk-progfill" id="wk-pf" style="width:0%"></div></div></div><div style="padding:12px 16px;max-width:600px;margin:0 auto" id="wk-exs"></div>`;
+  c.innerHTML=`<div class="wk-header"><div class="wk-hd-row"><div class="wk-sess-name">${sess.name}</div><div class="wk-elapsed" id="wk-t">0:00</div><button class="wk-finish" onclick="finishWK()">Finish</button></div><div class="wk-progbar"><div class="wk-progfill" id="wk-pf" style="width:0%"></div></div></div><div style="padding:12px 16px;max-width:600px;margin:0 auto" id="wk-exs"></div>`;
   const exs=document.getElementById('wk-exs');
   (sess.exercises||[]).forEach((ex,i)=>exs.appendChild(makeExBlock(ex,i)));
-  // restore today's sets
   (sess.exercises||[]).forEach(ex=>{
     const td=getToday(ex.id);if(!td)return;
     if(!WK.states[ex.id])WK.states[ex.id]={};
@@ -1183,30 +1188,10 @@ function renderWorkout(){
   clearInterval(WK_TMR);
   WK_TMR=setInterval(()=>{
     const el=document.getElementById('wk-t');if(!el){clearInterval(WK_TMR);return;}
-    const elapsed=Math.floor((Date.now()-WK.t0)/1000);
-    const remaining=WK_TARGET*60-elapsed;
-    if(remaining>0){
-      const m=Math.floor(remaining/60);const s=remaining%60;
-      el.textContent=`⏱ ${m}:${String(s).padStart(2,'0')}`;
-      el.style.color='var(--lime)';
-    } else {
-      const over=Math.abs(remaining);
-      const m=Math.floor(over/60);const s=over%60;
-      el.textContent=`+${m}:${String(s).padStart(2,'0')}`;
-      el.style.color='var(--amber)';
-      if(over===0){toast('⏰ Target waktu tercapai!');if(navigator.vibrate)navigator.vibrate([60,40,60]);}
-    }
+    const s=Math.floor((Date.now()-WK.t0)/1000);
+    el.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
     wkUpdateProg();
   },1000);
-}
-function wkSetTarget(){
-  const cur=WK_TARGET;
-  const v=prompt(`Target durasi workout (menit):\nSekarang: ${cur} menit`,''+cur);
-  if(v===null)return;
-  const n=parseInt(v);
-  if(isNaN(n)||n<1||n>300){toast('Masukkan angka 1–300 menit');return;}
-  WK_TARGET=n;
-  toast(`⏱ Target: ${n} menit`);
 }
 function makeExBlock(ex,idx){
   const div=document.createElement('div');div.className='ex-block';
@@ -1408,27 +1393,33 @@ function wkUpdateProg(){
 }
 function finishWK(){
   if(!WK){navTo('home');return;}
-  // Show notes sheet first
+  const elSec=Math.floor((Date.now()-WK.t0)/1000);
+  const m=Math.floor(elSec/60);const s=elSec%60;
+  document.getElementById('fn-min').value=m;
+  document.getElementById('fn-sec').value=s;
   document.getElementById('fn-note').value='';
   shOpen('fn');
 }
-let FN_WK=null;// snapshot for finishWK after notes
 function fnClose(){
   shClose('fn');
   if(!WK)return;
-  _doFinish('');
+  const elSec=Math.floor((Date.now()-WK.t0)/1000);
+  _doFinish(elSec,'');
 }
 function fnSave(){
+  const m=parseInt(document.getElementById('fn-min').value)||0;
+  const s=parseInt(document.getElementById('fn-sec').value)||0;
+  const elSec=m*60+s;
   const note=document.getElementById('fn-note').value.trim();
   shClose('fn');
-  _doFinish(note);
+  _doFinish(elSec,note);
 }
-function _doFinish(note){
+function _doFinish(elSec,note){
   if(!WK)return;
-  const hist=sg(K.hist,[]);const el=Math.floor((Date.now()-WK.t0)/1000);
+  const hist=sg(K.hist,[]);
   let totalSets=0;Object.values(WK.states).forEach(es=>Object.entries(es).forEach(([k,v])=>{if(!k.startsWith('_')&&(v.done||v.kg))totalSets++;}));
   const d=new Date();const dateLbl=d.toLocaleDateString('id-ID',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
-  const entry={date:today(),dateLbl,name:WK.sess.name,prog:WK.prog?.name||'',el,exs:Object.keys(WK.states).length,sets:totalSets};
+  const entry={date:today(),dateLbl,name:WK.sess.name,prog:WK.prog?.name||'',el:elSec,exs:Object.keys(WK.states).length,sets:totalSets};
   if(note)entry.note=note;
   hist.unshift(entry);if(hist.length>50)hist.pop();ss(K.hist,hist);
   clearInterval(WK_TMR);WK=null;

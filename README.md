@@ -120,20 +120,17 @@ python3 -m http.server 8000
 
 ## Changelog
 
-### [4.5.0] — 2026-05-09
+### [4.5.2] — 2026-05-09
 
-**Cardio Block — Durasi · Incline · Speed · Countdown Timer**
+**Fix: Cardio Block · Workout Timer · Total Waktu Editable**
 
-- Exercise bertipe Cardio (muscle group = Cardio) render block terpisah, bukan kg/reps grid
-- Fields: **Durasi** (menit) · **Incline %** · **Speed km/h** — treadmill template default 20min · 8% · 6km/h
-- **Countdown timer** per cardio exercise: ▶ Start → ⏸ Pause → selesai otomatis dengan toast + haptic
-- Tombol ↺ Reset untuk mulai ulang dari durasi yang diset
-- Timer sinkron dengan input durasi: ganti durasi → timer reset otomatis
-- Tombol **✓ Selesai** menandai cardio selesai, stop timer jika masih running
-- Previous session ditampilkan di bawah (dur · incline · speed)
-- Progress bar workout menghitung cardio sebagai 1 set target
-- Library BLIB: semua Cardio entry diberi `type:'cardio'` + `fields[]`
-- Template Nishaa: 3 Incline Treadmill Walk diupdate dengan `dur:20, incline:8, speed:6`
+- Cardio exercise render block terpisah — input Durasi · Incline · Speed + tombol ✓ Selesai
+- Tidak ada countdown timer (dihapus — tidak praktis tanpa HP)
+- Previous session ditampilkan: `Prev: 20min · 8% · 6km/h`
+- Timer workout count-up normal (stopwatch)
+- Tap **Finish** → sheet dua input besar: **menit** + **detik**, prefilled dari stopwatch aktual
+- Waktu bisa diedit manual sebelum disimpan (koreksi kalau HP ditinggal)
+- Tap **Lewati** → simpan waktu aktual tanpa catatan
 
 ---
 
