@@ -120,6 +120,30 @@ python3 -m http.server 8000
 
 ## Changelog
 
+### [4.3.0] — 2026-05-09
+
+**Quick Wins: Deload Mode · RIR Aktual · 1RM Estimator · Overload Suggester**
+
+**Deload Week Mode**
+- Toggle dari Settings → ⚡ Deload Week, pilih −10% (ringan) atau −15% (berat)
+- Banner amber muncul di Home saat deload aktif, tap ✓ untuk selesaikan
+- KG placeholder di set rows otomatis turun sesuai persentase deload saat workout
+
+**RIR Aktual per Set**
+- Kolom RIR input ditambahkan ke setiap set row (termasuk add set & warm-up)
+- Data RIR disimpan ke log bersama kg & reps, dipakai untuk overload detection
+
+**1RM Estimator (Epley)**
+- Estimasi 1RM otomatis dari log: `kg × (1 + reps÷30)`
+- Tampil di progress chart sheet, tap "Epley ⓘ" untuk lihat formula
+
+**Progressive Overload Suggester**
+- Section "Next Session Targets" muncul di Home jika ada suggestion
+- Trigger: hit rep ceiling OR RIR aktual ≤ 0.5 → suggest +2.5kg
+- Tap exercise langsung buka progress chart
+
+---
+
 ### [4.2.0] — 2026-05-08
 
 **Data: Nishaa Precision Cut + Library Expansion**

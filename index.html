@@ -175,7 +175,37 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .sl-add::before{content:'+';font-size:14px}
 .sl-note-row{padding:4px 14px 10px}
 
-/* ── WARMUP ROW ── */
+/* ── DELOAD BANNER ── */
+.deload-banner{background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(251,191,36,.04));border:1px solid rgba(251,191,36,.25);border-radius:var(--r2);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.deload-icon{font-size:22px;flex-shrink:0}
+.deload-info{flex:1}
+.deload-title{font-size:13px;font-weight:700;color:var(--amber)}
+.deload-sub{font-size:11px;color:var(--ink3);margin-top:2px}
+.deload-off{background:none;border:none;font-size:16px;color:var(--ink3);cursor:pointer;padding:4px;flex-shrink:0}
+.deload-pct{font-family:'DM Mono',monospace;font-size:11px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.2);color:var(--amber);border-radius:6px;padding:3px 8px;font-weight:600}
+
+/* ── RIR INPUT in set row ── */
+.sl-head{grid-template-columns:28px 1fr 1fr 1fr 32px 32px}
+.sl-row{grid-template-columns:28px 1fr 1fr 1fr 32px 32px}
+.sl-rir{width:32px;height:36px;border-radius:8px;border:1.5px solid var(--edge);background:var(--bg1);color:var(--ink3);font-size:12px;font-family:'DM Mono',monospace;text-align:center;padding:0;transition:all .2s;-moz-appearance:textfield}
+.sl-rir:focus{outline:none;border-color:rgba(200,240,58,.35);color:var(--lime)}
+.sl-rir::-webkit-inner-spin-button,.sl-rir::-webkit-outer-spin-button{-webkit-appearance:none}
+.sl-row.warmup .sl-rir{border-color:rgba(251,191,36,.15);color:rgba(251,191,36,.4)}
+
+/* ── 1RM STAT in progress chart ── */
+.pc-1rm-wrap{padding:10px 16px 4px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--edge)}
+.pc-1rm-lbl{font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em}
+.pc-1rm-val{font-size:14px;font-weight:700;color:var(--lime);font-family:'DM Mono',monospace}
+.pc-1rm-formula{font-size:10px;color:var(--ink3);margin-left:auto;cursor:pointer;text-decoration:underline dotted}
+
+/* ── OVERLOAD SUGGESTION ── */
+.ol-card{background:linear-gradient(135deg,rgba(200,240,58,.08),rgba(200,240,58,.02));border:1px solid rgba(200,240,58,.2);border-radius:var(--r2);padding:14px 16px;margin:8px 16px 0}
+.ol-title{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--lime);margin-bottom:8px}
+.ol-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--edge)}
+.ol-row:last-child{border-bottom:none}
+.ol-name{font-size:12px;color:var(--ink2);flex:1}
+.ol-sug{font-size:12px;font-weight:700;font-family:'DM Mono',monospace;color:var(--lime)}
+.ol-reason{font-size:10px;color:var(--ink3)}
 .sl-row.warmup{background:rgba(251,191,36,.03)}
 .sl-row.warmup .sl-num{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.25);color:var(--amber)}
 .sl-row.warmup .sl-cell{border-color:rgba(251,191,36,.18);color:var(--amber)}
@@ -404,9 +434,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 
 /* ── RESPONSIVE ── */
 @media(max-width:380px){
-  .sl-head,.sl-row{grid-template-columns:26px 1fr 1fr 1fr 36px;gap:4px;padding:5px 10px}
-  .sl-cell{font-size:14px;padding:8px 1px}
-  .sl-check{width:30px;height:30px}
+  .sl-head,.sl-row{grid-template-columns:26px 1fr 1fr 1fr 28px 30px;gap:3px;padding:5px 8px}
+  .sl-cell{font-size:13px;padding:8px 1px}
+  .sl-rir{width:28px;font-size:11px}
+  .sl-check{width:28px;height:30px}
   .wk-sess-name{font-size:15px}
   .ex-hd{padding:11px 12px}
   .streak-count{font-size:30px}
@@ -439,11 +470,37 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
       <div class="streak-fire" id="h-sf">🔥</div>
       <div><div class="streak-count" id="h-sc">0</div><div class="streak-lbl">Day Streak</div><div class="streak-dots" id="h-sd"></div><div class="streak-best" id="h-sb"></div></div>
     </div>
+
+    <!-- DELOAD BANNER -->
+    <div id="h-deload" class="deload-banner fade-up" style="display:none">
+      <div class="deload-icon">⚡</div>
+      <div class="deload-info">
+        <div class="deload-title" id="h-dl-pct">Deload aktif</div>
+        <div class="deload-sub" id="h-dl-date"></div>
+      </div>
+      <button class="deload-off" onclick="showConf('Selesaikan Deload?','Beban kembali normal.',()=>clearDeload())" title="Selesai">✓</button>
+    </div>
+    <!-- DELOAD PICKER (hidden) -->
+    <div id="dl-pick" style="display:none;gap:8px;margin-bottom:12px">
+      <button class="btn btn-secondary" style="flex:1" onclick="dlSet(10)">−10% ringan</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="dlSet(15)">−15% berat</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('dl-pick').style.display='none'">✕</button>
+    </div>
+
     <div id="h-today"></div>
     <div class="stats-row fade-up" id="h-stats" style="display:none">
       <div class="stat-card"><div class="stat-val lime" id="h-wsets">—</div><div class="stat-lbl">Sets this week</div></div>
       <div class="stat-card"><div class="stat-val" id="h-bw">—</div><div class="stat-lbl">Body weight</div></div>
     </div>
+
+    <!-- OVERLOAD SUGGESTIONS -->
+    <div id="h-ol-wrap" style="display:none">
+      <div class="sec-label" style="display:flex;align-items:center;justify-content:space-between">
+        Next Session Targets <span style="font-size:10px;color:var(--ink3);font-weight:400">Epley · RIR</span>
+      </div>
+      <div class="ol-card" id="h-ol"></div>
+    </div>
+
     <div id="h-prs-wrap" style="display:none">
       <div class="sec-label">Recent PRs</div>
       <div class="card"><div id="h-prs"></div></div>
@@ -500,6 +557,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
   <div class="sheet-hd"><div><div class="sheet-title" id="pc-title">Exercise</div><div style="font-size:11px;color:var(--ink3);margin-top:2px;font-family:'DM Mono',monospace" id="pc-sub"></div></div><button class="sheet-close" onclick="pcClose()">✕</button></div>
   <div class="pc-stats"><div class="pc-stat"><div class="pc-sv" id="pc-best">—</div><div class="pc-sl">Best KG</div></div><div class="pc-stat"><div class="pc-sv n" id="pc-sess">—</div><div class="pc-sl">Sessions</div></div><div class="pc-stat"><div class="pc-sv" id="pc-trend">—</div><div class="pc-sl">Trend</div></div></div>
   <div class="pc-tabs"><button class="pc-tab on" onclick="pcMode('kg',this)">KG</button><button class="pc-tab" onclick="pcMode('reps',this)">Reps</button><button class="pc-tab" onclick="pcMode('volume',this)">Volume</button><button class="pc-tab" style="margin-left:auto" onclick="shareOpen()">↑ Share</button></div>
+  <div class="pc-1rm-wrap" id="pc-1rm-wrap" style="display:none">
+    <span class="pc-1rm-lbl">Est. 1RM</span>
+    <span class="pc-1rm-val" id="pc-1rm-val">—</span>
+    <span class="pc-1rm-formula" onclick="toast('Epley: 1RM = kg × (1 + reps÷30)')">Epley ⓘ</span>
+  </div>
   <div style="padding:8px 14px 16px"><svg id="pc-svg" style="width:100%;height:150px;display:block;overflow:visible" viewBox="0 0 440 150" preserveAspectRatio="none"></svg></div>
 </div>
 
@@ -551,7 +613,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 
 <!-- SETTINGS -->
 <div class="backdrop" id="set-bd" onclick="settingsClose()"></div>
-<div class="sheet" id="set-sheet"><div class="sheet-handle"></div><div class="sheet-hd"><div class="sheet-title">Settings</div><button class="sheet-close" onclick="settingsClose()">✕</button></div><div class="sheet-body" style="display:flex;flex-direction:column;gap:10px"><button class="btn btn-secondary" onclick="toggleTheme()">🌓 Toggle Dark/Light</button><button class="btn btn-secondary" onclick="bkExport()">💾 Export Backup</button><label class="btn btn-secondary" style="justify-content:center;cursor:pointer">📂 Import Backup<input type="file" accept=".json" style="display:none" onchange="bkImport(this)"></label><button class="btn btn-danger" onclick="bkClearAll()">🗑️ Hapus Semua Data</button><div style="font-size:11px;color:var(--ink3);text-align:center;padding:4px 0;font-family:'DM Mono',monospace" id="set-info"></div></div></div>
+<div class="sheet" id="set-sheet"><div class="sheet-handle"></div><div class="sheet-hd"><div class="sheet-title">Settings</div><button class="sheet-close" onclick="settingsClose()">✕</button></div><div class="sheet-body" style="display:flex;flex-direction:column;gap:10px"><button class="btn btn-secondary" onclick="toggleTheme()">🌓 Toggle Dark/Light</button><button class="btn btn-secondary" onclick="settingsClose();dlToggle()">⚡ Deload Week</button><button class="btn btn-secondary" onclick="bkExport()">💾 Export Backup</button><label class="btn btn-secondary" style="justify-content:center;cursor:pointer">📂 Import Backup<input type="file" accept=".json" style="display:none" onchange="bkImport(this)"></label><button class="btn btn-danger" onclick="bkClearAll()">🗑️ Hapus Semua Data</button><div style="font-size:11px;color:var(--ink3);text-align:center;padding:4px 0;font-family:'DM Mono',monospace" id="set-info"></div></div></div>
 
 <!-- EDIT LOAD SHEET -->
 <div class="backdrop" id="el-bd" onclick="exEditClose()"></div>
@@ -603,7 +665,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 
 <script>
 'use strict';
-const K={progs:'gl_p',active:'gl_a',log:'gl_l',lib:'gl_lib',bw:'gl_bw',hist:'gl_h',theme:'gl_t'};
+const K={progs:'gl_p',active:'gl_a',log:'gl_l',lib:'gl_lib',bw:'gl_bw',hist:'gl_h',theme:'gl_t',deload:'gl_dl'};
 function sg(k,fb=null){try{const v=localStorage.getItem(k);return v===null?fb:JSON.parse(v)}catch(e){return fb}}
 function ss(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){if(e.name==='QuotaExceededError')toast('⚠️ Storage penuh');return false}}
 const uid=()=>(crypto.randomUUID?crypto.randomUUID().slice(0,8):Date.now().toString(36)+Math.random().toString(36).slice(2,5));
@@ -928,6 +990,19 @@ function renderHome(){
   document.getElementById('g-name').textContent=getGreeting();
   document.getElementById('g-sub').textContent=prog?prog.name:'No program — tap + to create one';
   renderStreak(prog);renderHomeToday(prog,dow);renderStats();renderBW();renderHomePRs(prog);
+  renderDeloadBanner();renderOverload(prog);
+}
+function renderOverload(prog){
+  const wrap=document.getElementById('h-ol-wrap');const el=document.getElementById('h-ol');
+  if(!prog||!wrap||!el){if(wrap)wrap.style.display='none';return;}
+  const sugs=getOverloadSuggestions(prog);
+  if(!sugs.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  el.innerHTML=`<div class="ol-title">💡 Progressive Overload — sesi berikutnya</div>`+
+    sugs.map(s=>`<div class="ol-row" onclick="pcOpen('${s.exId}','${s.name.replace(/'/g,"\\'")}')">
+      <div class="ol-name">${s.name}</div>
+      <div style="text-align:right"><div class="ol-sug">${s.sug} kg</div><div class="ol-reason">${s.reason}</div></div>
+    </div>`).join('');
 }
 function renderStreak(prog){
   const el=document.getElementById('h-streak');const{streak,best,last14}=calcStreak(prog);
@@ -1009,7 +1084,7 @@ function makeExBlock(ex,idx){
   const prev=getPrev(ex.id);const sc=ex.sets||2;
   const wu=ex.warmup;// {load, reps} or undefined
 
-  // Build warmup row if exists
+  // Warm-up row
   let warmupRow='';
   if(wu){
     const wid=`${ex.id}-w`;
@@ -1018,6 +1093,7 @@ function makeExBlock(ex,idx){
       `<span class="sl-prev" style="font-size:9px;color:var(--amber);opacity:.7">warm-up</span>` +
       `<input class="sl-cell" id="${wid}-k" type="number" placeholder="${wu.load||'—'}" step="2.5" inputmode="decimal" onchange="wkSaveWu('${ex.id}')">` +
       `<input class="sl-cell" id="${wid}-p" type="number" placeholder="${wu.reps||5}" step="1" inputmode="numeric" onchange="wkSaveWu('${ex.id}')">` +
+      `<input class="sl-rir" id="${wid}-r" type="number" placeholder="RIR" min="0" max="10" inputmode="numeric" onchange="wkSaveWu('${ex.id}')">` +
       `<button class="sl-check" id="${wid}-c" onclick="wkCheckWu('${ex.id}','${ex.name.replace(/'/g,"\\'")}')"></button>` +
       `</div>`;
   }
@@ -1026,10 +1102,11 @@ function makeExBlock(ex,idx){
   let rows='';
   for(let si=1;si<=sc;si++){
     const p=prev&&prev[si];const pt=p?`${p.kg}×${p.reps}`:'—';
-    rows+=`<div class="sl-row" id="${ex.id}-r${si}"><div class="sl-num">${si}</div><span class="sl-prev">${pt}</span><input class="sl-cell" id="${ex.id}-k${si}" type="number" placeholder="${p?p.kg:'—'}" step="2.5" inputmode="decimal" onchange="wkSave('${ex.id}',${si})"><input class="sl-cell" id="${ex.id}-p${si}" type="number" placeholder="${p?p.reps:'—'}" step="1" inputmode="numeric" onchange="wkSave('${ex.id}',${si})"><button class="sl-check" id="${ex.id}-c${si}" onclick="wkCheck('${ex.id}',${si},'${ex.name.replace(/'/g,"\\'")}')"></button></div>`;
+    const dl=getDeload();const baseLoad=ex.load||0;const sugKg=dl?Math.round((baseLoad*(1-dl/100))/2.5)*2.5:baseLoad;
+    rows+=`<div class="sl-row" id="${ex.id}-r${si}"><div class="sl-num">${si}</div><span class="sl-prev">${pt}</span><input class="sl-cell" id="${ex.id}-k${si}" type="number" placeholder="${p?p.kg:(sugKg||'—')}" step="2.5" inputmode="decimal" onchange="wkSave('${ex.id}',${si})"><input class="sl-cell" id="${ex.id}-p${si}" type="number" placeholder="${p?p.reps:'—'}" step="1" inputmode="numeric" onchange="wkSave('${ex.id}',${si})"><input class="sl-rir" id="${ex.id}-rir${si}" type="number" placeholder="RIR" min="0" max="10" inputmode="numeric" onchange="wkSave('${ex.id}',${si})"><button class="sl-check" id="${ex.id}-c${si}" onclick="wkCheck('${ex.id}',${si},'${ex.name.replace(/'/g,"\\'")}')"></button></div>`;
   }
 
-  div.innerHTML=`<div class="ex-hd"><div class="ex-num">${String(idx+1).padStart(2,'0')}</div><div class="ex-name" onclick="pcOpen('${ex.id}','${ex.name.replace(/'/g,"\\'")}')"><span class="ex-name-text">${ex.name}</span></div><div style="display:flex;align-items:center;gap:6px">${ex.rir?`<span class="pill pill-muted" style="font-size:10px">${ex.rir}</span>`:''}<button class="ex-edit-btn" onclick="event.stopPropagation();exEditOpen('${ex.id}','${ex.name.replace(/'/g,"\\'")}',${ex.sets||2},${ex.load||0})" title="Edit beban">⊕</button></div></div><div class="sl-head"><span>Set</span><span>Previous</span><span>KG</span><span>Reps</span><span>✓</span></div><div id="${ex.id}-rows">${warmupRow}${rows}</div><button class="sl-add" onclick="wkAddSet('${ex.id}')">Add Set</button><div class="sl-note-row"><textarea class="sl-note" id="${ex.id}-note" placeholder="Notes, RPE…" rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea></div>`;
+  div.innerHTML=`<div class="ex-hd"><div class="ex-num">${String(idx+1).padStart(2,'0')}</div><div class="ex-name" onclick="pcOpen('${ex.id}','${ex.name.replace(/'/g,"\\'")}')"><span class="ex-name-text">${ex.name}</span></div><div style="display:flex;align-items:center;gap:6px">${ex.rir?`<span class="pill pill-muted" style="font-size:10px">${ex.rir}</span>`:''}<button class="ex-edit-btn" onclick="event.stopPropagation();exEditOpen('${ex.id}','${ex.name.replace(/'/g,"\\'")}',${ex.sets||2},${ex.load||0})" title="Edit beban">⊕</button></div></div><div class="sl-head"><span>Set</span><span>Previous</span><span>KG</span><span>Reps</span><span style="font-size:9px">RIR</span><span>✓</span></div><div id="${ex.id}-rows">${warmupRow}${rows}</div><button class="sl-add" onclick="wkAddSet('${ex.id}')">Add Set</button><div class="sl-note-row"><textarea class="sl-note" id="${ex.id}-note" placeholder="Notes, RPE…" rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea></div>`;
   return div;
 }
 function wkCheck(exId,si,name){
@@ -1063,21 +1140,73 @@ function wkSaveWu(exId){
 function wkSave(exId,si){
   const kg=parseFloat(document.getElementById(`${exId}-k${si}`)?.value)||0;
   const reps=parseInt(document.getElementById(`${exId}-p${si}`)?.value)||0;
+  const rirEl=document.getElementById(`${exId}-rir${si}`);
+  const rir=rirEl&&rirEl.value!==''?parseInt(rirEl.value):undefined;
   if(!WK.states[exId])WK.states[exId]={};
-  WK.states[exId][si]={...(WK.states[exId][si]||{}),kg,reps};
+  WK.states[exId][si]={...(WK.states[exId][si]||{}),kg,reps,...(rir!=null?{rir}:{})};
 }
 function wkPersist(exId){
   const s=WK.states[exId]||{};const data={};
-  Object.entries(s).forEach(([si,v])=>{if(!si.startsWith('_')&&(v.done||v.kg||v.reps))data[si]={kg:v.kg||0,reps:v.reps||0};});
+  Object.entries(s).forEach(([si,v])=>{if(!si.startsWith('_')&&(v.done||v.kg||v.reps))data[si]={kg:v.kg||0,reps:v.reps||0,...(v.rir!=null?{rir:v.rir}:{})};});
   if(Object.keys(data).length)saveExSets(exId,data);
 }
 function wkAddSet(exId){
   const rowsEl=document.getElementById(`${exId}-rows`);if(!rowsEl)return;
-  const si=rowsEl.querySelectorAll('.sl-row').length+1;
+  const working=rowsEl.querySelectorAll('.sl-row:not(.warmup)');const si=working.length+1;
   const prev=getPrev(exId);const p=prev&&prev[si];const pt=p?`${p.kg}×${p.reps}`:'—';
   const d=document.createElement('div');d.className='sl-row';d.id=`${exId}-r${si}`;
-  d.innerHTML=`<div class="sl-num">${si}</div><span class="sl-prev">${pt}</span><input class="sl-cell" id="${exId}-k${si}" type="number" placeholder="${p?p.kg:'—'}" step="2.5" inputmode="decimal" onchange="wkSave('${exId}',${si})"><input class="sl-cell" id="${exId}-p${si}" type="number" placeholder="${p?p.reps:'—'}" step="1" inputmode="numeric" onchange="wkSave('${exId}',${si})"><button class="sl-check" id="${exId}-c${si}" onclick="wkCheck('${exId}',${si},'')"></button>`;
+  d.innerHTML=`<div class="sl-num">${si}</div><span class="sl-prev">${pt}</span><input class="sl-cell" id="${exId}-k${si}" type="number" placeholder="${p?p.kg:'—'}" step="2.5" inputmode="decimal" onchange="wkSave('${exId}',${si})"><input class="sl-cell" id="${exId}-p${si}" type="number" placeholder="${p?p.reps:'—'}" step="1" inputmode="numeric" onchange="wkSave('${exId}',${si})"><input class="sl-rir" id="${exId}-rir${si}" type="number" placeholder="RIR" min="0" max="10" inputmode="numeric" onchange="wkSave('${exId}',${si})"><button class="sl-check" id="${exId}-c${si}" onclick="wkCheck('${exId}',${si},'')"></button>`;
   rowsEl.appendChild(d);
+}
+
+/* ── DELOAD ── */
+function getDeload(){const d=sg(K.deload,null);return d?.pct?d:null;}
+function setDeload(pct){ss(K.deload,{pct,date:today()});renderDeloadBanner();toast(`⚡ Deload ON — beban −${pct}%`);}
+function clearDeload(){ss(K.deload,null);renderDeloadBanner();toast('✓ Deload selesai! Kembali ke beban normal.');}
+function renderDeloadBanner(){
+  const el=document.getElementById('h-deload');if(!el)return;
+  const dl=getDeload();
+  if(!dl){el.style.display='none';document.getElementById('dl-pick').style.display='none';return;}
+  el.style.display='flex';
+  document.getElementById('h-dl-pct').textContent=`Deload −${dl.pct}% aktif`;
+  document.getElementById('h-dl-date').textContent=`Mulai ${dl.date}`;
+}
+function dlToggle(){
+  const dl=getDeload();
+  if(dl){showConf('Selesaikan Deload?','Beban kembali ke program normal.',()=>clearDeload());return;}
+  const pick=document.getElementById('dl-pick');pick.style.display=pick.style.display==='flex'?'none':'flex';
+}
+function dlSet(pct){document.getElementById('dl-pick').style.display='none';setDeload(pct);}
+
+/* ── 1RM ESTIMATOR (Epley) ── */
+function calc1RM(kg,reps){if(!kg||reps<=0)return 0;if(reps===1)return kg;return Math.round(kg*(1+reps/30)*10)/10;}
+function getBest1RM(exId){
+  const log=loadLog();let best=0;
+  (log[exId]||[]).forEach(s=>Object.entries(s).filter(([k])=>!k.startsWith('_')).forEach(([,v])=>{
+    const e=calc1RM(v.kg||0,v.reps||0);if(e>best)best=e;
+  }));return best;
+}
+
+/* ── OVERLOAD SUGGESTION ── */
+function getOverloadSuggestions(prog){
+  const log=loadLog();const sugs=[];
+  (prog?.sessions||[]).forEach(sess=>{
+    (sess.exercises||[]).forEach(ex=>{
+      const entries=log[ex.id]||[];if(!entries.length)return;
+      const last=entries[0];
+      const sets=Object.entries(last).filter(([k])=>!k.startsWith('_'));if(!sets.length)return;
+      const maxReps=Math.max(...sets.map(([,v])=>v.reps||0));
+      const maxKg=Math.max(...sets.map(([,v])=>v.kg||0));
+      const rirVals=sets.filter(([,v])=>v.rir!=null).map(([,v])=>v.rir);
+      const meanRir=rirVals.length?rirVals.reduce((a,b)=>a+b,0)/rirVals.length:null;
+      const repCeil=ex.reps?parseInt(String(ex.reps).split('–').pop()||ex.reps):8;
+      let sug=null,reason='';
+      if(maxReps>=repCeil&&maxKg>0){sug=Math.round((maxKg+2.5)*10)/10;reason=`Hit ${maxReps}+ reps → +2.5kg`;}
+      else if(meanRir!=null&&meanRir<=0.5&&maxKg>0){sug=Math.round((maxKg+2.5)*10)/10;reason=`RIR ${meanRir.toFixed(1)} → siap naik`;}
+      if(sug)sugs.push({name:ex.name,sug,reason,exId:ex.id});
+    });
+  });
+  return sugs.slice(0,6);
 }
 function wkUpdateProg(){
   if(!WK)return;
@@ -1152,6 +1281,9 @@ function pcPts(){
 function pcRender(){
   const pts=pcPts();const svg=document.getElementById('pc-svg');if(!svg)return;
   document.getElementById('pc-sub').textContent=pts.length?pts[0].lbl+(pts.length>1?' — '+pts[pts.length-1].lbl:''):'';
+  // 1RM
+  const rm=getBest1RM(PC.id);const rmWrap=document.getElementById('pc-1rm-wrap');
+  if(rmWrap){rmWrap.style.display=rm>0?'flex':'none';if(rm>0)document.getElementById('pc-1rm-val').textContent=rm+' kg';}
   if(!pts.length){svg.innerHTML='<text x="220" y="75" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="var(--ink3)" letter-spacing="2">NO DATA YET</text>';['pc-best','pc-sess','pc-trend'].forEach(id=>document.getElementById(id).textContent='—');return;}
   const vals=pts.map(p=>p[PC.mode]);const mn=Math.min(...vals),mx=Math.max(...vals);const rng=mx-mn||1;
   const n=pts.length;const W=440,H=150;const PD={t:14,r:14,b:28,l:36};const cW=W-PD.l-PD.r,cH=H-PD.t-PD.b;
@@ -1347,7 +1479,7 @@ function exEditApply(){
       for(let si=cur+1;si<=EL.sets;si++){
         const prev=getPrev(EL.exId);const p=prev&&prev[si];
         const d=document.createElement('div');d.className='sl-row';d.id=`${EL.exId}-r${si}`;
-        d.innerHTML=`<div class="sl-num">${si}</div><span class="sl-prev">${p?`${p.kg}×${p.reps}`:'—'}</span><input class="sl-cell" id="${EL.exId}-k${si}" type="number" placeholder="${EL.kg||'—'}" step="2.5" inputmode="decimal" onchange="wkSave('${EL.exId}',${si})"><input class="sl-cell" id="${EL.exId}-p${si}" type="number" placeholder="${p?p.reps:'—'}" step="1" inputmode="numeric" onchange="wkSave('${EL.exId}',${si})"><button class="sl-check" id="${EL.exId}-c${si}" onclick="wkCheck('${EL.exId}',${si},'${ex.name.replace(/'/g,"\\'")}')"></button>`;
+        d.innerHTML=`<div class="sl-num">${si}</div><span class="sl-prev">${p?`${p.kg}×${p.reps}`:'—'}</span><input class="sl-cell" id="${EL.exId}-k${si}" type="number" placeholder="${EL.kg||'—'}" step="2.5" inputmode="decimal" onchange="wkSave('${EL.exId}',${si})"><input class="sl-cell" id="${EL.exId}-p${si}" type="number" placeholder="${p?p.reps:'—'}" step="1" inputmode="numeric" onchange="wkSave('${EL.exId}',${si})"><input class="sl-rir" id="${EL.exId}-rir${si}" type="number" placeholder="RIR" min="0" max="10" inputmode="numeric" onchange="wkSave('${EL.exId}',${si})"><button class="sl-check" id="${EL.exId}-c${si}" onclick="wkCheck('${EL.exId}',${si},'${ex.name.replace(/'/g,"\\'")}')"></button>`;
         rowsEl.appendChild(d);
       }
       // Update all unfilled kg placeholders
