@@ -1517,14 +1517,30 @@ function rtClose(){
 }
 
 /* ── PROGRESS CHART ── */
-let PC={id:null,name:null,mode:'kg'};
-function pcOpen(id,name){PC={id,name,mode:'kg'};document.getElementById('pc-title').textContent=name;document.querySelectorAll('.pc-tab').forEach((t,i)=>t.classList.toggle('on',i===0));pcRender();shOpen('pc');}
+let PC={id:null,name:null,mode:'kg',lid:null};
+function pcOpen(id,name,lid){PC={id,name,mode:'kg',lid:lid||null};document.getElementById('pc-title').textContent=name;document.querySelectorAll('.pc-tab').forEach((t,i)=>t.classList.toggle('on',i===0));
+  // Cardio: rename tabs
+  const isCardio=BLIB.find(l=>l.id===lid)?.type==='cardio';
+  const tabs=document.querySelectorAll('.pc-tab');
+  if(isCardio&&tabs.length>=3){tabs[0].textContent='Durasi';tabs[1].textContent='Incline';tabs[2].textContent='Speed';}
+  else if(tabs.length>=3){tabs[0].textContent='KG';tabs[1].textContent='Reps';tabs[2].textContent='Volume';}
+  pcRender();shOpen('pc');
+}
 function pcClose(){shClose('pc');}
 function pcMode(m,btn){PC.mode=m;document.querySelectorAll('.pc-tab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');pcRender();}
 function pcPts(){
-  const log=loadLog();const td=today();
+  const log=loadLog();
+  const isCardio=BLIB.find(l=>l.id===PC.lid)?.type==='cardio';
   return(log[PC.id]||[]).map(s=>{
     const sets=Object.entries(s).filter(([k])=>!k.startsWith('_'));if(!sets.length)return null;
+    if(isCardio){
+      // Cardio: chart durasi
+      const dur=sets[0]?.[1]?.dur||0;
+      const incline=sets[0]?.[1]?.incline;
+      const speed=sets[0]?.[1]?.speed;
+      const d=new Date(s._date+'T00:00:00');const lbl=!isNaN(d)?(d.getMonth()+1)+'/'+d.getDate():s._date.slice(5);
+      return dur>0?{date:s._date,lbl,kg:dur,reps:incline||0,volume:speed||0,dur,incline,speed}:null;
+    }
     const maxKg=Math.max(...sets.map(([,v])=>v.kg||0));const maxRp=Math.max(...sets.map(([,v])=>v.reps||0));
     const vol=sets.reduce((a,[,v])=>a+(v.kg||0)*(v.reps||0),0);
     const d=new Date(s._date+'T00:00:00');const lbl=!isNaN(d)?(d.getMonth()+1)+'/'+d.getDate():s._date.slice(5);
@@ -1535,13 +1551,15 @@ function pcRender(){
   const pts=pcPts();const svg=document.getElementById('pc-svg');if(!svg)return;
   document.getElementById('pc-sub').textContent=pts.length?pts[0].lbl+(pts.length>1?' — '+pts[pts.length-1].lbl:''):'';
   // 1RM
-  const rm=getBest1RM(PC.id);const rmWrap=document.getElementById('pc-1rm-wrap');
+  const isCardio=BLIB.find(l=>l.id===PC.lid)?.type==='cardio';
+  const rm=isCardio?0:getBest1RM(PC.id);const rmWrap=document.getElementById('pc-1rm-wrap');
   if(rmWrap){rmWrap.style.display=rm>0?'flex':'none';if(rm>0)document.getElementById('pc-1rm-val').textContent=rm+' kg';}
   if(!pts.length){svg.innerHTML='<text x="220" y="75" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="var(--ink3)" letter-spacing="2">NO DATA YET</text>';['pc-best','pc-sess','pc-trend'].forEach(id=>document.getElementById(id).textContent='—');return;}
   const vals=pts.map(p=>p[PC.mode]);const mn=Math.min(...vals),mx=Math.max(...vals);const rng=mx-mn||1;
   const n=pts.length;const W=440,H=150;const PD={t:14,r:14,b:28,l:36};const cW=W-PD.l-PD.r,cH=H-PD.t-PD.b;
   const xO=i=>PD.l+(n===1?cW/2:(i/(n-1))*cW);const yO=v=>PD.t+cH-((v-mn)/rng)*cH;
-  document.getElementById('pc-best').textContent=mx+(PC.mode==='kg'?' kg':PC.mode==='reps'?' reps':' vol');
+  const mxLabel=isCardio?(PC.mode==='kg'?mx+' min':PC.mode==='reps'?mx+'%':mx+' km/h'):(PC.mode==='kg'?mx+' kg':PC.mode==='reps'?mx+' reps':mx+' vol');
+  document.getElementById('pc-best').textContent=mxLabel;
   document.getElementById('pc-sess').textContent=n;
   if(n>=2){const d=vals[n-1]-vals[0];const p=((d/(vals[0]||1))*100).toFixed(1);const el=document.getElementById('pc-trend');el.textContent=(d>=0?'+':'')+p+'%';el.className='pc-sv'+(d>0?' lime':d<0?' d':' n');}
   else document.getElementById('pc-trend').textContent='—';
@@ -1602,9 +1620,26 @@ function histNoteToggle(btn){
 }
 function histNoteSave(btn,idx){
   const hist=sg(K.hist,[]);if(!hist[idx])return;
-  const ta=btn.previousElementSibling;const note=ta.value.trim();
+  const body=btn.parentElement;
+  const ta=body.querySelector('.hist-note-edit');
+  const note=ta.value.trim();
   hist[idx].note=note;ss(K.hist,hist);
-  renderHist();toast('✓ Catatan disimpan');
+  // Update DOM in-place, no full re-render
+  let txt=body.querySelector('.hist-note-text');
+  if(note){
+    if(!txt){txt=document.createElement('div');txt.className='hist-note-text';body.insertBefore(txt,ta);}
+    txt.textContent=note;txt.style.display='block';
+  } else {
+    if(txt)txt.style.display='none';
+  }
+  ta.style.display='none';btn.style.display='none';
+  // Update toggle button label
+  const toggle=body.previousElementSibling;
+  if(toggle&&toggle.classList.contains('hist-note-toggle')){
+    toggle.innerHTML=note?'📝 Catatan <span style="font-size:9px;opacity:.6">▾</span>':'✏️ Tambah catatan';
+  }
+  body.classList.remove('open');
+  toast('✓ Catatan disimpan');
 }
 
 /* ── TEMPLATE PICKER ── */
@@ -1747,21 +1782,28 @@ function elPct(p){EL.kg=Math.max(0,Math.round((EL.kg*(1+p/100))/2.5)*2.5);elRefr
 function elSetsAdj(d){EL.sets=Math.max(1,Math.min(20,EL.sets+d));elRefresh();}
 function exEditApply(){
   if(!EL.exId||!WK)return;
-  // Update exercise sets target in sess (in-memory only for this workout)
   const ex=WK.sess.exercises.find(e=>e.id===EL.exId);
   if(ex){
-    const oldSets=ex.sets||2;ex.sets=EL.sets;ex.load=EL.kg;
-    // Sync rows: add missing rows, prefill kg placeholder
+    ex.sets=EL.sets;ex.load=EL.kg;
+    // Persist to program data in localStorage
+    const ps=loadProgs();
+    const prog=ps.find(p=>p.id===WK.progId);
+    if(prog){
+      const sess=prog.sessions?.find(s=>s.id===WK.sessId);
+      const pex=sess?.exercises?.find(e=>e.id===EL.exId);
+      if(pex){pex.sets=EL.sets;pex.load=EL.kg;}
+      saveProgs(ps);
+    }
+    // Sync DOM rows
     const rowsEl=document.getElementById(`${EL.exId}-rows`);
     if(rowsEl){
-      const cur=rowsEl.querySelectorAll('.sl-row').length;
+      const cur=rowsEl.querySelectorAll('.sl-row:not(.warmup)').length;
       for(let si=cur+1;si<=EL.sets;si++){
         const prev=getPrev(EL.exId);const p=prev&&prev[si];
         const d=document.createElement('div');d.className='sl-row';d.id=`${EL.exId}-r${si}`;
         d.innerHTML=`<div class="sl-num">${si}</div><span class="sl-prev">${p?`${p.kg}×${p.reps}`:'—'}</span><input class="sl-cell" id="${EL.exId}-k${si}" type="number" placeholder="${EL.kg||'—'}" step="2.5" inputmode="decimal" onchange="wkSave('${EL.exId}',${si})"><input class="sl-cell" id="${EL.exId}-p${si}" type="number" placeholder="${p?p.reps:'—'}" step="1" inputmode="numeric" onchange="wkSave('${EL.exId}',${si})"><input class="sl-rir" id="${EL.exId}-rir${si}" type="number" placeholder="RIR" min="0" max="10" inputmode="numeric" onchange="wkSave('${EL.exId}',${si})"><button class="sl-check" id="${EL.exId}-c${si}" onclick="wkCheck('${EL.exId}',${si},'${ex.name.replace(/'/g,"\\'")}')"></button>`;
         rowsEl.appendChild(d);
       }
-      // Update all unfilled kg placeholders
       for(let si=1;si<=EL.sets;si++){
         const inp=document.getElementById(`${EL.exId}-k${si}`);
         if(inp&&!inp.value)inp.placeholder=EL.kg||'—';
@@ -1769,7 +1811,7 @@ function exEditApply(){
     }
     wkUpdateProg();
   }
-  exEditClose();toast(`✓ Beban → ${EL.kg}kg · ${EL.sets} sets`);
+  exEditClose();toast(`✓ Tersimpan — ${EL.kg}kg · ${EL.sets} sets`);
 }
 
 /* ── SHARE PROGRESS (Canvas API) ── */
