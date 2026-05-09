@@ -1086,9 +1086,8 @@ function renderOverload(prog){
 function renderHeatmap(){
   const wrap=document.getElementById('h-heatmap-wrap');const grid=document.getElementById('h-hm-grid');
   if(!wrap||!grid)return;
-  const log=loadLog();const DAYS=105;// 15 weeks
-  const td=today();
-  // Build daily sets map
+  wrap.style.display='block';
+  const log=loadLog();const DAYS=105;const td=today();
   const daily={};
   Object.values(log).forEach(entries=>entries.forEach(s=>{
     const d=s._date;if(!d)return;
@@ -1096,21 +1095,19 @@ function renderHeatmap(){
     daily[d]=(daily[d]||0)+cnt;
   }));
   const vals=Object.values(daily).filter(v=>v>0);
-  if(!vals.length){wrap.style.display='none';return;}
-  wrap.style.display='block';
-  const max=Math.max(...vals);
+  const max=vals.length?Math.max(...vals):1;
   const level=v=>{if(!v)return 0;const p=v/max;return p<.2?1:p<.45?2:p<.75?3:4;};
-  // Start from DAYS ago (align to Sunday)
   const start=new Date();start.setDate(start.getDate()-DAYS+1);start.setHours(0,0,0,0);
   let cells='';
   for(let i=0;i<DAYS;i++){
     const d=new Date(start);d.setDate(d.getDate()+i);
     const ds=d.toISOString().slice(0,10);const sets=daily[ds]||0;
-    const isToday=ds===td;const lv=level(sets);
-    const isFut=ds>td;
+    const isToday=ds===td;const lv=level(sets);const isFut=ds>td;
     cells+=`<div class="hm-cell l${isFut?'0':lv}${isToday?' today':''}${isFut?' rest':''}" title="${ds}${sets?' · '+sets+' sets':''}" onclick="hmTap('${ds}',${sets})"></div>`;
   }
   grid.innerHTML=cells;
+  const lbl=document.getElementById('h-hm-lbl');
+  if(lbl&&!vals.length)lbl.textContent='Mulai workout untuk isi heatmap 💪';
 }
 function hmTap(date,sets){
   const lbl=document.getElementById('h-hm-lbl');if(!lbl)return;
