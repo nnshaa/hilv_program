@@ -234,6 +234,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .hist-note-save{font-size:11px;padding:5px 12px;margin-top:6px}
 
 /* ── FINISH WORKOUT NOTES ── */
+/* ── CARDIO BLOCK ── */
+.cardio-block{padding:14px 16px;display:flex;flex-direction:column;gap:14px}
+.cardio-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.cardio-field{display:flex;flex-direction:column;gap:4px}
+.cardio-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);font-family:'DM Mono',monospace;text-align:center}
+.cardio-input{background:var(--bg2);border:1.5px solid var(--edge);border-radius:8px;color:var(--ink);font-size:20px;font-weight:700;font-family:'DM Mono',monospace;text-align:center;padding:10px 4px;transition:border-color .2s;width:100%;box-sizing:border-box;-moz-appearance:textfield}
+.cardio-input:focus{outline:none;border-color:rgba(200,240,58,.4);color:var(--lime)}
+.cardio-input::-webkit-inner-spin-button,.cardio-input::-webkit-outer-spin-button{-webkit-appearance:none}
+.cardio-unit{font-size:10px;color:var(--ink3);text-align:center;font-family:'DM Mono',monospace;margin-top:2px}
+.cardio-timer-row{display:flex;align-items:center;gap:10px}
+.cardio-countdown{font-family:'DM Mono',monospace;font-size:34px;font-weight:700;color:var(--lime);min-width:88px;letter-spacing:.03em;transition:color .3s}
+.cardio-countdown.done-col{color:var(--ink3)}
+@keyframes pulse-lime{0%,100%{opacity:1}50%{opacity:.55}}
+.cardio-countdown.running{animation:pulse-lime 1.8s ease-in-out infinite}
+.cardio-tbtn{height:44px;padding:0 18px;border-radius:10px;border:1.5px solid rgba(200,240,58,.3);background:rgba(200,240,58,.07);color:var(--lime);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;flex-shrink:0}
+.cardio-tbtn:hover{background:rgba(200,240,58,.15);border-color:rgba(200,240,58,.5)}
+.cardio-tbtn.stop{border-color:rgba(255,80,80,.3);background:rgba(255,80,80,.06);color:#ff6060}
+.cardio-tbtn.reset{border-color:var(--edge);background:var(--bg2);color:var(--ink3);padding:0 12px}
+.cardio-done-row{display:flex;align-items:center;gap:8px}
+.cardio-chk{height:44px;border-radius:10px;border:1.5px solid var(--edge);background:var(--bg2);color:var(--ink3);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;flex:1}
+.cardio-chk.done{background:var(--lime);border-color:var(--lime);color:#0C0C0F;box-shadow:0 0 16px rgba(200,240,58,.25)}
+.cardio-prev{font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace;text-align:right}
+
 .fn-label{font-size:13px;color:var(--ink2);margin-bottom:8px;font-weight:500}
 .fn-textarea{width:100%;background:var(--bg2);border:1.5px solid var(--edge);border-radius:10px;color:var(--ink);font-size:13px;padding:10px 12px;resize:none;font-family:'DM Sans',sans-serif;min-height:80px;transition:border-color .2s;box-sizing:border-box}
 .fn-textarea:focus{outline:none;border-color:rgba(200,240,58,.35)}
@@ -830,12 +853,12 @@ const BLIB=[
   {id:'l89',name:'Russian Twist',muscle:'Core',emoji:'🔥'},
   {id:'l90',name:'Side Plank',muscle:'Core',emoji:'🔥'},
   /* Cardio */
-  {id:'l38',name:'Incline Treadmill Walk',muscle:'Cardio',emoji:'🚶'},
-  {id:'l39',name:'Stationary Bike',muscle:'Cardio',emoji:'🚴'},
-  {id:'l40',name:'Rowing Machine',muscle:'Cardio',emoji:'🚣'},
-  {id:'l91',name:'Stairmaster',muscle:'Cardio',emoji:'🪜'},
-  {id:'l92',name:'Elliptical',muscle:'Cardio',emoji:'🏃'},
-  {id:'l93',name:'Jump Rope',muscle:'Cardio',emoji:'🪢'},
+  {id:'l38',name:'Incline Treadmill Walk',muscle:'Cardio',emoji:'🚶',type:'cardio',fields:['dur','incline','speed']},
+  {id:'l39',name:'Stationary Bike',muscle:'Cardio',emoji:'🚴',type:'cardio',fields:['dur','resistance','rpm']},
+  {id:'l40',name:'Rowing Machine',muscle:'Cardio',emoji:'🚣',type:'cardio',fields:['dur','resistance']},
+  {id:'l91',name:'Stairmaster',muscle:'Cardio',emoji:'🪜',type:'cardio',fields:['dur','level']},
+  {id:'l92',name:'Elliptical',muscle:'Cardio',emoji:'🏃',type:'cardio',fields:['dur','resistance']},
+  {id:'l93',name:'Jump Rope',muscle:'Cardio',emoji:'🪢',type:'cardio',fields:['dur','rounds']},
 ];
 function getLib(){const c=sg(K.lib,[]);const ids=new Set(c.map(e=>e.id));return[...BLIB.filter(e=>!ids.has(e.id)),...c]}
 
@@ -851,7 +874,7 @@ const TPLS=[
       {id:'e4',lid:'l12',name:'Single-Arm Cable Lateral Raise',sets:2,reps:'6–10',load:12.5,rir:'RIR 0–1'},
       {id:'e5',lid:'l17',name:'Rope Tricep Pushdown',sets:2,reps:'6–10',load:32.5,rir:'RIR 0–1'},
       {id:'e6',lid:'l20',name:'Incline Dumbbell Curl',sets:2,reps:'6–10',load:20,rir:'RIR 0–1'},
-      {id:'e7',lid:'l38',name:'Incline Treadmill Walk',sets:1,reps:'20 min',load:0,rir:''},
+      {id:'e7',lid:'l38',name:'Incline Treadmill Walk',sets:1,reps:'20 min',load:0,rir:'',type:'cardio',dur:20,incline:8,speed:6},
     ]},
     {id:'s2',name:'Lower A',focus:'Quad · Ham · Adductor · Calf · Core',day:0,exercises:[
       {id:'e8',lid:'l24',name:'Smith Machine Back Squat',sets:2,reps:'6–8',load:110,rir:'RIR 1–2',warmup:{load:65,reps:5}},
@@ -869,7 +892,7 @@ const TPLS=[
       {id:'e18',lid:'l48',name:'Straight-Arm Cable Pulldown',sets:1,reps:'6–10',load:30,rir:'RIR 0–1'},
       {id:'e19',lid:'l55',name:'Single-Arm Reverse Pec Deck Fly',sets:2,reps:'6–10',load:75,rir:'RIR 0–1'},
       {id:'e20',lid:'l22',name:'Alternating Dumbbell Hammer Curl',sets:1,reps:'6–10',load:30,rir:'RIR 0–1'},
-      {id:'e21',lid:'l38',name:'Incline Treadmill Walk',sets:1,reps:'20 min',load:0,rir:''},
+      {id:'e21',lid:'l38',name:'Incline Treadmill Walk',sets:1,reps:'20 min',load:0,rir:'',type:'cardio',dur:20,incline:8,speed:6},
     ]},
     {id:'s4',name:'Lower B',focus:'Ham · Glute · Abductor · Calf · Core',day:3,exercises:[
       {id:'e22',lid:'l28',name:'Barbell Romanian Deadlift',sets:2,reps:'6–8',load:90,rir:'RIR 1–2',warmup:{load:55,reps:5}},
@@ -887,7 +910,7 @@ const TPLS=[
       {id:'e32',lid:'l65',name:'EZ-Bar Preacher Curl',sets:2,reps:'6–10',load:30,rir:'RIR 0–1'},
       {id:'e33',lid:'l66',name:'EZ-Bar Reverse Curl',sets:1,reps:'6–10',load:35,rir:'RIR 0–1'},
       {id:'e34',lid:'l18',name:'Overhead Cable Tricep Extension',sets:2,reps:'6–10',load:37.5,rir:'RIR 0–1'},
-      {id:'e35',lid:'l38',name:'Incline Treadmill Walk',sets:1,reps:'20 min',load:0,rir:''},
+      {id:'e35',lid:'l38',name:'Incline Treadmill Walk',sets:1,reps:'20 min',load:0,rir:'',type:'cardio',dur:20,incline:8,speed:6},
     ]},
   ]},
   {id:'ppl',name:'PPL 6 Days',emoji:'⚡',goal:'bulking',desc:'6 hari/minggu · Push Pull Legs · Volume tinggi.',tags:['Bulking','6 Days','PPL'],
@@ -1174,10 +1197,53 @@ function renderWorkout(){
 }
 function makeExBlock(ex,idx){
   const div=document.createElement('div');div.className='ex-block';
-  const prev=getPrev(ex.id);const sc=ex.sets||2;
-  const wu=ex.warmup;// {load, reps} or undefined
+  const isCardio=ex.type==='cardio'||ex.muscle==='Cardio'||
+    (BLIB.find(l=>l.id===ex.lid)?.type==='cardio');
 
-  // Warm-up row
+  if(isCardio){
+    const prev=getPrev(ex.id);const lp=prev&&prev[1];
+    // Fields: dur always + incline+speed for treadmill, resistance for others
+    const hasIncline='incline'in ex||ex.lid==='l38';
+    const hasSpeed='speed'in ex||ex.lid==='l38';
+    const durVal=ex.dur||20;const inclineVal=ex.incline??8;const speedVal=ex.speed??6;
+    const prevStr=lp?`Prev: ${lp.dur||'?'}min${lp.incline!=null?' · '+lp.incline+'%':''}${lp.speed!=null?' · '+lp.speed+'km/h':''}`:null;
+    const field2=hasIncline
+      ?`<div class="cardio-field"><div class="cardio-lbl">Incline %</div><input class="cardio-input" id="${ex.id}-incline" type="number" value="${inclineVal}" step="1" min="0" max="30" inputmode="decimal" onchange="wkSaveCardio('${ex.id}')"><div class="cardio-unit">%</div></div>`
+      :'';
+    const field3=hasSpeed
+      ?`<div class="cardio-field"><div class="cardio-lbl">Speed</div><input class="cardio-input" id="${ex.id}-speed" type="number" value="${speedVal}" step="0.5" min="1" max="20" inputmode="decimal" onchange="wkSaveCardio('${ex.id}')"><div class="cardio-unit">km/h</div></div>`
+      :'';
+    div.innerHTML=`
+      <div class="ex-hd">
+        <div class="ex-num">${String(idx+1).padStart(2,'0')}</div>
+        <div class="ex-name"><span class="ex-name-text">🚶 ${ex.name}</span></div>
+        <div style="display:flex;gap:6px;align-items:center"><span class="pill pill-muted" style="font-size:10px">Cardio</span></div>
+      </div>
+      <div class="cardio-block">
+        <div class="cardio-fields">
+          <div class="cardio-field">
+            <div class="cardio-lbl">Durasi</div>
+            <input class="cardio-input" id="${ex.id}-dur" type="number" value="${durVal}" step="1" min="1" max="180" inputmode="numeric" onchange="wkSaveCardio('${ex.id}')">
+            <div class="cardio-unit">menit</div>
+          </div>
+          ${field2}${field3}
+        </div>
+        <div class="cardio-timer-row">
+          <div class="cardio-countdown" id="${ex.id}-cd">—:——</div>
+          <button class="cardio-tbtn" id="${ex.id}-tbtn" onclick="cardioTimerToggle('${ex.id}')">▶ Start</button>
+          <button class="cardio-tbtn reset" onclick="cardioTimerReset('${ex.id}')" title="Reset">↺</button>
+        </div>
+        <div class="cardio-done-row">
+          <button class="cardio-chk" id="${ex.id}-done" onclick="cardioCheck('${ex.id}','${ex.name.replace(/'/g,"\\'")}')">✓ Selesai</button>
+          ${prevStr?`<div class="cardio-prev">${prevStr}</div>`:''}
+        </div>
+      </div>`;
+    return div;
+  }
+
+  // ── STRENGTH BLOCK (original) ──
+  const prev=getPrev(ex.id);const sc=ex.sets||2;
+  const wu=ex.warmup;
   let warmupRow='';
   if(wu){
     const wid=`${ex.id}-w`;
@@ -1190,15 +1256,12 @@ function makeExBlock(ex,idx){
       `<button class="sl-check" id="${wid}-c" onclick="wkCheckWu('${ex.id}','${ex.name.replace(/'/g,"\\'")}')"></button>` +
       `</div>`;
   }
-
-  // Working sets
   let rows='';
   for(let si=1;si<=sc;si++){
     const p=prev&&prev[si];const pt=p?`${p.kg}×${p.reps}`:'—';
     const dl=getDeload();const baseLoad=ex.load||0;const sugKg=dl?Math.round((baseLoad*(1-dl/100))/2.5)*2.5:baseLoad;
     rows+=`<div class="sl-row" id="${ex.id}-r${si}"><div class="sl-num">${si}</div><span class="sl-prev">${pt}</span><input class="sl-cell" id="${ex.id}-k${si}" type="number" placeholder="${p?p.kg:(sugKg||'—')}" step="2.5" inputmode="decimal" onchange="wkSave('${ex.id}',${si})"><input class="sl-cell" id="${ex.id}-p${si}" type="number" placeholder="${p?p.reps:'—'}" step="1" inputmode="numeric" onchange="wkSave('${ex.id}',${si})"><input class="sl-rir" id="${ex.id}-rir${si}" type="number" placeholder="RIR" min="0" max="10" inputmode="numeric" onchange="wkSave('${ex.id}',${si})"><button class="sl-check" id="${ex.id}-c${si}" onclick="wkCheck('${ex.id}',${si},'${ex.name.replace(/'/g,"\\'")}')"></button></div>`;
   }
-
   div.innerHTML=`<div class="ex-hd"><div class="ex-num">${String(idx+1).padStart(2,'0')}</div><div class="ex-name" onclick="pcOpen('${ex.id}','${ex.name.replace(/'/g,"\\'")}')"><span class="ex-name-text">${ex.name}</span></div><div style="display:flex;align-items:center;gap:6px">${ex.rir?`<span class="pill pill-muted" style="font-size:10px">${ex.rir}</span>`:''}<button class="ex-edit-btn" onclick="event.stopPropagation();exEditOpen('${ex.id}','${ex.name.replace(/'/g,"\\'")}',${ex.sets||2},${ex.load||0})" title="Edit beban">⊕</button></div></div><div class="sl-head"><span>Set</span><span>Previous</span><span>KG</span><span>Reps</span><span style="font-size:9px">RIR</span><span>✓</span></div><div id="${ex.id}-rows">${warmupRow}${rows}</div><button class="sl-add" onclick="wkAddSet('${ex.id}')">Add Set</button><div class="sl-note-row"><textarea class="sl-note" id="${ex.id}-note" placeholder="Notes, RPE…" rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea></div>`;
   return div;
 }
@@ -1252,7 +1315,72 @@ function wkAddSet(exId){
   rowsEl.appendChild(d);
 }
 
-/* ── DELOAD ── */
+/* ── CARDIO TIMER ── */
+const CARDIO_TMRS={};// exId → {tmr, remaining, total}
+function cardioFmtTime(sec){const m=Math.floor(sec/60);const s=sec%60;return`${m}:${String(s).padStart(2,'0')}`;}
+function cardioTimerToggle(exId){
+  const state=CARDIO_TMRS[exId];const btn=document.getElementById(`${exId}-tbtn`);const cd=document.getElementById(`${exId}-cd`);
+  if(state&&state.tmr){
+    // Pause
+    clearInterval(state.tmr);state.tmr=null;
+    btn.textContent='▶ Lanjut';btn.classList.remove('stop');
+    cd.classList.remove('running');
+  } else {
+    // Start / resume
+    const durEl=document.getElementById(`${exId}-dur`);
+    const totalSec=(parseFloat(durEl?.value)||20)*60;
+    if(!CARDIO_TMRS[exId])CARDIO_TMRS[exId]={remaining:totalSec,total:totalSec,tmr:null};
+    const s=CARDIO_TMRS[exId];
+    if(s.remaining<=0){s.remaining=totalSec;s.total=totalSec;}
+    cd.textContent=cardioFmtTime(s.remaining);cd.classList.add('running');
+    btn.textContent='⏸ Pause';btn.classList.add('stop');
+    s.tmr=setInterval(()=>{
+      s.remaining--;
+      const cdEl=document.getElementById(`${exId}-cd`);
+      if(!cdEl){clearInterval(s.tmr);return;}
+      cdEl.textContent=cardioFmtTime(Math.max(0,s.remaining));
+      if(s.remaining<=0){
+        clearInterval(s.tmr);s.tmr=null;
+        cdEl.classList.remove('running');cdEl.classList.add('done-col');
+        const b=document.getElementById(`${exId}-tbtn`);if(b){b.textContent='✓ Done';b.classList.remove('stop');}
+        toast('✅ Cardio selesai!');if(navigator.vibrate)navigator.vibrate([60,40,120]);
+      }
+    },1000);
+  }
+}
+function cardioTimerReset(exId){
+  const state=CARDIO_TMRS[exId];
+  if(state?.tmr)clearInterval(state.tmr);
+  delete CARDIO_TMRS[exId];
+  const durEl=document.getElementById(`${exId}-dur`);const total=(parseFloat(durEl?.value)||20)*60;
+  const cd=document.getElementById(`${exId}-cd`);if(cd){cd.textContent=cardioFmtTime(total);cd.classList.remove('running','done-col');}
+  const btn=document.getElementById(`${exId}-tbtn`);if(btn){btn.textContent='▶ Start';btn.classList.remove('stop');}
+}
+function wkSaveCardio(exId){
+  const dur=parseFloat(document.getElementById(`${exId}-dur`)?.value)||0;
+  const incline=parseFloat(document.getElementById(`${exId}-incline`)?.value??'');
+  const speed=parseFloat(document.getElementById(`${exId}-speed`)?.value??'');
+  if(!WK.states[exId])WK.states[exId]={};
+  WK.states[exId][1]={dur,...(!isNaN(incline)?{incline}:{}),...(!isNaN(speed)?{speed}:{})};
+  // Also reset timer if dur changed
+  const state=CARDIO_TMRS[exId];if(state&&!state.tmr){delete CARDIO_TMRS[exId];cardioTimerReset(exId);}
+}
+function cardioCheck(exId,name){
+  const btn=document.getElementById(`${exId}-done`);if(!btn)return;
+  const isDone=btn.classList.toggle('done');
+  btn.textContent=isDone?'✓ Selesai ✓':'✓ Selesai';
+  if(!WK.states[exId])WK.states[exId]={};
+  const dur=parseFloat(document.getElementById(`${exId}-dur`)?.value)||0;
+  const incline=parseFloat(document.getElementById(`${exId}-incline`)?.value??'');
+  const speed=parseFloat(document.getElementById(`${exId}-speed`)?.value??'');
+  if(isDone){
+    WK.states[exId][1]={dur,...(!isNaN(incline)?{incline}:{}),...(!isNaN(speed)?{speed}:{}),done:true};
+    // Stop timer if running
+    const st=CARDIO_TMRS[exId];if(st?.tmr){clearInterval(st.tmr);st.tmr=null;}
+    wkPersist(exId);if(navigator.vibrate)navigator.vibrate(20);
+  } else {delete WK.states[exId][1];wkPersist(exId);}
+  wkUpdateProg();
+}
 function getDeload(){const d=sg(K.deload,null);return d?.pct?d:null;}
 function setDeload(pct){ss(K.deload,{pct,date:today()});renderDeloadBanner();toast(`⚡ Deload ON — beban −${pct}%`);}
 function clearDeload(){ss(K.deload,null);renderDeloadBanner();toast('✓ Deload selesai! Kembali ke beban normal.');}
@@ -1303,7 +1431,10 @@ function getOverloadSuggestions(prog){
 }
 function wkUpdateProg(){
   if(!WK)return;
-  const total=(WK.sess.exercises||[]).reduce((a,ex)=>a+(ex.sets||2),0);
+  const total=(WK.sess.exercises||[]).reduce((a,ex)=>{
+    const isCardio=ex.type==='cardio'||(BLIB.find(l=>l.id===ex.lid)?.type==='cardio');
+    return a+(isCardio?1:ex.sets||2);
+  },0);
   let done=0;Object.values(WK.states).forEach(es=>Object.entries(es).forEach(([k,v])=>{if(!k.startsWith('_')&&v.done)done++;}));
   const el=document.getElementById('wk-pf');if(el)el.style.width=(total?Math.round(done/total*100):0)+'%';
 }
