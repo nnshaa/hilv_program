@@ -1856,6 +1856,10 @@ function navTo(v){
   document.getElementById('view-'+v).classList.add('active');
   document.getElementById('nav-'+v).classList.add('active');
   CUR=v;
+  // If leaving workout mid-session, flush all checked sets to storage so heatmap is current
+  if(v==='home'&&WK){
+    Object.keys(WK.states).forEach(exId=>wkPersist(exId));
+  }
   if(v==='home')renderHome();
   if(v==='program')renderProgView();
   if(v==='history')renderHist();
