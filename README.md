@@ -120,6 +120,22 @@ python3 -m http.server 8000
 
 ## Changelog
 
+### [4.6.0] — 2026-05-09
+
+**Body Measurement Tracker + Bug Fixes**
+
+- 6 measurement types: Pinggang · Dada · Pinggul · Lengan · Paha · Betis
+- Tab switcher horizontal di Home, di bawah Body Weight
+- Summary: Sekarang · Total Delta · Best · sparkline chart
+- Delta per entry: turun = lime (bagus untuk cutting), naik = merah
+- Storage `gl_ms`, included di backup/restore
+- Fix: `exEditApply` sekarang persist ke localStorage
+- Fix: Progress chart cardio — tampil durasi/incline/speed bukan kg
+- Fix: `histNoteSave` update DOM in-place, tidak re-render seluruh list
+- Fix: `pcOpen` pass `lid` ke PC state untuk detect cardio
+
+---
+
 ### [4.5.2] — 2026-05-09
 
 **Fix: Cardio Block · Workout Timer · Total Waktu Editable**
