@@ -565,7 +565,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
     </div>
     <div class="sec-label">Body Weight</div>
     <div class="card card-pad">
-      <div class="bw-row"><input class="bw-input" id="bw-input" type="number" placeholder="70.0" step="0.1" inputmode="decimal"><span class="bw-unit">kg</span><button class="bw-log-btn" onclick="bwLog()">Log</button></div>
+      <div class="bw-row">
+        <input class="bw-input" id="bw-input" type="number" placeholder="70.0" step="0.1" inputmode="decimal">
+        <span class="bw-unit">kg</span>
+        <button class="bw-log-btn" onclick="bwLog()">Log</button>
+      </div>
+      <div style="margin:-6px 0 10px">
+        <input type="date" id="bw-date" style="background:var(--bg2);border:1px solid var(--edge);border-radius:8px;color:var(--ink2);font-size:11px;font-family:'DM Mono',monospace;padding:5px 10px;outline:none;width:100%;box-sizing:border-box">
+      </div>
       <div id="bw-list"></div>
     </div>
 
@@ -583,7 +590,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 
 <!-- HISTORY -->
 <div class="view page" id="view-history">
-  <div class="topbar"><div class="topbar-title">History</div></div>
+  <div class="topbar"><div class="topbar-title">History</div><button class="icon-btn" onclick="histManualOpen()" title="Log manual">＋</button></div>
   <div class="wrap" id="hist-wrap"></div>
 </div>
 
@@ -742,6 +749,40 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
   <div class="sheet-footer">
     <button class="btn btn-secondary" onclick="fnClose()">Lewati</button>
     <button class="btn btn-primary" onclick="fnSave()">Simpan & Selesai</button>
+  </div>
+</div>
+
+<!-- MANUAL HISTORY LOG SHEET -->
+<div class="backdrop" id="hm-bd" onclick="histManualClose()"></div>
+<div class="sheet" id="hm-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-hd"><div class="sheet-title">📝 Log Manual</div><button class="sheet-close" onclick="histManualClose()">✕</button></div>
+  <div class="sheet-body" style="display:flex;flex-direction:column;gap:12px">
+    <div class="field">
+      <label class="field-label">Tanggal</label>
+      <input type="date" id="hm-date" class="field-input" style="font-family:'DM Mono',monospace">
+    </div>
+    <div class="field">
+      <label class="field-label">Nama Sesi</label>
+      <input type="text" id="hm-name" class="field-input" placeholder="Upper A, Lower B, dst…">
+    </div>
+    <div class="field">
+      <label class="field-label">Durasi</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="number" id="hm-min" class="field-input" placeholder="45" min="0" max="300" inputmode="numeric" style="text-align:center;font-family:'DM Mono',monospace;font-size:18px;font-weight:700">
+        <span style="color:var(--ink3);font-weight:600">:</span>
+        <input type="number" id="hm-sec" class="field-input" placeholder="00" min="0" max="59" inputmode="numeric" style="text-align:center;font-family:'DM Mono',monospace;font-size:18px;font-weight:700">
+        <span style="font-size:12px;color:var(--ink3);white-space:nowrap">min · sek</span>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Catatan (opsional)</label>
+      <textarea id="hm-note" class="field-input" placeholder="PR baru, kondisi hari ini…" rows="2" style="resize:none;line-height:1.5"></textarea>
+    </div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn btn-secondary" onclick="histManualClose()">Batal</button>
+    <button class="btn btn-primary" onclick="histManualSave()">Simpan</button>
   </div>
 </div>
 
@@ -1031,16 +1072,24 @@ function showPR(name,val){
 
 /* ── BW ── */
 function loadBW(){return sg(K.bw,[])}
+function bwDateInit(){
+  const el=document.getElementById('bw-date');
+  if(el&&!el.value)el.value=today();
+}
 function bwLog(){
   const inp=document.getElementById('bw-input');const kg=parseFloat(inp.value);
   if(!kg||kg<20||kg>400){inp.focus();return;}
-  const data=loadBW();const td=today();
-  const idx=data.findIndex(e=>e.date===td);
-  if(idx>=0)data[idx].kg=kg;else{data.push({date:td,kg});data.sort((a,b)=>a.date<b.date?-1:1);if(data.length>90)data.splice(0,data.length-90);}
+  const dateEl=document.getElementById('bw-date');
+  const date=dateEl?.value||today();
+  const data=loadBW();
+  const idx=data.findIndex(e=>e.date===date);
+  if(idx>=0)data[idx].kg=kg;else{data.push({date,kg});data.sort((a,b)=>a.date<b.date?-1:1);if(data.length>90)data.splice(0,data.length-90);}
   ss(K.bw,data);inp.value='';renderBW();renderStats();
-  toast(`⚖️ ${kg} kg`);
+  const isBackdate=date!==today();
+  toast(`⚖️ ${kg} kg${isBackdate?' ('+date+')':''}`);
 }
 function renderBW(){
+  bwDateInit();
   const data=loadBW();const el=document.getElementById('bw-list');if(!el)return;
   if(!data.length){el.innerHTML='<div style="font-size:12px;color:var(--ink3);text-align:center;padding:8px 0">Belum ada data</div>';return;}
   el.innerHTML=data.slice(-5).reverse().map((e,i,a)=>{
@@ -1595,12 +1644,17 @@ function renderHist(){
   if(!hist.length){w.innerHTML=`<div class="empty-state"><div class="empty-state-icon">📈</div>Selesaikan workout pertamamu.<br><br><span style="font-size:11px;color:var(--ink3)">Tap nama exercise di workout untuk progress chart</span></div>`;return;}
   w.innerHTML=hist.slice(0,30).map((h,i)=>{
     const dur=h.el?`${Math.floor(h.el/60)}m ${h.el%60}s`:'—';
+    const manualBadge=h.manual?`<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(96,165,250,.12);color:var(--blue);font-weight:600;border:1px solid rgba(96,165,250,.2)">manual</span>`:'';
+    const delBtn=`<button onclick="histDelete(${i})" style="background:none;border:none;color:var(--ink3);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0" title="Hapus">✕</button>`;
     const noteHtml=h.note
       ?`<button class="hist-note-toggle" onclick="histNoteToggle(this)">📝 Catatan <span style="font-size:9px;opacity:.6">▾</span></button><div class="hist-note-body"><div class="hist-note-text">${h.note.replace(/</g,'&lt;')}</div><textarea class="hist-note-edit" placeholder="Edit catatan…" rows="2" style="display:none">${h.note.replace(/</g,'&lt;')}</textarea><button class="btn btn-secondary hist-note-save" style="display:none" onclick="histNoteSave(this,${i})">Simpan</button></div>`
       :`<button class="hist-note-toggle" onclick="histNoteToggle(this)">✏️ Tambah catatan</button><div class="hist-note-body"><textarea class="hist-note-edit" placeholder="Kondisi hari ini, PR, catatan…" rows="2"></textarea><button class="btn btn-secondary hist-note-save" onclick="histNoteSave(this,${i})">Simpan</button></div>`;
     return`<div class="hist-date-lbl">${h.dateLbl||h.date||''}</div>
     <div class="hist-card">
-      <div class="hist-hd"><div class="hist-name">${h.prog?`<span style="color:var(--ink3);font-size:11px">${h.prog} — </span>`:''}${h.name}</div><div class="hist-time">${dur}</div></div>
+      <div class="hist-hd">
+        <div class="hist-name">${h.prog?`<span style="color:var(--ink3);font-size:11px">${h.prog} — </span>`:''}${h.name} ${manualBadge}</div>
+        <div style="display:flex;align-items:center;gap:6px"><div class="hist-time">${dur}</div>${delBtn}</div>
+      </div>
       <div style="font-size:12px;color:var(--ink3)">${h.exs||0} exercise · ${h.sets||0} sets</div>
       ${noteHtml}
     </div>`;
@@ -1643,7 +1697,48 @@ function histNoteSave(btn,idx){
   toast('✓ Catatan disimpan');
 }
 
-/* ── TEMPLATE PICKER ── */
+/* ── MANUAL HISTORY LOG ── */
+function histManualOpen(){
+  document.getElementById('hm-date').value=today();
+  document.getElementById('hm-name').value='';
+  document.getElementById('hm-min').value='';
+  document.getElementById('hm-sec').value='';
+  document.getElementById('hm-note').value='';
+  const prog=getActiveProg();
+  if(prog?.sessions?.length){
+    document.getElementById('hm-name').placeholder=prog.sessions.map(s=>s.name).join(', ')+'…';
+  }
+  shOpen('hm');
+}
+function histManualClose(){shClose('hm');}
+function histManualSave(){
+  const date=document.getElementById('hm-date').value;
+  const name=document.getElementById('hm-name').value.trim();
+  const min=parseInt(document.getElementById('hm-min').value)||0;
+  const sec=parseInt(document.getElementById('hm-sec').value)||0;
+  const note=document.getElementById('hm-note').value.trim();
+  if(!date){toast('Pilih tanggal dulu');return;}
+  if(!name){toast('Isi nama sesi');document.getElementById('hm-name').focus();return;}
+  const elSec=min*60+sec;
+  const d=new Date(date+'T00:00:00');
+  const dateLbl=d.toLocaleDateString('id-ID',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  const prog=getActiveProg();
+  const hist=sg(K.hist,[]);
+  const entry={date,dateLbl,name,prog:prog?.name||'',el:elSec,exs:0,sets:0,manual:true};
+  if(note)entry.note=note;
+  // Insert sorted by date descending
+  const idx=hist.findIndex(h=>h.date<=date);
+  if(idx>=0)hist.splice(idx,0,entry);else hist.push(entry);
+  if(hist.length>50)hist.pop();
+  ss(K.hist,hist);
+  histManualClose();renderHist();
+  toast(`✓ ${name} (${date}) disimpan`);
+}
+function histDelete(idx){
+  showConf('Hapus log ini?','Data workout ini akan dihapus permanen.',()=>{
+    const hist=sg(K.hist,[]);hist.splice(idx,1);ss(K.hist,hist);renderHist();toast('🗑 Dihapus');
+  });
+}
 function tplOpen(){
   const b=document.getElementById('tpl-body');
   b.innerHTML=TPLS.map(t=>`<div class="tpl-card${t.blank?' blank':''}" onclick="tplSel('${t.id}')"><div class="tpl-icon">${t.emoji}</div><div><div class="tpl-name">${t.name}</div><div class="tpl-desc">${t.desc}</div><div class="tpl-tags">${t.tags.map((tag,i)=>`<span class="pill ${i===0?'pill-lime':i===1?'pill-blue':'pill-amber'}" style="font-size:10px">${tag}</span>`).join('')}</div></div></div>`).join('');
