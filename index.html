@@ -131,11 +131,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .today-start:active{transform:scale(.95)}
 .today-exs{padding:10px 16px 12px}
 .today-ex{font-size:12px;color:var(--ink2);padding:2px 0}
-.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.stat-card{background:var(--bg1);border:1px solid var(--edge);border-radius:var(--r2);padding:14px 16px}
-.stat-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:0}
+.stat-card{background:var(--bg1);border:1px solid var(--edge);border-radius:var(--r2);padding:12px 14px}
+.stat-val{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
 .stat-val.lime{color:var(--lime)}
 .stat-lbl{font-size:10px;color:var(--ink3);margin-top:4px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.stats-tab{padding:5px 14px;border-radius:20px;border:1.5px solid var(--edge);background:var(--bg2);font-size:11px;font-weight:600;color:var(--ink3);cursor:pointer;transition:all .15s;font-family:inherit}
+.stats-tab.on{border-color:var(--lime-edge);background:var(--lime-bg);color:var(--lime)}
 .empty-state{text-align:center;padding:48px 20px;color:var(--ink3);font-size:13px;line-height:1.6}
 .empty-state-icon{font-size:36px;margin-bottom:12px;opacity:.6}
 .today-ex{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--edge2)}
@@ -144,13 +146,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .today-ex-name{flex:1;font-size:13px;font-weight:500}
 .today-ex-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink3)}
 .rest-card{background:var(--bg1);border:1px solid var(--edge);border-radius:var(--r2);padding:28px 16px;text-align:center;margin-bottom:12px}
-.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.stat-card{background:var(--bg1);border:1px solid var(--edge);border-radius:var(--r2);padding:14px}
-.stat-val{font-family:'DM Mono',monospace;font-size:24px;font-weight:600;line-height:1}
-.stat-val.lime{color:var(--lime)}
-.stat-lbl{font-size:11px;color:var(--ink2);margin-top:4px}
-.pr-item{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--edge2)}
-.pr-item:last-child{border-bottom:none}
 .bw-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
 .bw-input{flex:1;padding:12px 14px;background:var(--bg2);border:1.5px solid var(--edge);border-radius:var(--r);color:var(--ink);font-family:'DM Mono',monospace;font-size:20px;font-weight:600;text-align:center;outline:none;transition:border-color .15s;-moz-appearance:textfield}
 .bw-input::-webkit-inner-spin-button{-webkit-appearance:none}
@@ -592,9 +587,32 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
     </div>
 
     <div id="h-today"></div>
-    <div class="stats-row fade-up" id="h-stats" style="display:none">
-      <div class="stat-card"><div class="stat-val lime" id="h-wsets">—</div><div class="stat-lbl">Sets this week</div></div>
-      <div class="stat-card"><div class="stat-val" id="h-bw">—</div><div class="stat-lbl">Body weight</div></div>
+    <div id="h-stats" class="fade-up" style="display:none;margin-bottom:10px">
+      <!-- Tab switcher -->
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <button class="stats-tab on" id="st-day" onclick="statsSw('day')">Hari ini</button>
+        <button class="stats-tab" id="st-week" onclick="statsSw('week')">Minggu</button>
+        <button class="stats-tab" id="st-month" onclick="statsSw('month')">Bulan</button>
+      </div>
+      <!-- Stats grid -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-val lime" id="h-sets">—</div>
+          <div class="stat-lbl" id="h-sets-lbl">Sets</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="h-vol">—</div>
+          <div class="stat-lbl" id="h-vol-lbl">Volume (kg)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="h-exs">—</div>
+          <div class="stat-lbl">Exercises</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="h-bw">—</div>
+          <div class="stat-lbl">Body Weight</div>
+        </div>
+      </div>
     </div>
 
     <!-- VOLUME HEATMAP -->
@@ -1260,13 +1278,52 @@ function renderHomeToday(prog,dow){
   const more=sess.exercises.length>4?`<div style="font-size:12px;color:var(--ink3);padding:8px 0 2px;text-align:center">+${sess.exercises.length-4} more</div>`:'';
   w.innerHTML=`<div class="today-card fade-up"><div class="today-hd"><div class="today-emoji">${prog.emoji||'🏋️'}</div><div class="today-info"><div class="today-name">${sess.name}</div><div class="today-focus">${sess.focus||''}</div></div><button class="today-start" onclick="startWorkout('${prog.id}','${sess.id}')">Start →</button></div><div class="today-exs">${rows}${more}</div></div>`;
 }
+let STATS_MODE='week';
+function statsSw(mode){
+  STATS_MODE=mode;
+  document.querySelectorAll('.stats-tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('st-'+mode)?.classList.add('on');
+  renderStats();
+}
 function renderStats(){
-  const el=document.getElementById('h-stats');const log=loadLog();const bw=loadBW();
-  const ws=new Date();ws.setDate(ws.getDate()-ws.getDay());ws.setHours(0,0,0,0);
-  let sets=0;Object.values(log).forEach(ss2=>ss2.forEach(s=>{const d=new Date(s._date+'T00:00:00');if(d>=ws)sets+=Object.keys(s).filter(k=>!k.startsWith('_')).length;}));
-  document.getElementById('h-wsets').textContent=sets||'—';
+  const el=document.getElementById('h-stats');if(!el)return;
+  const log=loadLog();const bw=loadBW();
+  const now=new Date();const td=today();
+  // Determine date range
+  let fromDate;
+  if(STATS_MODE==='day'){
+    fromDate=td;
+  } else if(STATS_MODE==='week'){
+    const d=new Date(now);d.setDate(d.getDate()-6);d.setHours(0,0,0,0);
+    fromDate=d.toISOString().slice(0,10);
+  } else {
+    const d=new Date(now);d.setDate(d.getDate()-29);d.setHours(0,0,0,0);
+    fromDate=d.toISOString().slice(0,10);
+  }
+  // Aggregate from log
+  let sets=0,volume=0,exsSet=new Set();
+  Object.entries(log).forEach(([exId,entries])=>{
+    entries.forEach(s=>{
+      if(!s._date||s._date<fromDate)return;
+      const setEntries=Object.entries(s).filter(([k])=>!k.startsWith('_'));
+      if(!setEntries.length)return;
+      exsSet.add(exId);
+      setEntries.forEach(([,v])=>{
+        sets++;
+        volume+=((v.kg||0)*(v.reps||0));
+      });
+    });
+  });
+  // Format volume
+  const volFmt=volume>=1000?(volume/1000).toFixed(1)+'t':volume?Math.round(volume)+'':'—';
+  const lbl=STATS_MODE==='day'?'Hari ini':STATS_MODE==='week'?'7 hari':STATS_MODE==='month'?'30 hari':'';
+  document.getElementById('h-sets').textContent=sets||'—';
+  document.getElementById('h-sets-lbl').textContent=`Sets · ${lbl}`;
+  document.getElementById('h-vol').textContent=volFmt;
+  document.getElementById('h-vol-lbl').textContent=`Volume · ${lbl}`;
+  document.getElementById('h-exs').textContent=exsSet.size||'—';
   document.getElementById('h-bw').textContent=bw.length?bw[bw.length-1].kg+' kg':'—';
-  el.style.display='grid';
+  el.style.display='block';
 }
 function renderHomePRs(prog){
   const w=document.getElementById('h-prs-wrap');const l=document.getElementById('h-prs');
