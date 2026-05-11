@@ -588,29 +588,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 
     <div id="h-today"></div>
     <div id="h-stats" class="fade-up" style="display:none;margin-bottom:10px">
-      <!-- Tab switcher -->
-      <div style="display:flex;gap:6px;margin-bottom:8px">
-        <button class="stats-tab on" id="st-day" onclick="statsSw('day')">Hari ini</button>
-        <button class="stats-tab" id="st-week" onclick="statsSw('week')">Minggu</button>
-        <button class="stats-tab" id="st-month" onclick="statsSw('month')">Bulan</button>
-      </div>
-      <!-- Stats grid -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-val lime" id="h-sets">—</div>
-          <div class="stat-lbl" id="h-sets-lbl">Sets</div>
+      <div class="card card-pad" style="padding:14px 16px">
+        <!-- Tab switcher -->
+        <div style="display:flex;gap:6px;margin-bottom:14px">
+          <button class="stats-tab on" id="st-day" onclick="statsSw('day')">Hari ini</button>
+          <button class="stats-tab" id="st-week" onclick="statsSw('week')">7 hari</button>
+          <button class="stats-tab" id="st-month" onclick="statsSw('month')">30 hari</button>
+          <div style="flex:1"></div>
+          <div style="font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace;align-self:center" id="h-bw"></div>
         </div>
-        <div class="stat-card">
-          <div class="stat-val" id="h-vol">—</div>
-          <div class="stat-lbl" id="h-vol-lbl">Volume (kg)</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val" id="h-exs">—</div>
-          <div class="stat-lbl">Exercises</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val" id="h-bw">—</div>
-          <div class="stat-lbl">Body Weight</div>
+        <!-- Stats row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--edge);border-radius:var(--r);overflow:hidden">
+          <div style="padding:12px 10px;border-right:1px solid var(--edge);text-align:center">
+            <div class="stat-val lime" id="h-sets">—</div>
+            <div class="stat-lbl" style="margin-top:3px">Sets</div>
+          </div>
+          <div style="padding:12px 10px;border-right:1px solid var(--edge);text-align:center">
+            <div class="stat-val" id="h-vol">—</div>
+            <div class="stat-lbl" style="margin-top:3px">Volume</div>
+          </div>
+          <div style="padding:12px 10px;text-align:center">
+            <div class="stat-val" id="h-exs">—</div>
+            <div class="stat-lbl" style="margin-top:3px">Exercises</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1318,11 +1318,10 @@ function renderStats(){
   const volFmt=volume>=1000?(volume/1000).toFixed(1)+'t':volume?Math.round(volume)+'':'—';
   const lbl=STATS_MODE==='day'?'Hari ini':STATS_MODE==='week'?'7 hari':STATS_MODE==='month'?'30 hari':'';
   document.getElementById('h-sets').textContent=sets||'—';
-  document.getElementById('h-sets-lbl').textContent=`Sets · ${lbl}`;
   document.getElementById('h-vol').textContent=volFmt;
-  document.getElementById('h-vol-lbl').textContent=`Volume · ${lbl}`;
   document.getElementById('h-exs').textContent=exsSet.size||'—';
-  document.getElementById('h-bw').textContent=bw.length?bw[bw.length-1].kg+' kg':'—';
+  const bwEl=document.getElementById('h-bw');
+  if(bwEl)bwEl.textContent=bw.length?'⚖ '+bw[bw.length-1].kg+' kg':'';
   el.style.display='block';
 }
 function renderHomePRs(prog){
