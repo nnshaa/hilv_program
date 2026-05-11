@@ -526,6 +526,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 @keyframes pr-in{from{opacity:0;transform:scale(.92) translateY(-4px)}to{opacity:1;transform:scale(1)}}
 @keyframes pr-out{from{opacity:1}to{opacity:0;transform:scale(.92) translateY(-4px)}}
 .pr-item-toast{background:rgba(12,12,15,.96);border:1px solid rgba(200,240,58,.3);border-radius:12px;padding:11px 18px;font-size:12px;font-weight:600;color:var(--lime);white-space:nowrap;box-shadow:0 8px 24px rgba(200,240,58,.15);animation:pr-in .22s ease forwards}
+.pr-item{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--edge)}
+.pr-item:last-child{border-bottom:none}
+.pr-star{color:var(--lime);font-size:13px;flex-shrink:0}
+.pr-name{flex:1;font-size:13px;font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pr-meta{text-align:right;flex-shrink:0}
+.pr-kg{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--lime)}
+.pr-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-top:1px}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
@@ -1337,7 +1344,7 @@ function renderHomePRs(prog){
   if(!prs.length){w.style.display='none';return;}
   prs.sort((a,b)=>b.date.localeCompare(a.date));
   w.style.display='block';
-  l.innerHTML=prs.slice(0,4).map(p=>`<div class="pr-item"><div style="color:var(--lime);font-size:14px;flex-shrink:0">★</div><div style="flex:1;font-size:13px;font-weight:500">${p.name}</div><div><div style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:var(--lime)">${p.kg} kg</div><div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)">${p.date}</div></div></div>`).join('');
+  l.innerHTML=prs.slice(0,5).map(p=>`<div class="pr-item"><div class="pr-star">★</div><div class="pr-name">${p.name}</div><div class="pr-meta"><div class="pr-kg">${p.kg} kg</div><div class="pr-date">${p.date}</div></div></div>`).join('');
 }
 
 /* ── WORKOUT ── */
