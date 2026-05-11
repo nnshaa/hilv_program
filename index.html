@@ -252,14 +252,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .hm-lc{width:10px;height:10px;border-radius:2px}
 
 /* ── SESSION NOTES ── */
-.hist-note-toggle{font-size:11px;color:var(--ink3);background:none;border:none;padding:2px 0;cursor:pointer;display:flex;align-items:center;gap:4px;margin-top:6px;font-family:inherit}
-.hist-note-toggle:hover{color:var(--lime)}
-.hist-note-body{margin-top:8px;padding-top:8px;border-top:1px solid var(--edge);display:none}
+.hist-note-toggle{font-size:12px;color:var(--ink2);background:none;border:none;padding:4px 0;cursor:pointer;display:flex;align-items:center;gap:5px;margin-top:6px;font-family:inherit;text-align:left;width:100%}
+.hist-note-toggle:hover{color:var(--ink)}
+.hist-note-body{display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--edge)}
 .hist-note-body.open{display:block}
-.hist-note-text{font-size:12px;color:var(--ink2);line-height:1.5;white-space:pre-wrap;margin-bottom:6px}
-.hist-note-edit{width:100%;background:var(--bg2);border:1.5px solid var(--edge);border-radius:8px;color:var(--ink);font-size:12px;padding:8px 10px;resize:none;font-family:'DM Sans',sans-serif;line-height:1.5;transition:border-color .2s;box-sizing:border-box}
-.hist-note-edit:focus{outline:none;border-color:rgba(200,240,58,.35)}
-.hist-note-save{font-size:11px;padding:5px 12px;margin-top:6px}
+.hist-note-edit{width:100%;background:var(--bg2);border:1.5px solid var(--edge);border-radius:8px;color:var(--ink);font-size:12px;padding:8px 10px;resize:none;font-family:"DM Sans",sans-serif;line-height:1.5;transition:border-color .15s;box-sizing:border-box;outline:none}
+.hist-note-edit:focus{border-color:var(--lime-edge)}
+.hist-act-btn{width:28px;height:28px;border-radius:7px;background:var(--bg2);border:1px solid var(--edge);color:var(--ink3);font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0}
+.hist-act-btn:hover{color:var(--ink);background:var(--bg3)}
+.hist-act-btn.del:hover{color:var(--red);border-color:rgba(248,113,113,.25);background:rgba(248,113,113,.06)}
 
 /* ── FINISH WORKOUT NOTES ── */
 /* ── CARDIO BLOCK ── */
@@ -828,9 +829,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
     <div class="fn-label">Catatan sesi (opsional)</div>
     <textarea class="fn-textarea" id="fn-note" placeholder="Kondisi hari ini, hal yang dirasakan, PR baru…" rows="3"></textarea>
   </div>
-  <div class="sheet-footer">
-    <button class="btn btn-secondary" onclick="fnClose()">Lewati</button>
-    <button class="btn btn-primary" onclick="fnSave()">Simpan & Selesai</button>
+  <div class="sheet-footer" style="flex-direction:column;gap:8px">
+    <div style="display:flex;gap:8px;width:100%">
+      <button class="btn btn-secondary" style="flex:1" onclick="fnClose()">Lewati</button>
+      <button class="btn btn-primary" style="flex:2" onclick="fnSave()">Simpan & Selesai</button>
+    </div>
+    <button class="btn btn-secondary" id="fn-share-btn" style="display:none;gap:6px" onclick="fnShareWorkout()">↑ Share Workout</button>
   </div>
 </div>
 
@@ -882,6 +886,32 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
   <div class="sheet-footer" id="hm-footer">
     <button class="btn btn-secondary" onclick="histManualClose()">Batal</button>
     <button class="btn btn-primary" id="hm-next-btn" onclick="hmNext()">Lanjut →</button>
+  </div>
+</div>
+
+<!-- HISTORY EDIT SHEET -->
+<div class="backdrop" id="he-bd" onclick="histEditClose()"></div>
+<div class="sheet" id="he-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-hd"><div class="sheet-title">Edit Log</div><button class="sheet-close" onclick="histEditClose()">✕</button></div>
+  <div class="sheet-body" style="display:flex;flex-direction:column;gap:12px">
+    <div class="field">
+      <label class="field-label">Nama Sesi</label>
+      <input type="text" id="he-name" class="field-input">
+    </div>
+    <div class="field">
+      <label class="field-label">Durasi</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="number" id="he-min" class="field-input" min="0" max="300" inputmode="numeric" style="text-align:center;font-family:'DM Mono',monospace;font-size:18px;font-weight:700">
+        <span style="color:var(--ink3);font-weight:600;flex-shrink:0">:</span>
+        <input type="number" id="he-sec" class="field-input" min="0" max="59" inputmode="numeric" style="text-align:center;font-family:'DM Mono',monospace;font-size:18px;font-weight:700">
+        <span style="font-size:12px;color:var(--ink3);white-space:nowrap">min · sek</span>
+      </div>
+    </div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn btn-secondary" onclick="histEditClose()">Batal</button>
+    <button class="btn btn-primary" onclick="histEditSave()">Simpan</button>
   </div>
 </div>
 
@@ -1590,9 +1620,12 @@ function finishWK(){
 }
 function fnClose(){
   shClose('fn');
-  if(!WK)return;
-  const elSec=Math.floor((Date.now()-WK.t0)/1000);
-  _doFinish(elSec,'');
+  if(WK){
+    const elSec=Math.floor((Date.now()-WK.t0)/1000);
+    _doFinish(elSec,'');
+  } else {
+    navTo('home');renderHome();
+  }
 }
 function fnSave(){
   const m=parseInt(document.getElementById('fn-min').value)||0;
@@ -1610,9 +1643,22 @@ function _doFinish(elSec,note){
   const entry={date:today(),dateLbl,name:WK.sess.name,prog:WK.prog?.name||'',el:elSec,exs:Object.keys(WK.states).length,sets:totalSets};
   if(note)entry.note=note;
   hist.unshift(entry);if(hist.length>50)hist.pop();ss(K.hist,hist);
+  // Save snapshot for share
+  FN_SNAP={sessName:WK.sess.name,progName:WK.prog?.name||'',elSec,sets:totalSets,exs:Object.keys(WK.states).length,note,date:today()};
   clearInterval(WK_TMR);WK=null;
-  toast('🎉 Workout selesai!');if(navigator.vibrate)navigator.vibrate([40,30,80]);
-  navTo('home');renderHome();
+  // Show share button
+  const shareBtn=document.getElementById('fn-share-btn');
+  if(shareBtn)shareBtn.style.display='flex';
+  if(document.getElementById('fn-sheet')?.classList.contains('show')){
+    // Still on finish sheet — update title and hide save btn
+    document.querySelector('#fn-sheet .sheet-title').textContent='✅ Tersimpan!';
+    document.querySelector('#fn-sheet .sheet-footer .btn-primary').style.display='none';
+    document.querySelector('#fn-sheet .sheet-footer .btn-secondary').textContent='Tutup';
+    document.querySelector('#fn-sheet .sheet-footer .btn-secondary').onclick=()=>{shClose('fn');navTo('home');renderHome();};
+  } else {
+    toast('🎉 Workout selesai!');if(navigator.vibrate)navigator.vibrate([40,30,80]);
+    navTo('home');renderHome();
+  }
 }
 
 /* ── REST TIMER ── */
@@ -1781,33 +1827,39 @@ function renderHist(){
   if(!hist.length){w.innerHTML=`<div class="empty-state"><div class="empty-state-icon">📈</div>Selesaikan workout pertamamu.<br><br><span style="font-size:11px;color:var(--ink3)">Tap nama exercise di workout untuk progress chart</span></div>`;return;}
   w.innerHTML=hist.slice(0,30).map((h,i)=>{
     const dur=h.el?`${Math.floor(h.el/60)}m ${h.el%60}s`:'—';
-    const manualBadge=h.manual?`<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(96,165,250,.12);color:var(--blue);font-weight:600;border:1px solid rgba(96,165,250,.2)">manual</span>`:'';
-    const delBtn=`<button onclick="histDelete(${i})" style="background:none;border:none;color:var(--ink3);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0" title="Hapus">✕</button>`;
-    const noteHtml=h.note
-      ?`<button class="hist-note-toggle" onclick="histNoteToggle(this)">📝 Catatan <span style="font-size:9px;opacity:.6">▾</span></button><div class="hist-note-body"><div class="hist-note-text">${h.note.replace(/</g,'&lt;')}</div><textarea class="hist-note-edit" placeholder="Edit catatan…" rows="2" style="display:none">${h.note.replace(/</g,'&lt;')}</textarea><button class="btn btn-secondary hist-note-save" style="display:none" onclick="histNoteSave(this,${i})">Simpan</button></div>`
-      :`<button class="hist-note-toggle" onclick="histNoteToggle(this)">✏️ Tambah catatan</button><div class="hist-note-body"><textarea class="hist-note-edit" placeholder="Kondisi hari ini, PR, catatan…" rows="2"></textarea><button class="btn btn-secondary hist-note-save" onclick="histNoteSave(this,${i})">Simpan</button></div>`;
+    const manualBadge=h.manual?`<span class="pill pill-blue" style="font-size:9px">manual</span> `:'';
+    // Note — collapsed by default, expand on tap
+    const noteHtml=`<div class="hist-note-row">
+      <button class="hist-note-toggle" onclick="histNoteToggle(this)">
+        ${h.note?`📝 <span style="font-size:11px">${h.note.slice(0,40)}${h.note.length>40?'…':''}</span>`:'<span style="font-size:11px;color:var(--ink3)">+ Catatan</span>'}
+      </button>
+      <div class="hist-note-body">
+        <textarea class="hist-note-edit" placeholder="Kondisi hari ini, PR, catatan…" rows="3">${h.note?h.note.replace(/</g,'&lt;'):''}</textarea>
+        <button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="histNoteSave(this,${i})">Simpan</button>
+      </div>
+    </div>`;
     return`<div class="hist-date-lbl">${h.dateLbl||h.date||''}</div>
     <div class="hist-card">
       <div class="hist-hd">
-        <div class="hist-name">${h.prog?`<span style="color:var(--ink3);font-size:11px">${h.prog} — </span>`:''}${h.name} ${manualBadge}</div>
-        <div style="display:flex;align-items:center;gap:6px"><div class="hist-time">${dur}</div>${delBtn}</div>
+        <div style="flex:1;min-width:0">
+          <div class="hist-name">${manualBadge}${h.prog?`<span style="color:var(--ink3);font-size:11px;font-weight:500">${h.prog} · </span>`:''}${h.name}</div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:3px;font-family:'DM Mono',monospace">${dur} · ${h.exs||0} ex · ${h.sets||0} sets</div>
+        </div>
+        <div style="display:flex;gap:4px;flex-shrink:0;margin-left:8px">
+          <button class="hist-act-btn" onclick="histEditOpen(${i})" title="Edit">✎</button>
+          <button class="hist-act-btn del" onclick="histDelete(${i})" title="Hapus">✕</button>
+        </div>
       </div>
-      <div style="font-size:12px;color:var(--ink3)">${h.exs||0} exercise · ${h.sets||0} sets</div>
       ${noteHtml}
     </div>`;
   }).join('');
 }
 function histNoteToggle(btn){
-  const body=btn.nextElementSibling;body.classList.toggle('open');
-  const ta=body.querySelector('.hist-note-edit');const sv=body.querySelector('.hist-note-save');
-  const txt=body.querySelector('.hist-note-text');
-  if(body.classList.contains('open')&&ta){
-    if(txt)txt.style.display='none';
-    ta.style.display='block';sv.style.display='block';
-    ta.focus();ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';
-  } else {
-    if(txt)txt.style.display='block';
-    if(ta)ta.style.display='none';if(sv)sv.style.display='none';
+  const body=btn.nextElementSibling;
+  const open=body.classList.toggle('open');
+  if(open){
+    const ta=body.querySelector('.hist-note-edit');
+    if(ta){ta.focus();ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';}
   }
 }
 function histNoteSave(btn,idx){
@@ -1816,19 +1868,11 @@ function histNoteSave(btn,idx){
   const ta=body.querySelector('.hist-note-edit');
   const note=ta.value.trim();
   hist[idx].note=note;ss(K.hist,hist);
-  // Update DOM in-place, no full re-render
-  let txt=body.querySelector('.hist-note-text');
-  if(note){
-    if(!txt){txt=document.createElement('div');txt.className='hist-note-text';body.insertBefore(txt,ta);}
-    txt.textContent=note;txt.style.display='block';
-  } else {
-    if(txt)txt.style.display='none';
-  }
-  ta.style.display='none';btn.style.display='none';
-  // Update toggle button label
   const toggle=body.previousElementSibling;
   if(toggle&&toggle.classList.contains('hist-note-toggle')){
-    toggle.innerHTML=note?'📝 Catatan <span style="font-size:9px;opacity:.6">▾</span>':'✏️ Tambah catatan';
+    toggle.innerHTML=note
+      ?`📝 <span style="font-size:11px">${note.slice(0,40)}${note.length>40?'…':''}</span>`
+      :`<span style="font-size:11px;color:var(--ink3)">+ Catatan</span>`;
   }
   body.classList.remove('open');
   toast('✓ Catatan disimpan');
@@ -1991,6 +2035,110 @@ function histDelete(idx){
   showConf('Hapus log ini?','Data workout ini akan dihapus permanen.',()=>{
     const hist=sg(K.hist,[]);hist.splice(idx,1);ss(K.hist,hist);renderHist();toast('🗑 Dihapus');
   });
+}
+
+/* ── HISTORY EDIT ── */
+let HE_IDX=null;
+function histEditOpen(idx){
+  const hist=sg(K.hist,[]);const h=hist[idx];if(!h)return;
+  HE_IDX=idx;
+  document.getElementById('he-name').value=h.name||'';
+  document.getElementById('he-min').value=h.el?Math.floor(h.el/60):'';
+  document.getElementById('he-sec').value=h.el?h.el%60:'';
+  shOpen('he');
+}
+function histEditClose(){shClose('he');HE_IDX=null;}
+function histEditSave(){
+  if(HE_IDX===null)return;
+  const hist=sg(K.hist,[]);const h=hist[HE_IDX];if(!h)return;
+  const name=document.getElementById('he-name').value.trim();
+  const min=parseInt(document.getElementById('he-min').value)||0;
+  const sec=parseInt(document.getElementById('he-sec').value)||0;
+  if(!name){toast('Nama sesi tidak boleh kosong');return;}
+  h.name=name;h.el=min*60+sec;
+  ss(K.hist,hist);histEditClose();renderHist();toast('✓ Log diupdate');
+}
+
+/* ── SHARE WORKOUT PNG ── */
+let FN_SNAP=null;// snapshot of WK state for share after save
+function fnShareWorkout(){
+  if(!FN_SNAP)return;
+  const{sessName,progName,elSec,sets,exs,note,date}=FN_SNAP;
+  const canvas=document.createElement('canvas');const W=800,H=500;canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const dark=document.documentElement.getAttribute('data-theme')!=='light';
+  const bg=dark?'#0C0C0F':'#F5F4F0';
+  const bg2=dark?'#1C1C22':'#E5E4E0';
+  const ink=dark?'#F2F0EB':'#111010';
+  const ink2=dark?'#9997A0':'#6B6966';
+  const ink3=dark?'#5A5865':'#AAA9A5';
+  const lime=dark?'#C8F03A':'#6EA800';
+  const edge=dark?'rgba(255,255,255,.08)':'rgba(0,0,0,.08)';
+  // Background
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  // Top accent bar
+  ctx.fillStyle=lime;ctx.fillRect(0,0,W,4);
+  // Logo top-left
+  ctx.fillStyle=lime;ctx.font='700 16px "DM Sans",sans-serif';ctx.fillText('GymLog',32,44);
+  // Date top-right
+  const dateStr=new Date(date+'T00:00:00').toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  ctx.fillStyle=ink3;ctx.font='500 12px "DM Mono",monospace';
+  ctx.textAlign='right';ctx.fillText(dateStr,W-32,44);ctx.textAlign='left';
+  // Divider
+  ctx.strokeStyle=edge;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(32,60);ctx.lineTo(W-32,60);ctx.stroke();
+  // Session name big
+  ctx.fillStyle=ink;ctx.font='800 42px "DM Sans",sans-serif';ctx.fillText(sessName,32,130);
+  // Program name
+  if(progName){ctx.fillStyle=ink3;ctx.font='500 14px "DM Sans",sans-serif';ctx.fillText(progName,32,158);}
+  // Stats row
+  const dur=`${Math.floor(elSec/60)}m ${elSec%60}s`;
+  const stats=[
+    {label:'Durasi',val:dur},
+    {label:'Exercises',val:String(exs)},
+    {label:'Total Sets',val:String(sets)},
+  ];
+  const sw=(W-64)/3;
+  stats.forEach((s,i)=>{
+    const x=32+i*sw;const y=210;
+    // Card bg
+    ctx.fillStyle=bg2;ctx.beginPath();ctx.roundRect(x,y,sw-12,110,12);ctx.fill();
+    ctx.strokeStyle=edge;ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(x,y,sw-12,110,12);ctx.stroke();
+    ctx.fillStyle=lime;ctx.font='700 30px "DM Mono",monospace';
+    ctx.textAlign='center';ctx.fillText(s.val,x+(sw-12)/2,y+52);
+    ctx.fillStyle=ink3;ctx.font='600 11px "DM Mono",monospace';
+    ctx.fillText(s.label.toUpperCase(),x+(sw-12)/2,y+78);
+    ctx.textAlign='left';
+  });
+  // Note if exists
+  if(note){
+    ctx.fillStyle=ink2;ctx.font='400 13px "DM Sans",sans-serif';
+    // Word wrap
+    const maxW=W-64;const words=note.split(' ');let line='';let y=355;
+    words.forEach(w=>{const t=line?line+' '+w:w;if(ctx.measureText(t).width>maxW&&line){ctx.fillText(line,32,y);line=w;y+=20;}else line=t;});
+    if(line)ctx.fillText(line,32,y);
+  }
+  // Bottom bar
+  ctx.fillStyle=bg2;ctx.fillRect(0,H-52,W,52);
+  ctx.strokeStyle=edge;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,H-52);ctx.lineTo(W,H-52);ctx.stroke();
+  ctx.fillStyle=lime;ctx.font='600 12px "DM Mono",monospace';
+  ctx.textAlign='center';ctx.fillText('Track lifts with GymLog 💪',W/2,H-20);ctx.textAlign='left';
+  // Share
+  _doShareCanvas(canvas,`gymlog-${sessName.replace(/\s+/g,'-').toLowerCase()}`);
+}
+async function _doShareCanvas(canvas,filename){
+  const dataUrl=canvas.toDataURL('image/png');
+  if(navigator.share&&navigator.canShare){
+    try{
+      const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));
+      const file=new File([blob],filename+'.png',{type:'image/png'});
+      if(navigator.canShare({files:[file]})){
+        await navigator.share({files:[file],title:'GymLog Workout'});return;
+      }
+    }catch(e){}
+  }
+  // Fallback: download
+  const a=document.createElement('a');a.href=dataUrl;a.download=filename+'.png';a.click();
+  toast('💾 Tersimpan sebagai PNG');
 }
 function tplOpen(){
   const b=document.getElementById('tpl-body');
