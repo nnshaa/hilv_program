@@ -895,19 +895,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
   <div class="sheet-handle"></div>
   <div class="sheet-hd"><div class="sheet-title">Edit Log</div><button class="sheet-close" onclick="histEditClose()">✕</button></div>
   <div class="sheet-body" style="display:flex;flex-direction:column;gap:12px">
-    <div class="field">
-      <label class="field-label">Nama Sesi</label>
-      <input type="text" id="he-name" class="field-input">
-    </div>
-    <div class="field">
-      <label class="field-label">Durasi</label>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input type="number" id="he-min" class="field-input" min="0" max="300" inputmode="numeric" style="text-align:center;font-family:'DM Mono',monospace;font-size:18px;font-weight:700">
-        <span style="color:var(--ink3);font-weight:600;flex-shrink:0">:</span>
-        <input type="number" id="he-sec" class="field-input" min="0" max="59" inputmode="numeric" style="text-align:center;font-family:'DM Mono',monospace;font-size:18px;font-weight:700">
-        <span style="font-size:12px;color:var(--ink3);white-space:nowrap">min · sek</span>
+    <div style="display:flex;gap:10px">
+      <div class="field" style="flex:2;margin:0">
+        <label class="field-label">Nama Sesi</label>
+        <input type="text" id="he-name" class="field-input">
+      </div>
+      <div class="field" style="flex:1;margin:0">
+        <label class="field-label">Durasi</label>
+        <div style="display:flex;gap:4px;align-items:center">
+          <input type="number" id="he-min" class="field-input" min="0" max="300" inputmode="numeric" style="text-align:center;font-family:'DM Mono',monospace;font-size:16px;font-weight:700;padding:10px 6px">
+          <span style="color:var(--ink3);flex-shrink:0">:</span>
+          <input type="number" id="he-sec" class="field-input" min="0" max="59" inputmode="numeric" style="text-align:center;font-family:'DM Mono',monospace;font-size:16px;font-weight:700;padding:10px 6px">
+        </div>
       </div>
     </div>
+    <div class="field-label" style="margin-bottom:4px">Sets & Reps</div>
+    <div id="he-ex-list" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
   <div class="sheet-footer">
     <button class="btn btn-secondary" onclick="histEditClose()">Batal</button>
@@ -1613,19 +1616,28 @@ function finishWK(){
   if(!WK){navTo('home');return;}
   const elSec=Math.floor((Date.now()-WK.t0)/1000);
   const m=Math.floor(elSec/60);const s=elSec%60;
-  document.getElementById('fn-min').value=m;
-  document.getElementById('fn-sec').value=s;
-  document.getElementById('fn-note').value='';
+  // Reset sheet to input state
+  document.querySelector('#fn-sheet .sheet-title').textContent='🎉 Workout Selesai!';
+  document.getElementById('fn-sheet').querySelector('.sheet-body').innerHTML=`
+    <div class="fn-label">Total waktu</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <input id="fn-min" class="cardio-input" type="number" min="0" max="300" step="1" inputmode="numeric" style="flex:1;font-size:28px;padding:10px 4px" value="${m}">
+      <span style="font-size:20px;font-weight:700;color:var(--ink3)">:</span>
+      <input id="fn-sec" class="cardio-input" type="number" min="0" max="59" step="1" inputmode="numeric" style="flex:1;font-size:28px;padding:10px 4px" value="${s}">
+      <span style="font-size:13px;color:var(--ink3);white-space:nowrap">min · sek</span>
+    </div>
+    <div class="fn-label">Catatan sesi (opsional)</div>
+    <textarea class="fn-textarea" id="fn-note" placeholder="Kondisi hari ini, hal yang dirasakan, PR baru…" rows="3"></textarea>`;
+  document.getElementById('fn-sheet').querySelector('.sheet-footer').innerHTML=`
+    <div style="display:flex;gap:8px;width:100%">
+      <button class="btn btn-secondary" style="flex:1" onclick="fnClose()">Lewati</button>
+      <button class="btn btn-primary" style="flex:2" onclick="fnSave()">Simpan & Selesai</button>
+    </div>`;
   shOpen('fn');
 }
 function fnClose(){
   shClose('fn');
-  if(WK){
-    const elSec=Math.floor((Date.now()-WK.t0)/1000);
-    _doFinish(elSec,'');
-  } else {
-    navTo('home');renderHome();
-  }
+  if(WK){const elSec=Math.floor((Date.now()-WK.t0)/1000);_doFinish(elSec,'');}
 }
 function fnSave(){
   const m=parseInt(document.getElementById('fn-min').value)||0;
@@ -1643,22 +1655,38 @@ function _doFinish(elSec,note){
   const entry={date:today(),dateLbl,name:WK.sess.name,prog:WK.prog?.name||'',el:elSec,exs:Object.keys(WK.states).length,sets:totalSets};
   if(note)entry.note=note;
   hist.unshift(entry);if(hist.length>50)hist.pop();ss(K.hist,hist);
-  // Save snapshot for share
   FN_SNAP={sessName:WK.sess.name,progName:WK.prog?.name||'',elSec,sets:totalSets,exs:Object.keys(WK.states).length,note,date:today()};
   clearInterval(WK_TMR);WK=null;
-  // Show share button
-  const shareBtn=document.getElementById('fn-share-btn');
-  if(shareBtn)shareBtn.style.display='flex';
-  if(document.getElementById('fn-sheet')?.classList.contains('show')){
-    // Still on finish sheet — update title and hide save btn
-    document.querySelector('#fn-sheet .sheet-title').textContent='✅ Tersimpan!';
-    document.querySelector('#fn-sheet .sheet-footer .btn-primary').style.display='none';
-    document.querySelector('#fn-sheet .sheet-footer .btn-secondary').textContent='Tutup';
-    document.querySelector('#fn-sheet .sheet-footer .btn-secondary').onclick=()=>{shClose('fn');navTo('home');renderHome();};
-  } else {
-    toast('🎉 Workout selesai!');if(navigator.vibrate)navigator.vibrate([40,30,80]);
-    navTo('home');renderHome();
-  }
+  if(navigator.vibrate)navigator.vibrate([40,30,80]);
+  shClose('fn');
+  // Show share bottom sheet
+  fnShowShareResult();
+  renderHome();
+}
+function fnShowShareResult(){
+  if(!FN_SNAP)return;
+  const{sessName,elSec,sets}=FN_SNAP;
+  const dur=`${Math.floor(elSec/60)}m ${elSec%60}s`;
+  // Reuse fn-sheet as result sheet
+  document.querySelector('#fn-sheet .sheet-title').textContent='🎉 Workout Selesai!';
+  document.getElementById('fn-share-btn').style.display='flex';
+  // Swap body to summary
+  document.getElementById('fn-sheet').querySelector('.sheet-body').innerHTML=`
+    <div style="text-align:center;padding:8px 0 16px">
+      <div style="font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px">${sessName}</div>
+      <div style="display:flex;justify-content:center;gap:24px;margin-top:12px">
+        <div style="text-align:center"><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--lime)">${dur}</div><div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-top:2px">Durasi</div></div>
+        <div style="width:1px;background:var(--edge)"></div>
+        <div style="text-align:center"><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--lime)">${sets}</div><div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-top:2px">Sets</div></div>
+        <div style="width:1px;background:var(--edge)"></div>
+        <div style="text-align:center"><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--lime)">${FN_SNAP.exs}</div><div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-top:2px">Exercises</div></div>
+      </div>
+    </div>`;
+  // Swap footer
+  document.getElementById('fn-sheet').querySelector('.sheet-footer').innerHTML=`
+    <button class="btn btn-secondary" onclick="shClose('fn')">Tutup</button>
+    <button class="btn btn-primary" id="fn-share-btn2" onclick="fnShareWorkout()">↑ Share</button>`;
+  shOpen('fn');
 }
 
 /* ── REST TIMER ── */
@@ -2045,7 +2073,54 @@ function histEditOpen(idx){
   document.getElementById('he-name').value=h.name||'';
   document.getElementById('he-min').value=h.el?Math.floor(h.el/60):'';
   document.getElementById('he-sec').value=h.el?h.el%60:'';
+  // Build exercise editor from prog session + existing log data
+  const prog=getActiveProg();
+  const sess=prog?.sessions?.find(s=>s.name===h.name)||prog?.sessions?.[0];
+  const exList=document.getElementById('he-ex-list');
+  if(!exList){shOpen('he');return;}
+  exList.innerHTML='';
+  if(sess){
+    const log=loadLog();
+    const logDate=h.date;
+    const exs=(sess.exercises||[]).filter(e=>e.type!=='cardio'&&!(BLIB.find(l=>l.id===e.lid)?.type==='cardio'));
+    exs.forEach(ex=>{
+      const existing=log[ex.id]?.find(e=>e._date===logDate);
+      const sets=existing?Math.max(...Object.keys(existing).filter(k=>!k.startsWith('_')).map(Number)):ex.sets||2;
+      let rows='';
+      for(let si=1;si<=sets;si++){
+        const v=existing?.[si];
+        rows+=`<div class="hm-set-row" id="he-${ex.id}-r${si}">
+          <div class="hm-set-num">${si}</div>
+          <input class="hm-set-inp" id="he-${ex.id}-k${si}" type="number" placeholder="kg" step="2.5" inputmode="decimal" value="${v?.kg||''}">
+          <input class="hm-set-inp" id="he-${ex.id}-p${si}" type="number" placeholder="reps" step="1" inputmode="numeric" value="${v?.reps||''}">
+          <div class="hm-set-done ${v?.kg||v?.reps?'on':''}" id="he-${ex.id}-d${si}" onclick="heToggleDone('${ex.id}',${si})">✓</div>
+        </div>`;
+      }
+      const card=document.createElement('div');
+      card.className='hm-ex-card';
+      card.innerHTML=`
+        <div class="hm-ex-hd">
+          <div class="hm-ex-name">${ex.name}</div>
+          <span style="font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace">${ex.sets||2}×${ex.reps||'?'}</span>
+        </div>
+        <div class="hm-set-head"><span>Set</span><span>KG</span><span>Reps</span><span>✓</span></div>
+        <div id="he-${ex.id}-rows">${rows}</div>
+        <button class="hm-add-set" onclick="heAddSet('${ex.id}')">+ Add Set</button>`;
+      exList.appendChild(card);
+    });
+    if(!exs.length)exList.innerHTML='<div style="font-size:12px;color:var(--ink3);padding:8px 0">Tidak ada exercise strength di sesi ini</div>';
+  } else {
+    exList.innerHTML='<div style="font-size:12px;color:var(--ink3);padding:8px 0">Session tidak ditemukan di program aktif</div>';
+  }
   shOpen('he');
+}
+function heToggleDone(exId,si){document.getElementById(`he-${exId}-d${si}`)?.classList.toggle('on');}
+function heAddSet(exId){
+  const rowsEl=document.getElementById(`he-${exId}-rows`);if(!rowsEl)return;
+  const si=rowsEl.querySelectorAll('.hm-set-row').length+1;
+  const d=document.createElement('div');d.className='hm-set-row';d.id=`he-${exId}-r${si}`;
+  d.innerHTML=`<div class="hm-set-num">${si}</div><input class="hm-set-inp" id="he-${exId}-k${si}" type="number" placeholder="kg" step="2.5" inputmode="decimal"><input class="hm-set-inp" id="he-${exId}-p${si}" type="number" placeholder="reps" step="1" inputmode="numeric"><div class="hm-set-done" id="he-${exId}-d${si}" onclick="heToggleDone('${exId}',${si})">✓</div>`;
+  rowsEl.appendChild(d);
 }
 function histEditClose(){shClose('he');HE_IDX=null;}
 function histEditSave(){
@@ -2056,7 +2131,37 @@ function histEditSave(){
   const sec=parseInt(document.getElementById('he-sec').value)||0;
   if(!name){toast('Nama sesi tidak boleh kosong');return;}
   h.name=name;h.el=min*60+sec;
-  ss(K.hist,hist);histEditClose();renderHist();toast('✓ Log diupdate');
+  // Save sets to log
+  const prog=getActiveProg();
+  const sess=prog?.sessions?.find(s=>s.name===name)||prog?.sessions?.[0];
+  if(sess){
+    const log=loadLog();
+    const exs=(sess.exercises||[]).filter(e=>e.type!=='cardio'&&!(BLIB.find(l=>l.id===e.lid)?.type==='cardio'));
+    let totalSets=0;let loggedExs=0;
+    exs.forEach(ex=>{
+      const rowsEl=document.getElementById(`he-${ex.id}-rows`);if(!rowsEl)return;
+      const rows=rowsEl.querySelectorAll('.hm-set-row');
+      const data={_date:h.date,_lbl:new Date(h.date+'T00:00:00').toDateString()};
+      let hasSets=false;
+      rows.forEach((_,i)=>{
+        const si=i+1;
+        const kg=parseFloat(document.getElementById(`he-${ex.id}-k${si}`)?.value)||0;
+        const reps=parseInt(document.getElementById(`he-${ex.id}-p${si}`)?.value)||0;
+        if(kg||reps){data[si]={kg,reps};hasSets=true;totalSets++;}
+      });
+      if(hasSets){
+        if(!log[ex.id])log[ex.id]=[];
+        const idx=log[ex.id].findIndex(e=>e._date===h.date);
+        if(idx>=0)log[ex.id].splice(idx,1);
+        log[ex.id].unshift(data);
+        if(log[ex.id].length>12)log[ex.id].pop();
+        loggedExs++;
+      }
+    });
+    saveLog(log);
+    h.exs=loggedExs;h.sets=totalSets;
+  }
+  ss(K.hist,hist);histEditClose();renderHist();renderHeatmap();toast('✓ Log diupdate');
 }
 
 /* ── SHARE WORKOUT PNG ── */
