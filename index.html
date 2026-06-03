@@ -539,6 +539,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
 ::selection{background:rgba(200,240,58,.2);color:var(--ink)}
 
+/* ── BODY MEASUREMENTS ── */
+.ms-types{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;flex-wrap:nowrap}
+.ms-types::-webkit-scrollbar{display:none}
+.ms-type-btn{padding:5px 10px;border-radius:99px;white-space:nowrap;flex-shrink:0;border:1px solid var(--edge);background:var(--bg2);font-size:11px;font-weight:600;color:var(--ink3);cursor:pointer;transition:all .15s;font-family:inherit}
+.ms-type-btn.on{border-color:var(--lime-edge);background:var(--lime-bg);color:var(--lime)}
+.ms-row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.ms-input{flex:1;padding:10px 12px;background:var(--bg2);border:1.5px solid var(--edge);border-radius:var(--r);color:var(--ink);font-family:'DM Mono',monospace;font-size:18px;font-weight:600;text-align:center;outline:none;transition:border-color .15s;-moz-appearance:textfield}
+.ms-input::-webkit-inner-spin-button{-webkit-appearance:none}
+.ms-input:focus{border-color:rgba(200,240,58,.5)}
+.ms-log-btn{padding:10px 14px;border-radius:var(--r);background:var(--bg2);border:1px solid var(--edge);color:var(--ink2);font-size:13px;font-weight:600;transition:all .15s;flex-shrink:0;cursor:pointer}
+.ms-log-btn:hover{border-color:rgba(200,240,58,.3);color:var(--lime)}
+.ms-entry{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--edge2)}
+.ms-entry:last-child{border-bottom:none}
+.ms-delta-dn{color:var(--lime)}
+.ms-delta-up{color:var(--red)}
+
 /* ── RESPONSIVE ── */
 @media(max-width:380px){
   .sl-head,.sl-row{grid-template-columns:26px 1fr 1fr 1fr 28px 30px;gap:3px;padding:5px 8px}
@@ -658,6 +674,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
       </div>
       <div id="bw-list"></div>
     </div>
+
+    <!-- MEASUREMENTS -->
+    <div class="sec-label" style="display:flex;justify-content:space-between;align-items:center">
+      Body Measurements
+      <div style="display:flex;gap:6px" id="ms-tab-row"></div>
+    </div>
+    <div class="card card-pad" id="ms-wrap"></div>
 
   </div>
 </div>
@@ -1202,6 +1225,53 @@ function showPR(name,val){
   setTimeout(()=>{el.style.animation='pr-out .25s ease forwards';setTimeout(()=>el.remove(),280);},3000);
 }
 
+/* ── MEASUREMENTS ── */
+const MS_TYPES=['Pinggang','Dada','Pinggul','Lengan','Paha','Betis'];
+const K_MS='gl_ms';
+let MS_CUR=MS_TYPES[0];
+function loadMS(){return sg(K_MS,{});}
+function msInit(){
+  const tabRow=document.getElementById('ms-tab-row');
+  if(tabRow){
+    tabRow.innerHTML=MS_TYPES.map(t=>`<button class="ms-type-btn${t===MS_CUR?' on':''}" onclick="msSw('${t}',this)">${t}</button>`).join('');
+  }
+  renderMS();
+}
+function msSw(t,btn){
+  MS_CUR=t;
+  document.querySelectorAll('.ms-type-btn').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  renderMS();
+}
+function msLog(){
+  const inp=document.getElementById('ms-inp');if(!inp)return;
+  const cm=parseFloat(inp.value);
+  if(!cm||cm<10||cm>300){inp.focus();return;}
+  const data=loadMS();
+  if(!data[MS_CUR])data[MS_CUR]=[];
+  const td=today();
+  const idx=data[MS_CUR].findIndex(e=>e.date===td);
+  if(idx>=0)data[MS_CUR][idx].cm=cm;
+  else{data[MS_CUR].push({date:td,cm});data[MS_CUR].sort((a,b)=>a.date<b.date?-1:1);if(data[MS_CUR].length>90)data[MS_CUR].splice(0,data[MS_CUR].length-90);}
+  ss(K_MS,data);inp.value='';renderMS();toast(`📏 ${MS_CUR}: ${cm} cm`);
+}
+function renderMS(){
+  const wrap=document.getElementById('ms-wrap');if(!wrap)return;
+  const data=loadMS();const entries=(data[MS_CUR]||[]).slice(-5).reverse();
+  const goal=MS_CUR==='Pinggang'||MS_CUR==='Pinggul'||MS_CUR==='Paha'?'dn':'up';// cutting: waist/hip/thigh going down = lime
+  wrap.innerHTML=`<div class="ms-row">
+    <input class="ms-input" id="ms-inp" type="number" placeholder="—" step="0.1" inputmode="decimal" min="10" max="300">
+    <span style="font-size:13px;color:var(--ink3);flex-shrink:0">cm</span>
+    <button class="ms-log-btn" onclick="msLog()">Log</button>
+  </div>`+
+  (entries.length?entries.map((e,i,a)=>{
+    const prev=a[i+1];const d=prev?(e.cm-prev.cm):null;
+    const isGood=d!==null&&(goal==='dn'?d<=0:d>=0);
+    const dHtml=d!==null?`<span class="${isGood?'ms-delta-dn':'ms-delta-up'}" style="font-family:'DM Mono',monospace;font-size:11px">${d>0?'+':''}${d.toFixed(1)}</span>`:'';
+    return`<div class="ms-entry"><span style="font-size:12px;color:var(--ink2)">${e.date}</span><div style="display:flex;align-items:center;gap:8px">${dHtml}<span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600">${e.cm} cm</span></div></div>`;
+  }).join(''):'<div style="font-size:12px;color:var(--ink3);text-align:center;padding:8px 0">Belum ada data</div>');
+}
+
 /* ── BW ── */
 function loadBW(){return sg(K.bw,[])}
 function bwDateInit(){
@@ -1225,7 +1295,8 @@ function renderBW(){
   const data=loadBW();const el=document.getElementById('bw-list');if(!el)return;
   if(!data.length){el.innerHTML='<div style="font-size:12px;color:var(--ink3);text-align:center;padding:8px 0">Belum ada data</div>';return;}
   el.innerHTML=data.slice(-5).reverse().map((e,i,a)=>{
-    const prev=a[i+1];const d=prev?e.kg-prev.kg:null;
+    // a[i] is current (newer), a[i+1] is previous (older) — correct for reversed array
+    const prev=a[i+1];const d=prev?(e.kg-prev.kg):null;
     const dHtml=d!==null?`<span class="${d<=0?'bw-delta-dn':'bw-delta-up'}" style="font-family:'DM Mono',monospace;font-size:11px">${d>0?'+':''}${d.toFixed(1)}</span>`:'';
     return`<div class="bw-entry"><span style="font-size:12px;color:var(--ink2)">${e.date}</span><div style="display:flex;align-items:center;gap:8px">${dHtml}<span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600">${e.kg} kg</span></div></div>`;
   }).join('');
@@ -1255,7 +1326,7 @@ function renderHome(){
   document.getElementById('g-name').textContent=getGreeting();
   document.getElementById('g-sub').textContent=prog?prog.name:'No program — tap + to create one';
   renderStreak(prog);renderHomeToday(prog,dow);renderStats();renderBW();renderHomePRs(prog);
-  renderDeloadBanner();renderOverload(prog);renderHeatmap();
+  renderDeloadBanner();renderOverload(prog);renderHeatmap();msInit();
 }
 function renderOverload(prog){
   const wrap=document.getElementById('h-ol-wrap');const el=document.getElementById('h-ol');
@@ -1402,8 +1473,10 @@ function renderWorkout(){
       const ck=document.getElementById(`${ex.id}-c${si}`);
       const kg=document.getElementById(`${ex.id}-k${si}`);
       const rp=document.getElementById(`${ex.id}-p${si}`);
+      const rirEl=document.getElementById(`${ex.id}-rir${si}`);
       if(row)row.classList.add('done');if(ck)ck.classList.add('checked');
       if(kg)kg.value=v.kg||'';if(rp)rp.value=v.reps||'';
+      if(rirEl&&v.rir!=null)rirEl.value=v.rir;
     });
   });
   clearInterval(WK_TMR);
@@ -1588,7 +1661,7 @@ function getOverloadSuggestions(prog){
   (prog?.sessions||[]).forEach(sess=>{
     (sess.exercises||[]).forEach(ex=>{
       const entries=log[ex.id]||[];if(entries.length<2)return;
-      const last=entries[0];
+      const last=entries[entries.length-1];
       const sets=Object.entries(last).filter(([k])=>!k.startsWith('_'));if(!sets.length)return;
       const maxReps=Math.max(...sets.map(([,v])=>v.reps||0));
       const maxKg=Math.max(...sets.map(([,v])=>v.kg||0));
@@ -1781,9 +1854,14 @@ function rtClose(){
 let PC={id:null,name:null,mode:'kg',lid:null};
 function pcOpen(id,name,lid){PC={id,name,mode:'kg',lid:lid||null};document.getElementById('pc-title').textContent=name;document.querySelectorAll('.pc-tab').forEach((t,i)=>t.classList.toggle('on',i===0));
   // Cardio: rename tabs
-  const isCardio=BLIB.find(l=>l.id===lid)?.type==='cardio';
+  const isCardio=BLIB.find(l=>l.id===PC.lid)?.type==='cardio';
   const tabs=document.querySelectorAll('.pc-tab');
-  if(isCardio&&tabs.length>=3){tabs[0].textContent='Durasi';tabs[1].textContent='Incline';tabs[2].textContent='Speed';}
+  if(isCardio&&tabs.length>=3){tabs[0].textContent='Durasi';tabs[1].textContent='Incline';tabs[2].textContent='Speed';
+    // Also remap mode keys for cardio: kg=dur, reps=incline, volume=speed
+    if(PC.mode==='kg')PC._cardioKey='kg';
+    else if(PC.mode==='reps')PC._cardioKey='reps';
+    else PC._cardioKey='volume';
+  }
   else if(tabs.length>=3){tabs[0].textContent='KG';tabs[1].textContent='Reps';tabs[2].textContent='Volume';}
   pcRender();shOpen('pc');
 }
@@ -2040,7 +2118,7 @@ function histManualSave(){
       const idx=log[ex.id].findIndex(e=>e._date===date);
       if(idx>=0)log[ex.id].splice(idx,1);
       log[ex.id].unshift(data);
-      if(log[ex.id].length>12)log[ex.id].pop();
+      if(log[ex.id].length>24)log[ex.id]=log[ex.id].slice(-24);
       loggedExs++;
     }
   });
@@ -2154,7 +2232,7 @@ function histEditSave(){
         const idx=log[ex.id].findIndex(e=>e._date===h.date);
         if(idx>=0)log[ex.id].splice(idx,1);
         log[ex.id].unshift(data);
-        if(log[ex.id].length>12)log[ex.id].pop();
+        if(log[ex.id].length>24)log[ex.id]=log[ex.id].slice(-24);
         loggedExs++;
       }
     });
@@ -2363,9 +2441,9 @@ function confCancel(){document.getElementById('conf-bd').classList.remove('show'
 function settingsOpen(){const ps=loadProgs();const log=loadLog();const bw=loadBW();document.getElementById('set-info').textContent=`${ps.length} program · ${Object.keys(log).length} ex · ${loadBW().length} BW`;shOpen('set');}
 function settingsClose(){shClose('set');}
 function toggleTheme(){const c=document.documentElement.getAttribute('data-theme')||'dark';const n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);ss(K.theme,n);}
-function bkExport(){const p={v:'1.0',exp:new Date().toISOString(),progs:loadProgs(),log:loadLog(),bw:loadBW(),lib:sg(K.lib,[]),hist:sg(K.hist,[])};const b=new Blob([JSON.stringify(p,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='gymlog-'+today()+'.json';a.click();URL.revokeObjectURL(u);toast('💾 Backup downloaded');}
-function bkImport(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!d.progs&&!d.log)throw new Error('Format invalid');if(d.progs)ss(K.progs,d.progs);if(d.log)ss(K.log,d.log);if(d.bw)ss(K.bw,d.bw);if(d.lib)ss(K.lib,d.lib);if(d.hist)ss(K.hist,d.hist);settingsClose();toast('✓ Restored');setTimeout(()=>location.reload(),800);}catch(err){toast('Gagal: '+err.message);}};r.readAsText(f);}
-function bkClearAll(){showConf('Hapus semua data?','Tidak bisa dibatalkan.',()=>{Object.values(K).forEach(k=>localStorage.removeItem(k));toast('✓ Data dihapus');setTimeout(()=>location.reload(),800);});}
+function bkExport(){const p={v:'1.0',exp:new Date().toISOString(),progs:loadProgs(),log:loadLog(),bw:loadBW(),lib:sg(K.lib,[]),hist:sg(K.hist,[]),ms:sg(K_MS,{})};const b=new Blob([JSON.stringify(p,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='gymlog-'+today()+'.json';a.click();URL.revokeObjectURL(u);toast('💾 Backup downloaded');}
+function bkImport(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!d.progs&&!d.log)throw new Error('Format invalid');if(d.progs)ss(K.progs,d.progs);if(d.log)ss(K.log,d.log);if(d.bw)ss(K.bw,d.bw);if(d.lib)ss(K.lib,d.lib);if(d.hist)ss(K.hist,d.hist);if(d.ms)ss(K_MS,d.ms);settingsClose();toast('✓ Restored');setTimeout(()=>location.reload(),800);}catch(err){toast('Gagal: '+err.message);}};r.readAsText(f);}
+function bkClearAll(){showConf('Hapus semua data?','Tidak bisa dibatalkan.',()=>{Object.values(K).forEach(k=>localStorage.removeItem(k));localStorage.removeItem(K_MS);toast('✓ Data dihapus');setTimeout(()=>location.reload(),800);});}
 
 /* ── EDIT LOAD (in-workout beban editor) ── */
 let EL={exId:null,kg:0,sets:2};
@@ -2566,12 +2644,12 @@ function navTo(v){
     const prog=getActiveProg();const c=document.getElementById('wk-content');
     if(!prog){c.innerHTML=`<div class="wrap"><div class="empty-state" style="padding-top:60px"><div class="empty-state-icon">📋</div>Buat program dulu di tab Program</div></div>`;return;}
     const tod=new Date().getDay();
-    c.innerHTML=`<div class="topbar"><div class="topbar-title">Pilih Sesi</div></div><div class="wrap">${(prog.sessions||[]).map(s=>`<div class="card card-pad" style="cursor:pointer;margin-bottom:10px" onclick="startWorkout('${prog.id}','${s.id}')"><div style="display:flex;align-items:center;gap:12px"><div style="font-size:22px">${prog.emoji||'🏋️'}</div><div><div style="font-size:15px;font-weight:600">${s.name}</div><div style="font-size:12px;color:var(--ink2)">${s.focus||''} · ${s.day>=0?DAY[s.day]:'—'}</div></div><div style="margin-left:auto;font-family:DM Mono,monospace;font-size:14px;color:var(--lime)">→</div></div></div>`).join('')}</div>`;
+    c.innerHTML=`<div class="topbar"><div class="topbar-title">Pilih Sesi</div></div><div class="wrap">${(prog.sessions||[]).map(s=>{const isToday=s.day===tod;return`<div class="card card-pad" style="cursor:pointer;margin-bottom:10px;${isToday?'border-color:var(--lime-edge);background:rgba(200,240,58,.03);':''}" onclick="startWorkout('${prog.id}','${s.id}')"><div style="display:flex;align-items:center;gap:12px"><div style="font-size:22px">${prog.emoji||'🏋️'}</div><div style="flex:1"><div style="font-size:15px;font-weight:600">${s.name}${isToday?' <span style="font-size:10px;background:var(--lime-bg);color:var(--lime);border:1px solid var(--lime-edge);border-radius:99px;padding:2px 7px;font-family:DM Mono,monospace;font-weight:700;letter-spacing:.04em">Hari ini</span>':''}</div><div style="font-size:12px;color:var(--ink2)">${s.focus||''} · ${s.day>=0?DAY[s.day]:'—'}</div></div><div style="font-family:DM Mono,monospace;font-size:14px;color:var(--lime)">→</div></div></div>`;}).join('')}</div>`;
   }
 }
 
 /* ── PWA ── */
-(()=>{
+(()=>{ 
   const mf={name:'GymLog',short_name:'GymLog',start_url:'./',display:'standalone',background_color:'#0C0C0F',theme_color:'#0C0C0F',icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='112' fill='%230C0C0F'/><text y='380' x='60' font-size='380'>🏋️</text></svg>",sizes:'512x512',type:'image/svg+xml'}]};
   const bl=new Blob([JSON.stringify(mf)],{type:'application/json'});const lk=document.createElement('link');lk.rel='manifest';lk.href=URL.createObjectURL(bl);document.head.appendChild(lk);
   if('serviceWorker' in navigator){const sw=`const C='gl-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['./'])).then(()=>self.skipWaiting()))});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request).then(r=>{caches.open(C).then(c=>c.put(e.request,r.clone()));return r}).catch(()=>caches.match(e.request)));});`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'})),{scope:'./'}).catch(()=>{});}
